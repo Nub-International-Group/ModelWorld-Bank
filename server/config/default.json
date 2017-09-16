@@ -3,5 +3,6 @@
     "reddit": {
         "key": null,
         "secret": null
-    }
+    },
+    "deploymentURL": "localhost:8080"
 }

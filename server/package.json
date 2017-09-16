@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.1",
+    "config": "^1.26.2",
     "express": "^4.15.4",
     "mongoose": "^4.11.11",
     "passport": "^0.4.0",
