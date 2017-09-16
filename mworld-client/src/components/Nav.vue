@@ -17,21 +17,21 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li>
-              <a href="#">Home</a>
+              <router-link to="/">Home</router-link>
             </li>
             <li>
-              <a href="#">Banking</a>
+              <router-link to="/account">Banking</router-link>
             </li>
             <li>
-              <a href="#">Property Market</a>
+              <router-link to="/bet">Betting</router-link>
             </li>
             <li>
-              <a href="#">Betting Shop</a>
+              <router-link to="/property">Broperty Market</router-link>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a href="#">Log In</a>
+              <router-link to="/auth/login">Log In</router-link>
             </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Menu
