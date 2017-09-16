@@ -11,25 +11,25 @@
     <div class="row">
       <div class="col-md-4">
         <div class="panel panel-primary">
-          <div class="panel-heading">Panel heading without title</div>
+          <div class="panel-heading">Banking</div>
           <div class="panel-body">
-            Panel content
+            Recieve your wages and pass your bribes all from one easy to use interface. We at NiG mWorld Bank pride ourselves in being discrete so you don't have to worry about a scandel.
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="panel panel-warning">
-          <div class="panel-heading">Panel heading without title</div>
+          <div class="panel-heading">Property</div>
           <div class="panel-body">
-            Panel content
+            All property is theft from the common people, so go ahead and invest in that lucrative west-end property.
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="panel panel-success">
-          <div class="panel-heading">Panel heading without title</div>
+          <div class="panel-heading">Betting</div>
           <div class="panel-body">
-            Panel content
+            Money? More money? That's betting for you.
           </div>
         </div>
       </div>

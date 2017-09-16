@@ -27,7 +27,8 @@ export default {
       quotes: [
       ['Not all those who wander are lost.', 'J.R.R. Tolkien', 'The Fellowship of the Ring'],
       ['Some beautiful paths can\'t be discovered without getting lost.', 'Erol Ozan', ''],
-      ['You\'ve got to find yourself first. Everything else\'ll follow.', 'Charles de Lint', 'Dreams Underfoot']
+      ['You\'ve got to find yourself first. Everything else\'ll follow.', 'Charles de Lint', 'Dreams Underfoot'],
+      ['They say that when one door closes, another opens. \n This is not that door', 'Lewis Miller', '']
       ],
       random: Math.random()
     }
