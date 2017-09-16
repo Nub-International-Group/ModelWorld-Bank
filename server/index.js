@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const passport = require('passport')
 
 const app = express()
 
@@ -12,6 +13,7 @@ app.use(bodyParser.json())
  */
 app.use(function (req, res, next) {
   res.contentType('application/json')
+  res.setHeader('X-Powered-By', 'The dreams and salt of MHOC')
   next()
 })
 
