@@ -14,8 +14,10 @@
     "axios": "^0.16.2",
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
+    "jsonwebtoken": "^8.0.1",
     "vue": "^2.4.2",
-    "vue-router": "^2.7.0"
+    "vue-router": "^2.7.0",
+    "vue-stash": "^2.0.1-beta"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

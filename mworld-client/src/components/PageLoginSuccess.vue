@@ -7,22 +7,29 @@
     </div>
     <br>
     <p> This page will redirect once your session has been fully established. Please hold.</p>
+    <p> Name: {{user.name}} </p>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+import jwt from 'jsonwebtoken'
+
 export default {
   name: 'PageLoginSuccess',
+  store: ['user'],
   data: function () {
     return {}
   },
-  methods: {
-    startLogin: function () {
-      window.location.href = '/api/auth/login'
-    }
-  },
-  mounted: function () {
-    console.log('hmm')
+  created: function () {
+    let app = this
+    axios.get('/api/auth/jwt').then(function (response) {
+      app.user = jwt.decode(response.data.jwt)
+      // app.$router.push('/')
+    }).catch(function (err) {
+      console.log(err)
+      app.$router.push('/login')
+    })
   }
 }
 </script>

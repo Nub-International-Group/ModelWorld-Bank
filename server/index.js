@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const passport = require('passport')
 const config = require('config')
 const session = require('express-session')
+const jwt = require('jsonwebtoken')
 
 const MongoStore = require('connect-mongo')(session)
 const RedditStrategy = require('passport-reddit').Strategy
@@ -22,6 +23,7 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+// sessions are only used for the authentication pathway. JWTs are usually used instead.
 app.use(session({
   secret: config.secret,
   store: new MongoStore({mongooseConnection: mongoose.connection})
@@ -103,16 +105,19 @@ app.get('/api/auth/return', function (req, res, next) {
  * Handles the client requesting a JWT
  */
 app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
+  jwt.sign({
+    name: req.user.name,
+    admin: false
+  }, config.secret, function (err, jwtString) {
+    if (err) { return next(err) }
 
+    res.status(200).json({'jwt': jwtString})
+
+    req.session.destroy() // Terminate the login and user. JWT then becomes the soul form of session.
+    req.user = null
+  })
 })
 
-/**
- * Handles logout. Cleans up the auth only session
- */
-app.get('/api/auth/logout', function (req, res, next) {
-  req.logout()
-  res.status(200).json({status: 200})
-})
 /**
  * 404 Handler
  */

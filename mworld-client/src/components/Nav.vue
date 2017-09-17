@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">NiG mWorld Bank</a>
+          <a class="navbar-brand" href="#">NiG mWorld Bank {{user.name}}</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -64,6 +64,11 @@
 
 <script>
 export default {
-  name: 'navbar'
+  name: 'navbar',
+  store: ['user'],
+  data: function () {
+    return {
+    }
+  }
 }
 </script>
