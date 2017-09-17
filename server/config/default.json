@@ -4,5 +4,6 @@
         "key": null,
         "secret": null
     },
-    "deploymentURL": "localhost:8080"
+    "deploymentURL": "localhost:8080",
+    "secret": "changeme"
 }

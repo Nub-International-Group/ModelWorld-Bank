@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
+
+import PageHome from '@/components/PageHome'
 import PageNotFound from '@/components/PageNotFound'
+import PageLogin from '@/components/PageLogin'
+import PageLoginSuccess from '@/components/PageLoginSuccess'
+
 import bootstrap from 'bootstrap'
 window.bootstrap = bootstrap
 
@@ -11,11 +15,21 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Home
+      component: PageHome
     },
     {
       path: '*',
       component: PageNotFound
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: PageLogin
+    },
+    {
+      path: '/login/success',
+      name: 'LoginSuccess',
+      component: PageLoginSuccess
     }
   ]
 })

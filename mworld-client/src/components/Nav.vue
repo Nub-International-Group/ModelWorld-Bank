@@ -31,7 +31,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <router-link to="/auth/login">Log In</router-link>
+              <router-link to="/login">Log In</router-link>
             </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Menu

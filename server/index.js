@@ -2,13 +2,30 @@ const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const passport = require('passport')
-const RedditStrategy = require('passport-reddit').Strategy
 const config = require('config')
+const session = require('express-session')
+
+const MongoStore = require('connect-mongo')(session)
+const RedditStrategy = require('passport-reddit').Strategy
+
+mongoose.connect(config.mongoURL)
+
+mongoose.connection.on('error', function (err) {
+  console.log('DB Connection Error')
+  console.log(err)
+
+  process.exit()
+})
 
 const app = express()
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+app.use(session({
+  secret: config.secret,
+  store: new MongoStore({mongooseConnection: mongoose.connection})
+}))
 
 /**
  * All responses should be JSON unless otherwise mentioned
@@ -39,16 +56,13 @@ passport.use(new RedditStrategy({
   })
 }))
 
+function ensureAuthenticated (req, res, next) {
+  if (req.isAuthenticated()) { return next() }
+  res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
+}
+
 app.use(passport.initialize())
-
-mongoose.connect(config.mongoURL)
-
-mongoose.connection.on('error', function (err) {
-  console.log('DB Connection Error')
-  console.log(err)
-
-  process.exit()
-})
+app.use(passport.session())
 
 /**
  * Endpoints Begin
@@ -80,7 +94,7 @@ app.get('/api/auth/login', function (req, res, next) {
  */
 app.get('/api/auth/return', function (req, res, next) {
   passport.authenticate('reddit', {
-    successRedirect: '/#/auth/success',
+    successRedirect: '/#/login/success',
     failureRedirect: '/#/login'
   })(req, res, next)
 })
@@ -88,7 +102,7 @@ app.get('/api/auth/return', function (req, res, next) {
 /**
  * Handles the client requesting a JWT
  */
-app.get('/api/auth/jwt', function (req, res, next) {
+app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
 
 })
 
@@ -96,7 +110,8 @@ app.get('/api/auth/jwt', function (req, res, next) {
  * Handles logout. Cleans up the auth only session
  */
 app.get('/api/auth/logout', function (req, res, next) {
-  
+  req.logout()
+  res.status(200).json({status: 200})
 })
 /**
  * 404 Handler

@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="PageHome">
     <div class="jumbotron">
       <h1>NiG mWorld Bank!</h1>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas non risus nibh. Etiam at ante at purus tincidunt faucibus eu at nibh. Nunc auctor nulla a sem porta, at sagittis nulla egestas. Ut odio tellus, varius ac pulvinar id, dictum et lacus. Nulla placerat nulla in orci laoreet, eu sollicitudin erat scelerisque. Fusce est sapien, rhoncus non risus vel, porttitor vehicula velit. Nam congue porta nisl in tincidunt. Nam at ante pulvinar, sollicitudin mi eu, tincidunt libero.</p>
@@ -39,6 +39,6 @@
 
 <script>
 export default {
-  name: 'home'
+  name: 'PageHome'
 }
 </script>
