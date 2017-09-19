@@ -63,6 +63,19 @@ function ensureAuthenticated (req, res, next) {
   res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
 }
 
+function ensureJWT (req, res, next) {
+  if (req.headers.jwt) {
+    jwt.verify(req.headers.jwt, config.secret, function (err, decoded) {
+      if (err) {
+        return res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
+      }
+      req.decoded = decoded
+      next()
+    })
+  } else {
+    res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
+  }
+}
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -80,6 +93,9 @@ app.get('/api/health', function (req, res, next) {
 /**
  * Auth Endpoints Begin
  */
+app.get('/api/account', ensureJWT, function (req, res, next) {
+  res.status(200).json({wew: 'jwt'})
+})
 
  /**
   * Gets the redirect url and sends it to the client which will then redirect

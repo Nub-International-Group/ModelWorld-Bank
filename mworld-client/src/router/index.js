@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import PageHome from '@/components/PageHome'
-import PageNotFound from '@/components/PageNotFound'
-import PageLogin from '@/components/PageLogin'
-import PageLoginSuccess from '@/components/PageLoginSuccess'
+import PageHome from '@/pages/PageHome'
+import PageNotFound from '@/pages/PageNotFound'
+import PageLogin from '@/pages/PageLogin'
+import PageLoginSuccess from '@/pages/PageLoginSuccess'
+import PageBanking from '@/pages/PageBanking'
 
 import bootstrap from 'bootstrap'
 window.bootstrap = bootstrap
@@ -30,6 +31,11 @@ export default new Router({
       path: '/login/success',
       name: 'LoginSuccess',
       component: PageLoginSuccess
+    },
+    {
+      path: '/account',
+      name: 'Banking',
+      component: PageBanking
     }
   ]
 })

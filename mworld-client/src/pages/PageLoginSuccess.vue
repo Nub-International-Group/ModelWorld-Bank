@@ -17,15 +17,18 @@ import jwt from 'jsonwebtoken'
 
 export default {
   name: 'PageLoginSuccess',
-  store: ['user'],
+  store: ['user', 'jwt'],
   data: function () {
     return {}
   },
   created: function () {
     let app = this
     axios.get('/api/auth/jwt').then(function (response) {
+      app.jwt = response.data.jwt
+      console.log(app.jwt)
       app.user = jwt.decode(response.data.jwt)
-      // app.$router.push('/')
+
+      app.$router.push('/')
     }).catch(function (err) {
       console.log(err)
       app.$router.push('/login')

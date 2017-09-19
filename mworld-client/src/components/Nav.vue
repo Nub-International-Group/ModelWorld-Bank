@@ -30,11 +30,24 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li v-if="user.name">
-              <router-link to="/">{{user.name}} Log Out</router-link>
+            <li v-if="user.name" class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user.name}}
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="#">Preferences</a>
+                </li>
+                <li>
+                  <a href="#">Log Out</a>
+                </li>
+              </ul>
             </li>
             <li v-else>
               <router-link to="/login">Login</router-link>
+            </li>
+            <li>
+              <a href="https://discord.gg/MXkYHyB">Discord</a>
             </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Menu

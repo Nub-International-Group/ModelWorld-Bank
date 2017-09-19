@@ -17,6 +17,7 @@
     "jsonwebtoken": "^8.0.1",
     "mongoose": "^4.11.11",
     "passport": "^0.4.0",
-    "passport-reddit": "^0.2.4"
+    "passport-reddit": "^0.2.4",
+    "shortid": "^2.2.8"
   }
 }
