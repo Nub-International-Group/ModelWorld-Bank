@@ -93,9 +93,7 @@ app.get('/api/health', function (req, res, next) {
 /**
  * Auth Endpoints Begin
  */
-app.get('/api/account', ensureJWT, function (req, res, next) {
-  res.status(200).json({wew: 'jwt'})
-})
+app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
 
  /**
   * Gets the redirect url and sends it to the client which will then redirect

@@ -57,13 +57,23 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'PageBanking',
   store: ['user', 'jwt'],
   data: function () {
-    return {}
+    return {
+      accounts: []
+    }
   },
-  created: function () {
+  mounted: function () {
+    axios.request({
+      url: '/api/account',
+      method: 'get',
+      headers: {jwt: this.$store.jwt}
+    }).then(function (response) {
+      this.accounts = response.data
+    })
   }
 }
 </script>
