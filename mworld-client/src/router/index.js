@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store'
 
 import PageHome from '@/pages/PageHome'
 import PageNotFound from '@/pages/PageNotFound'
@@ -12,7 +13,8 @@ import bootstrap from 'bootstrap'
 window.bootstrap = bootstrap
 
 Vue.use(Router)
-export default new Router({
+
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -36,12 +38,27 @@ export default new Router({
     {
       path: '/account',
       name: 'Banking',
-      component: PageBanking
+      component: PageBanking,
+      meta: { authRequire: true }
     },
     {
       path: '/account/:id',
       name: 'Account',
-      component: PageAccount
+      component: PageAccount,
+      meta: { authRequire: true }
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(route => route.meta.authRequire)) {
+    if (store.jwt) {
+      return next()
+    } else {
+      return next('/login')
+    }
+  }
+  return next()
+})
+
+export default router
