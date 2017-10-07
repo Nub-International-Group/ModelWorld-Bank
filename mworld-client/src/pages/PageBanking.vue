@@ -13,32 +13,16 @@
           </div>
           <div class="panel-body">
             <div class="row">
-              <div class="col-md-4">
+              <div v-for="account in accounts" :key="account._id" class="col-md-4">
                 <div class="panel panel-primary">
                   <div class="panel-heading">
-                    strideynet
+                    {{account.name}}
                   </div>
                   <div class="panel-body">
-                      Balance: £666 <br>
-                      Position: Owner <br>
-                      Description: Personal account for /u/strideynet <br>
-                      ID: PPBqWA9
-                  </div>
-                  <div class="panel-footer">
-                    <button type="button" class="btn btn-primary">Access Account</button>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="panel panel-primary">
-                  <div class="panel-heading">
-                    NiGBet
-                  </div>
-                  <div class="panel-body">
-                      Balance: £543 <br>
-                      Position: Read/Write <br>
-                      Description: Corporate account for NiGBet <br>
-                      ID: PZBs99G
+                      Balance: {{account.balance}} <br>
+                      Access: {{account.users[user.name]}} <br>
+                      Description: {{account.description}} <br>
+                      ID: {{account._id}}
                   </div>
                   <div class="panel-footer">
                     <button type="button" class="btn btn-primary">Access Account</button>
@@ -67,12 +51,13 @@ export default {
     }
   },
   mounted: function () {
+    let $this = this
     axios.request({
       url: '/api/account',
       method: 'get',
       headers: {jwt: this.$store.jwt}
     }).then(function (response) {
-      this.accounts = response.data
+      $this.accounts = response.data
     })
   }
 }

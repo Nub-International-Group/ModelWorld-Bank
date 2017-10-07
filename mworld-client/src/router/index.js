@@ -6,6 +6,7 @@ import PageNotFound from '@/pages/PageNotFound'
 import PageLogin from '@/pages/PageLogin'
 import PageLoginSuccess from '@/pages/PageLoginSuccess'
 import PageBanking from '@/pages/PageBanking'
+import PageAccount from '@/pages/PageAccount'
 
 import bootstrap from 'bootstrap'
 window.bootstrap = bootstrap
@@ -36,6 +37,11 @@ export default new Router({
       path: '/account',
       name: 'Banking',
       component: PageBanking
+    },
+    {
+      path: '/account/:id',
+      name: 'Account',
+      component: PageAccount
     }
   ]
 })
