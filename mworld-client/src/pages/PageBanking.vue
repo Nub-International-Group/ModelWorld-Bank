@@ -25,7 +25,7 @@
                       ID: {{account._id}}
                   </div>
                   <div class="panel-footer">
-                    <button type="button" class="btn btn-primary">Access Account</button>
+                    <router-link :to="'/account/' + account._id" type="button" class="btn btn-primary">Access Account</router-link>
                   </div>
                 </div>
               </div>

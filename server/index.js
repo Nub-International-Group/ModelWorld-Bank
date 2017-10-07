@@ -95,6 +95,10 @@ app.get('/api/health', function (req, res, next) {
  */
 app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
 
+let admins = [
+  'strideynet',
+  'padanub'
+]
  /**
   * Gets the redirect url and sends it to the client which will then redirect
   */
@@ -121,7 +125,7 @@ app.get('/api/auth/return', function (req, res, next) {
 app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
   jwt.sign({
     name: req.user.name,
-    admin: false
+    admin: admins.includes(req.user.name)
   }, config.secret, function (err, jwtString) {
     if (err) { return next(err) }
 
