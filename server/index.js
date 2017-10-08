@@ -53,7 +53,6 @@ passport.use(new RedditStrategy({
 }, function (accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
     // TODO: Grab extended user from the DATABASE
-    console.log(profile)
     return done(null, profile)
   })
 }))
@@ -94,6 +93,7 @@ app.get('/api/health', function (req, res, next) {
  * Auth Endpoints Begin
  */
 app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
+app.get('/api/account/:id', ensureJWT, require('./routes/account/individual.js'))
 
 let admins = [
   'strideynet',

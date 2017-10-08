@@ -74,6 +74,7 @@
           </table>
           <div class="panel-footer">
             <button type="button" class="btn btn-primary">Request Wage</button>
+            <button type="button" class="btn btn-primary">View Wage Review Queue</button>
           </div>
         </div>
       </div>
@@ -113,6 +114,38 @@
       <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">
+            Action Logs
+          </div>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Event ID</th>
+                <th>Date</th>
+                <th>Event Type</th>
+                <th>User</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>a17eii</strong></td>
+                <td>09/10/2017 12:44</td>
+                <td>Account Created(<strong>3728sd</strong>)</td>
+                <td>Strideynet(<strong>34aef3d</strong>)</td>
+                <td>{}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-primary">New Transaction</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="user.admin" class="row">
+      <div class="col-md-12">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
             Admin Options
           </div>
           <div class="panel-body">
@@ -128,23 +161,25 @@
 
 <script>
 import axios from 'axios'
+import errorHandler from '@/errorHandler'
+
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt'],
   data: function () {
     return {
-      accounts: []
+      account: {}
     }
   },
   mounted: function () {
     let $this = this
     axios.request({
-      url: '/api/account',
+      url: '/api/account/' + $this.$route.params.id,
       method: 'get',
       headers: {jwt: this.$store.jwt}
     }).then(function (response) {
-      $this.accounts = response.data
-    })
+      $this.account = response.data
+    }).catch(errorHandler)
   }
 }
 </script>

@@ -15,6 +15,7 @@
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
     "jsonwebtoken": "^8.0.1",
+    "sweetalert": "^2.0.5",
     "vue": "^2.4.2",
     "vue-router": "^2.7.0",
     "vue-stash": "^2.0.1-beta"

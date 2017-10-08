@@ -23,7 +23,7 @@
         <div class="panel panel-info">
           <div class="panel-heading">Property Investments</div>
           <div class="panel-body">
-            Utilize our state of the art market research tool to invest some of your wealth into property all around the UK, become the brownfield land baron who refuses to demolish or renovate old mills or create a property empire for the ultra wealthy internationalists.
+            Utilize our state of the art market research tool to invest some of your wealth into property all around the UK, become the brownfield land baron who refuses to demolish or renovate old mills or create a property empire for the ultra wealthy internationalists.<br><br> <strong> Soon &trade; </strong>
           </div>
         </div>
       </div>
@@ -31,7 +31,7 @@
         <div class="panel panel-success">
           <div class="panel-heading">Betting and Sweepstakes</div>
           <div class="panel-body">
-            Gamble away your earnings on frivolous political and other bets. Watch out for the gambling tax however and make sure you keep your eye on the stakes! Insider trading is forbidden.
+            Gamble away your earnings on frivolous political and other bets. Watch out for the gambling tax however and make sure you keep your eye on the stakes! Insider trading is forbidden. <br><br> <strong> Soon &trade; </strong>
           </div>
         </div>
       </div>
