@@ -1,14 +1,15 @@
 const account = require('../../models/account.js')
 
 module.exports = function (req, res, next) {
-  let key = 'users.' + req.decoded.name // Build query with adaptive key
-  let query = {}
-  query[key] = {$gt: 0} // greater than zero has at least read access
-
-  account.find(query).exec(function (err, documents) {
+  account.findOne({'_id': req.params.id}).exec(function (err, document) {
     if (err) {
       return next(err)
     }
-    res.status(200).json(documents)
+
+    if (document == null) {
+      return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
+    }
+
+    res.status(200).json(document)
   })
 }
