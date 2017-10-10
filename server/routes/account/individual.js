@@ -1,7 +1,7 @@
 const account = require('../../models/account.js')
 
 module.exports = function (req, res, next) {
-  account.findOne({'_id': req.params.id}).exec(function (err, document) {
+  account.findOne({'_id': req.params.id}).populate('wages').exec(function (err, document) {
     if (err) {
       return next(err)
     }
@@ -11,7 +11,13 @@ module.exports = function (req, res, next) {
     }
 
     if ((document.users[req.decoded.name] >= 1) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
-      return res.status(200).json(document)
+      document.calculateBalance(function (err, data) {
+        if (err) { return next(err) }
+        document.balance = data.balance
+        document.transactions = data.transactions
+
+        return res.status(200).json(document)
+      })
     } else {
       return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
     }

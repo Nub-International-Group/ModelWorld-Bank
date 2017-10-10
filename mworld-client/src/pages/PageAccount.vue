@@ -1,8 +1,8 @@
 <template>
   <div id="PageLoginSuccess">
     <div class="page-header">
-      <h1>Strideynet
-        <small>oi hands off its mine</small>
+      <h1>{{account.name}}
+        <small>{{account.description}}</small>
       </h1>
     </div>
     <div class="row">
@@ -178,6 +178,7 @@ export default {
       method: 'get',
       headers: {jwt: this.$store.jwt}
     }).then(function (response) {
+      console.log(response.data)
       $this.account = response.data
     }).catch(errorHandler)
   }
