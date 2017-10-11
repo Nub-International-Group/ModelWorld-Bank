@@ -174,7 +174,7 @@ export default {
   mounted: function () {
     let $this = this
     axios.request({
-      url: '/api/account/' + $this.$route.params.id,
+      url: '/api/account/id/' + $this.$route.params.id,
       method: 'get',
       headers: {jwt: this.$store.jwt}
     }).then(function (response) {

@@ -15,6 +15,7 @@ module.exports = function (req, res, next) {
         if (err) { return next(err) }
         document.balance = data.balance
         document.transactions = data.transactions
+        console.log(document)
 
         return res.status(200).json(document)
       })

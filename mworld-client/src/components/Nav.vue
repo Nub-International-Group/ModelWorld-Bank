@@ -55,17 +55,14 @@
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#">Action</a>
+                  <router-link to="/admin/wages">Wage Management</router-link>
                 </li>
                 <li>
-                  <a href="#">Another action</a>
-                </li>
-                <li>
-                  <a href="#">Something else here</a>
+                  <a href="#">Account Creation</a>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
-                  <a href="#">Separated link</a>
+                  <a href="#">Economy Settings</a>
                 </li>
               </ul>
             </li>

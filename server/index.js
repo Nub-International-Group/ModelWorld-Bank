@@ -93,12 +93,17 @@ app.get('/api/health', function (req, res, next) {
  * Auth Endpoints Begin
  */
 app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
-app.get('/api/account/:id', ensureJWT, require('./routes/account/individual.js'))
+app.get('/api/account/id/:id', ensureJWT, require('./routes/account/individual.js'))
+
+app.get('/api/wage', ensureJWT, require('./routes/wage/root.js'))
+app.put('/api/wage/id/:id', ensureJWT, require('./routes/wage/update.js'))
+app.post('/api/wage', ensureJWT, require('./routes/wage/new.js'))
 
 let admins = [
   'strideynet',
   'padanub'
 ]
+
  /**
   * Gets the redirect url and sends it to the client which will then redirect
   */

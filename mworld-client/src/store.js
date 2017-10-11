@@ -3,5 +3,6 @@ export default {
     name: null,
     admin: false
   },
-  jwt: null
+  jwt: null,
+  currencies: ['GBP', 'USD']
 }

@@ -9,6 +9,8 @@ import PageLoginSuccess from '@/pages/PageLoginSuccess'
 import PageBanking from '@/pages/PageBanking'
 import PageAccount from '@/pages/PageAccount'
 
+import PageAdminWages from '@/pages/PageAdminWages'
+
 import bootstrap from 'bootstrap'
 window.bootstrap = bootstrap
 
@@ -46,6 +48,12 @@ const router = new Router({
       name: 'Account',
       component: PageAccount,
       meta: { authRequire: true }
+    },
+    {
+      path: '/admin/wages',
+      name: 'AdminWages',
+      component: PageAdminWages,
+      meta: { adminRequire: true }
     }
   ]
 })
@@ -57,7 +65,14 @@ router.beforeEach((to, from, next) => {
     } else {
       return next('/login')
     }
+  } else if (to.matched.some(route => route.meta.adminRequire)) {
+    if (store.user.admin) {
+      return next()
+    } else {
+      return next('/login')
+    }
   }
+
   return next()
 })
 
