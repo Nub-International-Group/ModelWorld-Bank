@@ -58,7 +58,7 @@
                   <router-link to="/admin/wages">Wage Management</router-link>
                 </li>
                 <li>
-                  <a href="#">Account Creation</a>
+                  <router-link to="/admin/account">Account Creation</router-link>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>

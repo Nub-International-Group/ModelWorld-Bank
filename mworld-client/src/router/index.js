@@ -10,6 +10,7 @@ import PageBanking from '@/pages/PageBanking'
 import PageAccount from '@/pages/PageAccount'
 
 import PageAdminWages from '@/pages/PageAdminWages'
+import PageAdminAccount from '@/pages/PageAdminAccount'
 
 import bootstrap from 'bootstrap'
 window.bootstrap = bootstrap
@@ -53,6 +54,12 @@ const router = new Router({
       path: '/admin/wages',
       name: 'AdminWages',
       component: PageAdminWages,
+      meta: { adminRequire: true }
+    },
+    {
+      path: '/admin/account',
+      name: 'AdminAccount',
+      component: PageAdminAccount,
       meta: { adminRequire: true }
     }
   ]

@@ -1,15 +1,18 @@
 const wage = require('../../models/wage.js')
+const wageRoot = require('./root.js')
 
 module.exports = function (req, res, next) {
-  wage.findOne({'_id': req.params.id}).exec(function (err, document) {
-    if (err) {
-      return next(err)
-    }
+  if (req.decoded.admin === true) {
+    wage.findOneAndUpdate({'_id': req.params.id}, req.body.updatedDocument, function (err, document) {
+      if (err) {
+        return next(err)
+      }
 
-    if (document == null) {
-      return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
-    }
+      if (document == null) {
+        return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
+      }
 
-    return res.status(200).json(document)
-  })
+      return wageRoot(req, res, next) // Returns document with updated data
+    })
+  }
 }

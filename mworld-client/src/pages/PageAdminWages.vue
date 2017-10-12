@@ -23,12 +23,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="wage in wages" :key="wage._id" class="col-md-4">
+              <tr v-for="wage in wages" :key="wage._id">
                 <td><strong>{{wage._id}}</strong></td>
                 <td>{{wage.name}}</td>
                 <td>{{wage.description}}</td>
-                <td>{{wage.value}}</td>
-                <td>{{wage.curency}}</td>
+                <td>{{wage.value | currency}}</td>
+                <td>{{wage.currency}}</td>
                 <td>BUTTON</td>
               </tr>
             </tbody>
@@ -56,7 +56,7 @@
               <br>
               <div class="input-group">
                 <span class="input-group-addon">Wage Amount:</span>
-                <input v-model="newWage.amount" type="text" id="wage-amount" class="form-control">
+                <input v-model="newWage.value" type="text" id="wage-amount" class="form-control">
               </div>
               <br>
               <div class="input-group">
@@ -67,7 +67,7 @@
               </div>
             </div>
             <div class="panel-footer">
-              <button type="button" class="btn btn-primary">Submit Form</button>
+              <button v-on:click="submitNew" type="button" class="btn btn-primary">Submit Form</button>
             </div>
           </form>
         </div>
@@ -98,13 +98,32 @@ export default {
   mounted: function () {
     let $this = this
     axios.request({
-      url: '/api/wage/',
+      url: '/api/wage',
       method: 'get',
       headers: {jwt: this.$store.jwt}
     }).then(function (response) {
       console.log(response.data)
-      $this.account = response.data
+      $this.wages = response.data
     }).catch(errorHandler)
+  },
+  methods: {
+    submitNew: function (event) {
+      let $this = this
+      axios.request({
+        url: '/api/wage',
+        method: 'post',
+        headers: {jwt: this.$store.jwt},
+        data: {newDocument: $this.newWage}
+      }).then(function (response) {
+        console.log(response.data)
+        $this.wages = response.data
+      }).catch(errorHandler)
+    }
+  },
+  filters: {
+    currency: function (value) {
+      return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+    }
   }
 }
 </script>
