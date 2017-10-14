@@ -76,7 +76,21 @@ export default {
         swal({
           title: 'Creation Success!',
           icon: 'success',
-          text: 'Account succesfully created!'
+          text: 'Account succesfully created!',
+          buttons: {
+            stay: {
+              text: 'Stay Here',
+              value: false
+            },
+            change: {
+              text: 'Visit Account',
+              value: true
+            }
+          }
+        }).then((choice) => {
+          if (choice) {
+            $this.$router.push('/account/' + response.data['_id'])
+          }
         })
         console.log(response.data)
       }).catch(errorHandler)
