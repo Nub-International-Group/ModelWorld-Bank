@@ -17,6 +17,7 @@
     "jsonwebtoken": "^8.0.1",
     "sweetalert": "^2.0.5",
     "vue": "^2.4.2",
+    "vue-good-table": "^1.14.3",
     "vue-router": "^2.7.0",
     "vue-stash": "^2.0.1-beta"
   },

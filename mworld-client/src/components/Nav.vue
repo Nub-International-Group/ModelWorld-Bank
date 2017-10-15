@@ -58,11 +58,11 @@
                   <router-link to="/admin/wages">Wage Management</router-link>
                 </li>
                 <li>
-                  <router-link to="/admin/account">Account Creation</router-link>
+                  <router-link to="/admin/accounts">Account Management</router-link>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
-                  <a href="#">Economy Settings</a>
+                  <router-link to="/admin/economy">Economy Settings</router-link>
                 </li>
               </ul>
             </li>

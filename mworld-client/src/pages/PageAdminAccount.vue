@@ -1,8 +1,8 @@
 <template>
-  <div id="PageAdminAccount">
+  <div id="PageAdminAccounts">
     <div class="page-header">
-      <h1>Account Addition
-        <small>Add a new account</small>
+      <h1>Account Management
+        <small>Create and access accounts</small>
       </h1>
     </div>
     <div class="row">
@@ -43,6 +43,30 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Account Search
+          </div>
+          <vue-good-table
+          :columns="allAccounts.columns"
+          :rows="allAccounts.rows"
+          :filterable="true"
+          :globalSearch="true"
+          >
+            <template slot="table-row" scope="props">
+              <td><strong>{{ props.row._id }}</strong></td>
+              <td>{{ props.row.name }}</td>
+              <td>{{ props.row.description }}</td>
+              <td>{{ props.row.public}}</td>
+              <td>{{ props.row.created}}</td>
+              <td><router-link :to="'/account/' + props.row._id" type="button" class="btn btn-primary">Access Account</router-link></td>
+            </template>
+          </vue-good-table>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,10 +74,12 @@
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
+import VueGoodTable from 'vue-good-table'
 
 export default {
-  name: 'PageAdminAccount',
+  name: 'PageAdminAccounts',
   store: ['user', 'jwt', 'currencies'],
+  components: [VueGoodTable],
   data: function () {
     return {
       newAccount: {
@@ -61,6 +87,34 @@ export default {
         description: '',
         owner: '',
         public: ''
+      },
+      allAccounts: {
+        columns: [
+          {
+            label: 'ID',
+            field: '_id'
+          },
+          {
+            label: 'Name',
+            field: 'name'
+          },
+          {
+            label: 'Description',
+            field: 'description'
+          },
+          {
+            label: 'Public?',
+            field: 'public'
+          },
+          {
+            label: 'Created Date',
+            field: 'created'
+          },
+          {
+            label: 'Buttons'
+          }
+        ],
+        rows: []
       }
     }
   },
@@ -73,6 +127,8 @@ export default {
         headers: {jwt: this.$store.jwt},
         data: {newDocument: $this.newAccount}
       }).then(function (response) {
+        $this.allAccounts.rows.push(response.data) // Add new account to table onscreen
+
         swal({
           title: 'Creation Success!',
           icon: 'success',
@@ -89,12 +145,25 @@ export default {
           }
         }).then((choice) => {
           if (choice) {
-            $this.$router.push('/account/' + response.data['_id'])
+            $this.$router.push('/account/' + response.data['_id']) // Redirect to account page
           }
         })
         console.log(response.data)
       }).catch(errorHandler)
+    },
+    fetchAccounts: function () {
+      let $this = this
+      axios.request({
+        url: '/api/account/admin',
+        method: 'get',
+        headers: {jwt: this.$store.jwt}
+      }).then(function (response) {
+        $this.allAccounts.rows = response.data
+      }).catch(errorHandler)
     }
+  },
+  mounted: function () {
+    this.fetchAccounts()
   }
 }
 </script>

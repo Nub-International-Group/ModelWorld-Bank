@@ -93,6 +93,7 @@ app.get('/api/health', function (req, res, next) {
  * Auth Endpoints Begin
  */
 app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
+app.get('/api/account/admin', ensureJWT, require('./routes/account/admin.js'))
 app.post('/api/account', ensureJWT, require('./routes/account/new.js'))
 app.get('/api/account/id/:id', ensureJWT, require('./routes/account/individual.js'))
 

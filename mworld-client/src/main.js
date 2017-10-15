@@ -5,10 +5,12 @@ import App from './App'
 import router from './router'
 import VueStash from 'vue-stash'
 import store from '@/store'
+import VueGoodTable from 'vue-good-table'
 
 Vue.config.productionTip = false
 
 Vue.use(VueStash)
+Vue.use(VueGoodTable)
 
 /* eslint-disable no-new */
 new Vue({
