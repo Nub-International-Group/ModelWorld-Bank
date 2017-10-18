@@ -11,7 +11,8 @@ let schema = new mongoose.Schema({
   verified: Boolean,
   wages: [{ type: String, ref: 'wage' }], // wages: ['fdsuf923', 'ushdushfui', 'uishdfuis']
   created: { type: Date, default: Date.now },
-  users: mongoose.Schema.Types.Mixed // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
+  users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
+  lastPaid: { type: Date, default: Date.now }
 })
 
 /**
@@ -50,6 +51,14 @@ schema.methods.calculateBalance = function (callback) {
 
       return callback(null, {transactions, balance})
     })
+  })
+}
+
+schema.methods.payWages = function (callback) {
+  this.populate(function (err, account) { // Populate wage info
+    if (err) {
+      return callback(err)
+    }
   })
 }
 
