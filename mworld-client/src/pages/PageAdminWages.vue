@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="panel-footer">
-              <button v-on:click="submitNew()" type="button" class="btn btn-primary">Submit Form</button>
+              <button v-on:click="createWage()" type="button" class="btn btn-primary">Submit Form</button>
             </div>
           </form>
         </div>
@@ -101,8 +101,8 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Delete Wage</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+            <button type="button" v-on:click="deleteWage()" class="btn btn-danger" data-dismiss="modal">Delete Wage</button>
+            <button type="button" v-on:click="updateWage()" class="btn btn-primary" data-dismiss="modal">Save changes</button>
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default {
     this.fetchWages()
   },
   methods: {
-    submitNew: function (event) {
+    createWage: function (event) {
       let $this = this
       axios.request({
         url: '/api/wage',
@@ -175,6 +175,27 @@ export default {
     selectWage: function (row) {
       this.selectedWage = Object.assign({}, row) // Performs a copy of the object
     },
+    updateWage: function () {
+      let $this = this
+      axios.request({
+        url: '/api/wage/id/' + $this.selectedWage._id,
+        method: 'put',
+        headers: {jwt: this.$store.jwt},
+        data: {updatedDocument: this.selectedWage}
+      }).then(function (response) {
+        $this.wages = response.data
+      }).catch(errorHandler)
+    },
+    deleteWage: function () {
+      let $this = this
+      axios.request({
+        url: '/api/wage/id/' + $this.selectedWage._id,
+        method: 'delete',
+        headers: {jwt: this.$store.jwt}
+      }).then(function (response) {
+        $this.wages = response.data
+      }).catch(errorHandler)
+    },
     fetchWages: function () {
       let $this = this
       axios.request({
@@ -182,7 +203,6 @@ export default {
         method: 'get',
         headers: {jwt: this.$store.jwt}
       }).then(function (response) {
-        console.log(response.data)
         $this.wages = response.data
       }).catch(errorHandler)
     }
