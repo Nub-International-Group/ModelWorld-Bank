@@ -74,7 +74,6 @@
           </table>
           <div class="panel-footer">
             <button type="button" class="btn btn-primary">Request Wage</button>
-            <button type="button" class="btn btn-primary">View Wage Review Queue</button>
           </div>
         </div>
       </div>
@@ -105,7 +104,20 @@
             </tbody>
           </table>
           <div class="panel-footer">
-            <button type="button" class="btn btn-primary">Add User</button>
+              <label for="wage-name">Username:</label>
+              <div class="input-group">
+                <span class="input-group-addon">Username:</span>
+                <input v-model="userToAdd.name" type="text" id="wage-name" class="form-control">
+              </div>
+              <br>
+              <div class="input-group">
+                <label for="sel1">Access Level:</label>
+                <select v-model="userToAdd.level" class="form-control" id="sel1">
+                  <option v-for='(name, level) in accessLevels' :value="level">{{name}}</option>
+                </select>
+              </div>
+              <br>
+            <button type="button" v-on:click="addUser" class="btn btn-primary">Add User</button>
           </div>
         </div>
       </div>
@@ -128,10 +140,10 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>a17eii</strong></td>
+                <td><strong>eXampLe</strong></td>
                 <td>09/10/2017 12:44</td>
                 <td>Account Created(<strong>3728sd</strong>)</td>
-                <td>Strideynet(<strong>34aef3d</strong>)</td>
+                <td>Example</td>
                 <td>{}</td>
               </tr>
             </tbody>
@@ -149,9 +161,26 @@
             Admin Options
           </div>
           <div class="panel-body">
-            <button type="button" class="btn btn-primary">Delete Account</button>
+            <button v-on:click="deleteAccount()" type="button" class="btn btn-danger">Delete Account</button>
             <button type="button" class="btn btn-primary">Pay Wages</button>
             <button type="button" class="btn btn-primary">Place Hold</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="wageRequestModal" tabindex="-1" role="dialog" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+            <h4 class="modal-title">Request Wage</h4>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" v-on:click="" class="btn btn-danger" data-dismiss="modal">Delete Wage</button>
+            <button type="button" v-on:click="" class="btn btn-primary" data-dismiss="modal">Save changes</button>
           </div>
         </div>
       </div>
@@ -162,13 +191,16 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
+import swal from 'sweetalert'
 
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt'],
   data: function () {
     return {
-      account: {}
+      account: {},
+      accessLevels: {1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'},
+      userToAdd: {name: '', level: ''}
     }
   },
   methods: {
@@ -182,6 +214,29 @@ export default {
         console.log(response.data)
         $this.account = response.data
       }).catch(errorHandler)
+    },
+    addUser: function () {
+
+    },
+    deleteAccount: function () {
+      let $this = this
+      swal({
+        title: 'ARE YOU SURE?',
+        icon: 'warning',
+        text: 'Clicking \'ok\' will permenantly delete this account!',
+        dangerMode: true,
+        buttons: true
+      }).then((choice) => {
+        if (choice === true) {
+          axios.request({
+            url: '/api/account/id/' + $this.account._id,
+            method: 'delete',
+            headers: {jwt: this.$store.jwt}
+          }).then(function (response) {
+            $this.$router.push('/admin/accounts')
+          }).catch(errorHandler)
+        }
+      })
     }
   },
   mounted: function () {
