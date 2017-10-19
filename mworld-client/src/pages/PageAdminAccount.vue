@@ -24,7 +24,7 @@
               </div>
               <br>
               <div class="input-group">
-                <span class="input-group-addon">Initial Owner (Case Sensitive without /u/):</span>
+                <span class="input-group-addon">Initial Owner (Without /u/ Case Insensitive):</span>
                 <input v-model="newAccount.owner" type="text" id="wage-amount" class="form-control">
               </div>
               <br>

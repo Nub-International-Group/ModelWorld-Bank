@@ -96,6 +96,7 @@ app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
 app.get('/api/account/admin', ensureJWT, require('./routes/account/admin.js'))
 app.post('/api/account', ensureJWT, require('./routes/account/new.js'))
 app.get('/api/account/id/:id', ensureJWT, require('./routes/account/individual.js'))
+app.delete('/api/account/id/:id', ensureJWT, require('./routes/account/delete.js'))
 
 app.get('/api/wage', ensureJWT, require('./routes/wage/root.js'))
 app.put('/api/wage/id/:id', ensureJWT, require('./routes/wage/update.js'))
@@ -132,7 +133,7 @@ app.get('/api/auth/return', function (req, res, next) {
  */
 app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
   jwt.sign({
-    name: req.user.name,
+    name: req.user.name.toLowerCase(),
     admin: admins.includes(req.user.name)
   }, config.secret, function (err, jwtString) {
     if (err) { return next(err) }
@@ -149,6 +150,14 @@ app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
  */
 app.use(function (req, res, next) {
   res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
+})
+
+/**
+ * Error Handler
+ */
+app.use(function (err, req, res, next) {
+  res.status(500).json({err: {code: 500, desc: err.message}})
+  console.log(err)
 })
 
 app.listen(process.env.PORT || 8081)

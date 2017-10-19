@@ -6,10 +6,6 @@ module.exports = function (req, res, next) {
       return next(err)
     }
 
-    if (documents.length === 0) {
-      return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
-    }
-
     return res.status(200).json(documents)
   })
 }

@@ -10,7 +10,7 @@ module.exports = function (req, res, next) {
       users: {}
     })
 
-    newAccount.users[req.body.newDocument.owner] = 3 // Set owner
+    newAccount.users[req.body.newDocument.owner.toLowerCase()] = 3 // Set owner
 
     newAccount.save(function (err) {
       if (err) {

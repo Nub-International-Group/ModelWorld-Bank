@@ -171,16 +171,21 @@ export default {
       account: {}
     }
   },
+  methods: {
+    fetchAccount: function () {
+      let $this = this
+      axios.request({
+        url: '/api/account/id/' + $this.$route.params.id,
+        method: 'get',
+        headers: {jwt: this.$store.jwt}
+      }).then(function (response) {
+        console.log(response.data)
+        $this.account = response.data
+      }).catch(errorHandler)
+    }
+  },
   mounted: function () {
-    let $this = this
-    axios.request({
-      url: '/api/account/id/' + $this.$route.params.id,
-      method: 'get',
-      headers: {jwt: this.$store.jwt}
-    }).then(function (response) {
-      console.log(response.data)
-      $this.account = response.data
-    }).catch(errorHandler)
+    this.fetchAccount()
   }
 }
 </script>

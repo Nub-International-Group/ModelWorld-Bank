@@ -1,14 +1,13 @@
-const wage = require('../../models/wage.js')
-const wageRoot = require('./root.js')
+const account = require('../../models/account.js')
 
 module.exports = function (req, res, next) {
   if (req.decoded.admin === true) {
-    wage.remove({'_id': req.params.id}, function (err) {
+    account.remove({'_id': req.params.id}, function (err) {
       if (err) {
         return next(err)
       }
 
-      return wageRoot(req, res, next) // Returns document with updated data
+      return res.status(200).json({})
     })
   } else {
     return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
