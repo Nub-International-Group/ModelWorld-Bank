@@ -209,14 +209,21 @@ export default {
       axios.request({
         url: '/api/account/id/' + $this.$route.params.id,
         method: 'get',
-        headers: {jwt: this.$store.jwt}
+        headers: {jwt: $this.$store.jwt}
       }).then(function (response) {
-        console.log(response.data)
         $this.account = response.data
       }).catch(errorHandler)
     },
     addUser: function () {
-
+      let $this = this
+      axios.request({
+        url: '/api/account/id/' + $this.$route.params.id + '/user',
+        method: 'post',
+        headers: {jwt: $this.$store.jwt},
+        data: {newDocument: $this.userToAdd}
+      }).then(function (response) {
+        $this.account = response.data
+      }).catch(errorHandler)
     },
     deleteAccount: function () {
       let $this = this
@@ -231,7 +238,7 @@ export default {
           axios.request({
             url: '/api/account/id/' + $this.account._id,
             method: 'delete',
-            headers: {jwt: this.$store.jwt}
+            headers: {jwt: $this.$store.jwt}
           }).then(function (response) {
             $this.$router.push('/admin/accounts')
           }).catch(errorHandler)
