@@ -82,27 +82,13 @@
           <div class="panel-heading">
             Users
           </div>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Access Level</th>
-                <th>Options</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Strideynet</td>
-                <td>3</td>
-                <td><button type="button" class="btn btn-primary btn-sm">Options</button></td>
-              </tr>
-              <tr>
-                <td>Padanub</td>
-                <td>2</td>
-                <td><button type="button" class="btn btn-primary btn-sm">Options</button></td>
-              </tr>
-            </tbody>
-          </table>
+          <vue-good-table
+          :columns="tables.users"
+          :rows="account.users"
+          :filterable="true"
+          :globalSearch="true"
+          >
+          </vue-good-table>
           <div class="panel-footer">
               <label for="wage-name">Username:</label>
               <div class="input-group">
@@ -199,8 +185,20 @@ export default {
   data: function () {
     return {
       account: {},
-      accessLevels: {1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'},
-      userToAdd: {name: '', level: ''}
+      accessLevels: {0: 'Remove User', 1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'},
+      userToAdd: {name: '', level: ''},
+      tables: {
+        users: [
+          {
+            label: 'Username',
+            field: 'name'
+          },
+          {
+            label: 'Access Level',
+            field: 'level'
+          }
+        ]
+      }
     }
   },
   methods: {
@@ -211,8 +209,19 @@ export default {
         method: 'get',
         headers: {jwt: $this.$store.jwt}
       }).then(function (response) {
-        $this.account = response.data
+        $this.processAccountData(response.data)
       }).catch(errorHandler)
+    },
+    processAccountData: function (responseData) {
+      let userData = []
+      for (let key in responseData.users) {
+        if (responseData.users.hasOwnProperty(key)) {
+          userData.push({name: key, level: responseData.users[key]})
+        }
+      }
+      responseData.users = userData
+
+      this.account = responseData
     },
     addUser: function () {
       let $this = this
@@ -222,7 +231,7 @@ export default {
         headers: {jwt: $this.$store.jwt},
         data: {newDocument: $this.userToAdd}
       }).then(function (response) {
-        $this.account = response.data
+        $this.processAccountData(response.data)
       }).catch(errorHandler)
     },
     deleteAccount: function () {

@@ -74,12 +74,10 @@
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
-import VueGoodTable from 'vue-good-table'
 
 export default {
   name: 'PageAdminAccounts',
   store: ['user', 'jwt', 'currencies'],
-  components: [VueGoodTable],
   data: function () {
     return {
       newAccount: {

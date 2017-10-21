@@ -1,7 +1,7 @@
-const account = require('../../models/account.js')
+const Account = require('../../models/account.js')
 
 module.exports = function (req, res, next) {
-  account.findOne({'_id': req.params.id}).populate('wages').exec(function (err, document) {
+  Account.findOne({'_id': req.params.id}).populate('wages').exec(function (err, document) {
     if (err) {
       return next(err)
     }
