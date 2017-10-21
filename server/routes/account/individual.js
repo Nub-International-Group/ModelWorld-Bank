@@ -11,13 +11,7 @@ module.exports = function (req, res, next) {
     }
 
     if ((document.users[req.decoded.name] >= 1) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
-      document.calculateBalance(function (err, data) {
-        if (err) { return next(err) }
-        document.balance = data.balance
-        document.transactions = data.transactions
-
-        return res.status(200).json(document)
-      })
+      return res.status(200).json(document)
     } else {
       return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
     }

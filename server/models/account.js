@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const transaction = require('./transaction.js')
-const wage = require('./wage.js')
+const wageRequest = require('./wageRequest')
 
 let schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
@@ -51,6 +51,15 @@ schema.methods.calculateBalance = function (callback) {
 
       return callback(null, {transactions, balance})
     })
+  })
+}
+
+schema.methods.fetchWageRequests = function (callback) {
+  wageRequest.find({account: this._id}).populate('wage').exec(function (err, wageRequests) {
+    if (err) {
+      return callback(err)
+    }
+    callback(null, wageRequests)
   })
 }
 

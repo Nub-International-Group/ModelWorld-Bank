@@ -40,44 +40,32 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Wages
           </div>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Amount</th>
-                <th>Currency</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>aas32</strong></td>
-                <td>Mad Hacker</td>
-                <td>986,342.00</td>
-                <td>GBP</td>
-                <td><button type="button" class="btn btn-primary btn-sm">Delete</button></td>
-              </tr>
-              <tr>
-                <td><strong>a234d</strong></td>
-                <td>Grand Exchequer</td>
-                <td>12,342.00</td>
-                <td>GBP</td>
-                <td><button type="button" class="btn btn-primary btn-sm">Delete</button></td>
-              </tr>
-            </tbody>
-          </table>
+          <vue-good-table 
+          :columns="tables.wages"
+          :rows="account.wages"
+          :filterable="true"
+          :globalSearch="true"
+          >
+            <template slot="table-row" scope="props">
+              <td><strong>{{ props.row._id }}</strong></td>
+              <td>{{ props.row.name }}</td>
+              <td>{{ props.row.description }}</td>
+              <td>{{ props.row.value | currency}}</td>
+              <td>{{ props.row.currency}}</td>
+              <td><button class="btn btn-danger" v-on:click="selectWage(props.row)" data-toggle="modal" data-target="#wageModal">Remove</button></td>
+            </template>         
+          </vue-good-table>
           <div class="panel-footer">
-            <button type="button" class="btn btn-primary">Request Wage</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#wageRequestModal">Request Wage</button>
           </div>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Users
@@ -88,6 +76,10 @@
           :filterable="true"
           :globalSearch="true"
           >
+            <template slot="table-row" scope="props">
+              <td>{{ props.row.name }}</td>
+              <td>{{ props.row.level | accessLevel }}</td>
+            </template>
           </vue-good-table>
           <div class="panel-footer">
               <label for="wage-name">Username:</label>
@@ -103,39 +95,7 @@
                 </select>
               </div>
               <br>
-            <button type="button" v-on:click="addUser" class="btn btn-primary">Add User</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            Action Logs
-          </div>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>Event ID</th>
-                <th>Date</th>
-                <th>Event Type</th>
-                <th>User</th>
-                <th>Detail</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>eXampLe</strong></td>
-                <td>09/10/2017 12:44</td>
-                <td>Account Created(<strong>3728sd</strong>)</td>
-                <td>Example</td>
-                <td>{}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="panel-footer">
-            <button type="button" class="btn btn-primary">New Transaction</button>
+            <button type="button" v-on:click="addUser" class="btn btn-primary">Save User</button>
           </div>
         </div>
       </div>
@@ -159,9 +119,21 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
-            <h4 class="modal-title">Request Wage</h4>
+            <h4 class="modal-title">Wage Requests</h4>
           </div>
           <div class="modal-body">
+            <h4>Currently Requested</h4>
+            <p>Your requests will be validated as soon as possible. Please be patient.</p>
+            <vue-good-table 
+            :columns="tables.wageRequests"
+            :rows="account.wages"
+            :filterable="true"
+            :globalSearch="true"
+            >
+            </vue-good-table>
+            <hr />
+            <h4>Request New</h4>
+            <p>Once requested, a site operator will validate and accept your request to have this wage added.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -179,13 +151,14 @@ import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
 
+let accessLevels = {0: 'Remove User', 1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'}
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt'],
   data: function () {
     return {
       account: {},
-      accessLevels: {0: 'Remove User', 1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'},
+      accessLevels: accessLevels,
       userToAdd: {name: '', level: ''},
       tables: {
         users: [
@@ -196,6 +169,50 @@ export default {
           {
             label: 'Access Level',
             field: 'level'
+          }
+        ],
+        wages: [
+          {
+            label: 'ID',
+            field: '_id'
+          },
+          {
+            label: 'Name',
+            field: 'name'
+          },
+          {
+            label: 'Description',
+            field: 'description'
+          },
+          {
+            label: 'Value',
+            field: 'value',
+            type: 'decimal'
+          },
+          {
+            label: 'Currency',
+            field: 'currency'
+          },
+          {
+            label: 'Delete'
+          }
+        ],
+        wageRequests: [
+          {
+            label: 'Request ID',
+            field: '_id'
+          },
+          {
+            label: 'Wage ID',
+            field: 'wage._id'
+          },
+          {
+            label: 'Name',
+            field: 'wage.name'
+          },
+          {
+            label: 'Requested',
+            field: 'created'
           }
         ]
       }
@@ -220,6 +237,8 @@ export default {
         }
       }
       responseData.users = userData
+
+      console.log(JSON.stringify(responseData))
 
       this.account = responseData
     },
@@ -257,6 +276,14 @@ export default {
   },
   mounted: function () {
     this.fetchAccount()
+  },
+  filters: {
+    currency: function (value) {
+      return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+    },
+    accessLevel: function (level) {
+      return accessLevels[level]
+    }
   }
 }
 </script>
