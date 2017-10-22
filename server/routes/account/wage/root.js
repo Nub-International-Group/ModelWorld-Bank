@@ -2,7 +2,7 @@ const Account = require('../../../models/account.js')
 const WageRequest = require('../../../models/wageRequest.js')
 
 module.exports = function (req, res, next) {
-  Account.findOne({'_id': req.params.id}).populate('wages').exec(function (err, document) {
+  Account.findOne({'_id': req.params.id}).exec(function (err, document) {
     if (err) {
       return next(err)
     }
@@ -16,6 +16,8 @@ module.exports = function (req, res, next) {
         if (err) {
           return next(err)
         }
+
+        console.log(wageRequests)
         return res.status(200).json(wageRequests)
       })
     } else {

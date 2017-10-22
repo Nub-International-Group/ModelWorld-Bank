@@ -128,18 +128,32 @@
             <p>Your requests will be validated as soon as possible. Please be patient.</p>
             <vue-good-table 
             :columns="tables.wageRequests"
-            :rows="account.wages"
+            :rows="wageRequests"
             :filterable="true"
             :globalSearch="true"
-            >
+            :paginate="true"
+            styleClass="table table-bordered condensed"/>
             </vue-good-table>
             <hr />
             <h4>Request New</h4>
             <p>Once requested, a site operator will validate and accept your request to have this wage added.</p>
+            <vue-good-table 
+            :columns="tables.wagesList"
+            :rows="possibleWages"
+            :filterable="true"
+            :globalSearch="true"
+            :paginate="true"
+            styleClass="table table-bordered condensed">
+              <template slot="table-row" scope="props">
+                <td>{{ props.row.name }}</td>
+                <td>{{ props.row.description}}</td>
+                <td>{{ props.row.value | currency }}</td>
+                <td><button type="button" v-on:click="requestWage(props.row._id)" class="btn btn-primary">Request</button></td>
+              </template>
+            </vue-good-table>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" v-on:click="" class="btn btn-primary" data-dismiss="modal">Submit Request</button>
           </div>
         </div>
       </div>
@@ -161,6 +175,9 @@ export default {
       account: {},
       accessLevels: accessLevels,
       userToAdd: {name: '', level: ''},
+      wageToRequest: '',
+      wageRequests: [],
+      possibleWages: [],
       tables: {
         users: [
           {
@@ -198,6 +215,24 @@ export default {
             label: 'Delete'
           }
         ],
+        wagesList: [
+          {
+            label: 'Name',
+            field: 'name'
+          },
+          {
+            label: 'Description',
+            field: 'description'
+          },
+          {
+            label: 'Value',
+            field: 'value',
+            type: 'decimal'
+          },
+          {
+            label: 'Request'
+          }
+        ],
         wageRequests: [
           {
             label: 'Request ID',
@@ -230,6 +265,27 @@ export default {
         $this.processAccountData(response.data)
       }).catch(errorHandler)
     },
+    fetchPossibleWages: function () {
+      let $this = this
+      axios.request({
+        url: '/api/wage',
+        method: 'get',
+        headers: {jwt: $this.$store.jwt}
+      }).then(function (response) {
+        $this.processWageData(response.data)
+      }).catch(errorHandler)
+    },
+    fetchWageRequests: function () {
+      let $this = this
+      axios.request({
+        url: '/api/account/id/' + $this.$route.params.id + '/wage',
+        method: 'get',
+        headers: {jwt: $this.$store.jwt}
+      }).then(function (response) {
+        $this.wageRequests = response.data
+        $this.fetchPossibleWages()
+      }).catch(errorHandler)
+    },
     processAccountData: function (responseData) {
       let userData = []
       for (let key in responseData.users) {
@@ -239,9 +295,27 @@ export default {
       }
       responseData.users = userData
 
-      console.log(JSON.stringify(responseData))
-
       this.account = responseData
+      this.fetchWageRequests()
+    },
+    processWageData: function (responseData) {
+      let $this = this
+      responseData = responseData.filter(function (val) {
+        let existingWages = $this.account.wages.find(function (wage) { // Remove elements that exist already in the wage data.
+          return wage['_id'] === val['_id']
+        })
+
+        let existingRequests = $this.wageRequests.find(function (wageRequest) { // Remove elements that exist already in the requests
+          if (wageRequest.wage) {
+            return wageRequest.wage['_id'] === val['_id']
+          } else {
+            return false
+          }
+        })
+        return (existingWages === undefined) && (existingRequests === undefined)
+      })
+
+      $this.possibleWages = responseData
     },
     addUser: function () {
       let $this = this
@@ -252,6 +326,17 @@ export default {
         data: {newDocument: $this.userToAdd}
       }).then(function (response) {
         $this.processAccountData(response.data)
+      }).catch(errorHandler)
+    },
+    requestWage: function (wageID) {
+      let $this = this
+      axios.request({
+        url: '/api/account/id/' + $this.$route.params.id + '/wage',
+        method: 'post',
+        headers: {jwt: $this.$store.jwt},
+        data: {wageID: wageID}
+      }).then(function (response) {
+        $this.wageRequests = response.data
       }).catch(errorHandler)
     },
     deleteAccount: function () {

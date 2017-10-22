@@ -31,4 +31,8 @@ export default {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0
 }
+
+div .table-footer {
+  margin-bottom: 0px !important;
+}
 </style>

@@ -25,6 +25,7 @@ module.exports = function (req, res, next) {
           if (err) {
             return next(err)
           }
+          console.log(wageRequests)
           return res.status(200).json(wageRequests)
         })
       })
@@ -33,4 +34,3 @@ module.exports = function (req, res, next) {
     }
   })
 }
-

@@ -5,7 +5,8 @@ let schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   created: { type: Date, default: Date.now },
   account: { type: String, ref: 'account' },
-  wage: { type: String, ref: 'wage' }
+  wage: { type: String, ref: 'wage' },
+  user: String
 })
 
 let model = mongoose.model('wageRequest', schema)
