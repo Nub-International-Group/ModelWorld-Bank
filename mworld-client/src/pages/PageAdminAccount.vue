@@ -54,6 +54,7 @@
           :rows="allAccounts.rows"
           :filterable="true"
           :globalSearch="true"
+          :paginate="true"
           >
             <template slot="table-row" scope="props">
               <td><strong>{{ props.row._id }}</strong></td>
@@ -81,10 +82,10 @@ export default {
   data: function () {
     return {
       newAccount: {
-        name: '',
-        description: '',
-        owner: '',
-        public: ''
+        name: 'X\'s Personal Account',
+        description: 'Premium personal banking',
+        owner: 'X',
+        public: true
       },
       allAccounts: {
         columns: [

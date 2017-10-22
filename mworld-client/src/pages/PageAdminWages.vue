@@ -16,6 +16,7 @@
           :rows="wages"
           :filterable="true"
           :globalSearch="true"
+          :paginate="true"
           >
             <template slot="table-row" scope="props">
               <td><strong>{{ props.row._id }}</strong></td>

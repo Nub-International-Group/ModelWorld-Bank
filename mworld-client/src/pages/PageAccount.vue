@@ -50,6 +50,7 @@
           :rows="account.wages"
           :filterable="true"
           :globalSearch="true"
+          :paginate="true"
           >
             <template slot="table-row" scope="props">
               <td><strong>{{ props.row._id }}</strong></td>
@@ -75,6 +76,7 @@
           :rows="account.users"
           :filterable="true"
           :globalSearch="true"
+          :paginate="true"
           >
             <template slot="table-row" scope="props">
               <td>{{ props.row.name }}</td>
@@ -137,8 +139,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" v-on:click="" class="btn btn-danger" data-dismiss="modal">Delete Wage</button>
-            <button type="button" v-on:click="" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+            <button type="button" v-on:click="" class="btn btn-primary" data-dismiss="modal">Submit Request</button>
           </div>
         </div>
       </div>
