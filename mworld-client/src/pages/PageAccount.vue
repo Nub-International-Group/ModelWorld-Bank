@@ -282,6 +282,10 @@ export default {
         method: 'get',
         headers: {jwt: $this.$store.jwt}
       }).then(function (response) {
+        response.data = response.data.filter(function (val) { // Remove broken data entries. Will eventually be cleaned server-side
+          return !(val.wage == null)
+        })
+
         $this.wageRequests = response.data
         $this.fetchPossibleWages()
       }).catch(errorHandler)
@@ -337,6 +341,7 @@ export default {
         data: {wageID: wageID}
       }).then(function (response) {
         $this.wageRequests = response.data
+        $this.fetchPossibleWages()
       }).catch(errorHandler)
     },
     deleteAccount: function () {

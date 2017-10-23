@@ -12,7 +12,7 @@
             Wages
           </div>
           <vue-good-table 
-          :columns="columns"
+          :columns="tables.wages"
           :rows="wages"
           :filterable="true"
           :globalSearch="true"
@@ -67,6 +67,37 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Wage Requests
+          </div>
+          <vue-good-table 
+          :columns="tables.wageRequests"
+          :rows="wageRequests"
+          :filterable="true"
+          :globalSearch="true"
+          :paginate="true"
+          >
+            <template slot="table-row" scope="props">
+              <td><strong>{{ props.row._id }}</strong></td>
+              <td>{{ props.row.wage._id }}</td>
+              <td>{{ props.row.account.name}}</td>
+              <td>{{ props.row.wage.name}}</td>
+              <td>{{ props.row.user}}</td>
+              <td>{{ props.row.created}}</td>
+              <td>
+                <button class="btn btn-success" v-on:click="decideRequest(props.row, true)">Accept</button>
+              </td>
+              <td>
+                <button class="btn btn-danger" v-on:click="decideRequest(props.row, false)">Deny</button>
+              </td>
+            </template>         
+          </vue-good-table>
+        </div>
+      </div>
+    </div>
 
     <div class="modal fade" id="wageModal" tabindex="-1" role="dialog" >
       <div class="modal-dialog" role="document">
@@ -114,6 +145,7 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
+import swal from 'sweetalert'
 
 export default {
   name: 'PageAdminWages',
@@ -121,32 +153,55 @@ export default {
   data: function () {
     return {
       wages: [],
-      columns: [
-        {
-          label: 'ID',
-          field: '_id'
-        },
-        {
-          label: 'Name',
-          field: 'name'
-        },
-        {
-          label: 'Description',
-          field: 'description'
-        },
-        {
-          label: 'Value',
-          field: 'value',
-          type: 'decimal'
-        },
-        {
-          label: 'Currency',
-          field: 'currency'
-        },
-        {
-          label: 'Buttons'
-        }
-      ],
+      wageRequests: [],
+      tables: {
+        wages: [
+          {
+            label: 'ID'
+          },
+          {
+            label: 'Name'
+          },
+          {
+            label: 'Description'
+          },
+          {
+            label: 'Value'
+          },
+          {
+            label: 'Currency'
+          },
+          {
+            label: 'Buttons'
+          }
+        ],
+        wageRequests: [
+          {
+            label: 'Request ID'
+          },
+          {
+            label: 'Wage ID'
+          },
+          {
+            label: 'Account Name'
+          },
+          {
+            label: 'Wage Name'
+          },
+          {
+            label: 'User'
+          },
+          {
+            label: 'Requested Time'
+          },
+          {
+            label: 'Accept'
+          },
+          {
+            label: 'Deny'
+          }
+        ]
+      },
       wagesQueue: [],
       selectedWage: {},
       newWage: {
@@ -159,6 +214,7 @@ export default {
   },
   mounted: function () {
     this.fetchWages()
+    this.fetchRequests()
   },
   methods: {
     createWage: function (event) {
@@ -169,7 +225,6 @@ export default {
         headers: {jwt: this.$store.jwt},
         data: {newDocument: $this.newWage}
       }).then(function (response) {
-        console.log(response.data)
         $this.wages = response.data
       }).catch(errorHandler)
     },
@@ -189,13 +244,23 @@ export default {
     },
     deleteWage: function () {
       let $this = this
-      axios.request({
-        url: '/api/wage/id/' + $this.selectedWage._id,
-        method: 'delete',
-        headers: {jwt: this.$store.jwt}
-      }).then(function (response) {
-        $this.wages = response.data
-      }).catch(errorHandler)
+      swal({
+        title: 'ARE YOU SURE?',
+        icon: 'warning',
+        text: 'Clicking \'ok\' will permenantly delete this wage!',
+        dangerMode: true,
+        buttons: true
+      }).then((choice) => {
+        if (choice === true) {
+          axios.request({
+            url: '/api/wage/id/' + $this.selectedWage._id,
+            method: 'delete',
+            headers: {jwt: this.$store.jwt}
+          }).then(function (response) {
+            $this.wages = response.data
+          }).catch(errorHandler)
+        }
+      })
     },
     fetchWages: function () {
       let $this = this
@@ -205,6 +270,19 @@ export default {
         headers: {jwt: this.$store.jwt}
       }).then(function (response) {
         $this.wages = response.data
+      }).catch(errorHandler)
+    },
+    fetchRequests: function () {
+      let $this = this
+      axios.request({
+        url: '/api/request',
+        method: 'get',
+        headers: {jwt: this.$store.jwt}
+      }).then(function (response) {
+        response.data = response.data.filter(function (val) { // Remove broken data entries. Will eventually be cleaned server-side
+          return !(val.wage == null || val.account == null)
+        })
+        $this.wageRequests = response.data
       }).catch(errorHandler)
     }
   },

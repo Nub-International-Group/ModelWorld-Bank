@@ -17,7 +17,6 @@ module.exports = function (req, res, next) {
           return next(err)
         }
 
-        console.log(wageRequests)
         return res.status(200).json(wageRequests)
       })
     } else {

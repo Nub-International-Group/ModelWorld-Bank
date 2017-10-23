@@ -14,7 +14,8 @@ module.exports = function (req, res, next) {
     if ((document.users[req.decoded.name] === 3) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
       let wageRequest = new WageRequest({
         account: req.params.id,
-        wage: req.body.wageID
+        wage: req.body.wageID,
+        user: req.decoded.name
       })
 
       wageRequest.save(function (err) {
