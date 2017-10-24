@@ -103,6 +103,7 @@ app.get('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/ro
 app.post('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/new.js'))
 
 app.get('/api/request', ensureJWT, require('./routes/request/root.js'))
+app.post('/api/request/id/:id', ensureJWT, require('./routes/request/update.js'))
 
 app.get('/api/wage', ensureJWT, require('./routes/wage/root.js'))
 app.put('/api/wage/id/:id', ensureJWT, require('./routes/wage/update.js'))

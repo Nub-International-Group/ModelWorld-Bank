@@ -228,6 +228,28 @@ export default {
         $this.wages = response.data
       }).catch(errorHandler)
     },
+    decideRequest: function (wageRequest, decision) {
+      // Decision - True = Accept, Decision - False = Deny
+      let $this = this
+      swal({
+        title: 'ARE YOU SURE?',
+        icon: 'warning',
+        text: 'Clicking \'ok\' will complete this action!',
+        dangerMode: true,
+        buttons: true
+      }).then((choice) => {
+        if (choice === true) {
+          axios.request({
+            url: '/api/request/id/' + wageRequest._id,
+            method: 'post',
+            headers: {jwt: this.$store.jwt},
+            data: {accept: decision}
+          }).then(function (response) {
+            $this.fetchRequests()
+          }).catch(errorHandler)
+        }
+      })
+    },
     selectWage: function (row) {
       this.selectedWage = Object.assign({}, row) // Performs a copy of the object
     },
