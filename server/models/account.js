@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
+const moment = require('moment')
 const Transaction = require('./transaction.js')
 const WageRequest = require('./wageRequest')
 
@@ -64,9 +65,30 @@ schema.methods.fetchWageRequests = function (callback) {
 }
 
 schema.methods.payWages = function (callback) {
+  let $this = this
   this.populate(function (err, account) { // Populate wage info
     if (err) {
       return callback(err)
+    }
+
+    let yearlyUnscaled = {}
+
+    $this.wages.forEach(function (wage) {
+      if (yearlyUnscaled[wage.currency]) {
+        yearlyUnscaled[wage.currency] += wage.value
+      } else {
+        yearlyUnscaled[wage.currency] = wage.value
+      }
+    })
+
+    let wageToPay = {}
+
+    let yearsSinceLastwage = (moment().diff($this.lastPaid, 'years', true) * 10)
+
+    for (let currency in yearlyUnscaled) {
+      if (yearlyUnscaled.hasOwnProperty(currency)) {
+        wageToPay[currency] = yearlyUnscaled[currency] * yearsSinceLastwage
+      }
     }
   })
 }
