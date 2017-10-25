@@ -28,7 +28,28 @@
             </template>
           </vue-good-table>
           <div class="panel-footer">
-            <button type="button" class="btn btn-primary">New Transaction</button>
+            <form>
+              <label for="account-name-field">Account ID:</label>
+              <div class="input-group">
+                <span class="input-group-addon">Account ID:</span>
+                <input v-model="newTransaction.target" type="text" id="account-name-field" class="form-control" />
+              </div>
+              <br>
+              <label for="amount-field">Amount:</label>
+              <div class="input-group">
+                <span class="input-group-addon">Amount:</span>
+                <input v-model="newTransaction.amount" type="text" id="amount-field" class="form-control" />
+              </div>
+              <br>
+              <div class="input-group">
+                <label for="sel1">Currency:</label>
+                <select v-model="newTransaction.currency" class="form-control" id="sel1">
+                  <option v-for='currency in currencies'>{{currency}}</option>
+                </select>
+              </div>
+              <br>
+              <button type="button" v-on:click="submitTransaction" class="btn btn-primary">Submit Transaction</button>
+            </form>
           </div>
         </div>
       </div>
@@ -163,7 +184,7 @@ import swal from 'sweetalert'
 let accessLevels = {0: 'Remove User', 1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'}
 export default {
   name: 'PageAccount',
-  store: ['user', 'jwt'],
+  store: ['user', 'jwt', 'currencies'],
   data: function () {
     return {
       account: {},
