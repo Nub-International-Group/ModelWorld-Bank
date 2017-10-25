@@ -12,27 +12,12 @@ module.exports = function (req, res, next) {
     }
 
     if ((account.users[req.decoded.name] >= 1) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
-      Transaction.find({to: account._id}).populate('from').exec(function (err, toTransactions) {
+      account.calculateBalance(function (err, data) {
         if (err) {
           return next(err)
         }
-        Transaction.find({from: account._id}).populate('to').exec(function (err, fromTransactions) {
-          if (err) {
-            return next(err)
-          }
 
-          let combinedTransactions = []
-
-          if (fromTransactions === null) {
-            combinedTransactions = toTransactions
-          } else if (toTransactions === null) {
-            combinedTransactions = fromTransactions
-          } else {
-            combinedTransactions = toTransactions.concat(fromTransactions)
-          }
-
-          return res.status(200).json(combinedTransactions)
-        })
+        return res.status(200).json(data)
       })
     } else {
       return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})

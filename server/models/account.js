@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
-const transaction = require('./transaction.js')
-const wageRequest = require('./wageRequest')
+const Transaction = require('./transaction.js')
+const WageRequest = require('./wageRequest')
 
 let schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
@@ -24,7 +24,7 @@ let schema = new mongoose.Schema({
 schema.methods.calculateBalance = function (callback) {
   // TODO: Consider an approach where the to and froms are found simultanously and totted up, then finally added together. Possible enhancement to perf. - Async JS?
   // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
-  transaction.find({ 'to': this._id }, function (err, tos) {
+  Transaction.find({ 'to': this._id }, function (err, tos) {
     if (err) { return callback(err) }
     let balance = {}
 
@@ -36,7 +36,7 @@ schema.methods.calculateBalance = function (callback) {
       }
     })
 
-    transaction.find({ 'from': this._id }, function (err, froms) {
+    Transaction.find({ 'from': this._id }, function (err, froms) {
       if (err) { return callback(err) }
 
       froms.forEach(function (element) {
@@ -55,7 +55,7 @@ schema.methods.calculateBalance = function (callback) {
 }
 
 schema.methods.fetchWageRequests = function (callback) {
-  wageRequest.find({account: this._id}).populate('wage').exec(function (err, wageRequests) {
+  WageRequest.find({account: this._id}).populate('wage').exec(function (err, wageRequests) {
     if (err) {
       return callback(err)
     }

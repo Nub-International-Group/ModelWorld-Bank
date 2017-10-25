@@ -9,6 +9,35 @@
       <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">
+            Account Summary
+          </div>
+          <div class="panel-body">
+            Unique Account ID: <strong>{{account._id}}</strong>
+            <br/>
+            Creation Date: {{account.created}}
+            <br/>
+            Public: {{account.public}}
+            <br/>
+          </div>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Currency</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(amount, currency) in balances">
+                <td>{{currency}}</td>
+                <td>{{amount}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
             Transactions
           </div>
           <vue-good-table
@@ -29,26 +58,30 @@
           </vue-good-table>
           <div class="panel-footer">
             <form>
-              <label for="account-name-field">Account ID:</label>
-              <div class="input-group">
-                <span class="input-group-addon">Account ID:</span>
-                <input v-model="newTransaction.target" type="text" id="account-name-field" class="form-control" />
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="account-name-field">Account ID:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon">Account ID:</span>
+                    <input v-model="newTransaction.target" type="text" id="account-name-field" class="form-control" />
+                  </div>
+                  <br>
+                  <label for="amount-field">Amount:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon">Amount:</span>
+                    <input v-model="newTransaction.amount" type="text" id="amount-field" class="form-control" />
+                  </div>
+                  <br>
+                  <div class="input-group">
+                    <label for="sel1">Currency:</label>
+                    <select v-model="newTransaction.currency" class="form-control" id="sel1">
+                      <option v-for='currency in currencies'>{{currency}}</option>
+                    </select>
+                  </div>
+                  <br>
+                  <button type="button" v-on:click="submitTransaction" class="btn btn-primary">Submit Transaction</button>
+                </div>
               </div>
-              <br>
-              <label for="amount-field">Amount:</label>
-              <div class="input-group">
-                <span class="input-group-addon">Amount:</span>
-                <input v-model="newTransaction.amount" type="text" id="amount-field" class="form-control" />
-              </div>
-              <br>
-              <div class="input-group">
-                <label for="sel1">Currency:</label>
-                <select v-model="newTransaction.currency" class="form-control" id="sel1">
-                  <option v-for='currency in currencies'>{{currency}}</option>
-                </select>
-              </div>
-              <br>
-              <button type="button" v-on:click="submitTransaction" class="btn btn-primary">Submit Transaction</button>
             </form>
           </div>
         </div>
@@ -99,20 +132,24 @@
             </template>
           </vue-good-table>
           <div class="panel-footer">
-              <label for="wage-name">Username:</label>
-              <div class="input-group">
-                <span class="input-group-addon">Username:</span>
-                <input v-model="userToAdd.name" type="text" id="wage-name" class="form-control">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="wage-name">Username:</label>
+                <div class="input-group">
+                  <span class="input-group-addon">Username:</span>
+                  <input v-model="userToAdd.name" type="text" id="wage-name" class="form-control">
+                </div>
+                <br>
+                <div class="input-group">
+                  <label for="sel1">Access Level:</label>
+                  <select v-model="userToAdd.level" class="form-control" id="sel1">
+                    <option v-for='(name, level) in accessLevels' :value="level">{{name}}</option>
+                  </select>
+                </div>
+                <br>
+                <button type="button" v-on:click="addUser" class="btn btn-primary">Save User</button>
               </div>
-              <br>
-              <div class="input-group">
-                <label for="sel1">Access Level:</label>
-                <select v-model="userToAdd.level" class="form-control" id="sel1">
-                  <option v-for='(name, level) in accessLevels' :value="level">{{name}}</option>
-                </select>
-              </div>
-              <br>
-            <button type="button" v-on:click="addUser" class="btn btn-primary">Save User</button>
+            </div>
           </div>
         </div>
       </div>
@@ -126,7 +163,7 @@
           <div class="panel-body">
             <button v-on:click="deleteAccount()" type="button" class="btn btn-danger">Delete Account</button>
             <button type="button" class="btn btn-primary">Pay Wages</button>
-            <button type="button" class="btn btn-primary">Place Hold</button>
+            <button type="button" class="btn btn-primary disabled">Place Hold</button>
           </div>
         </div>
       </div>
@@ -194,6 +231,7 @@ export default {
       wageRequests: [],
       possibleWages: [],
       transactions: [],
+      balances: {},
       newTransaction: {},
       tables: {
         users: [
@@ -341,7 +379,7 @@ export default {
       }).then(function (response) {
         let processedTransactions = []
 
-        response.data.forEach(function (transaction) {
+        response.data.transactions.forEach(function (transaction) {
           let accountID = $this.$route.params.id
 
           if (transaction.from === accountID) {
@@ -356,6 +394,7 @@ export default {
         })
 
         $this.transactions = processedTransactions
+        $this.balances = response.data.balance
       }).catch(errorHandler)
     },
     processAccountData: function (responseData) {
