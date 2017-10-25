@@ -104,6 +104,9 @@ app.get('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/ro
 app.post('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/new.js'))
 app.delete('/api/account/id/:id/wage/:wageID', ensureJWT, require('./routes/account/wage/delete.js'))
 
+app.get('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/root.js'))
+app.post('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/new.js'))
+
 app.get('/api/request', ensureJWT, require('./routes/request/root.js'))
 app.post('/api/request/id/:id', ensureJWT, require('./routes/request/update.js'))
 
