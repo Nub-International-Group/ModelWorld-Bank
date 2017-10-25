@@ -11,28 +11,22 @@
           <div class="panel-heading">
             Transactions
           </div>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Currency</th>
-                <th>Other Account</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>a17ec</strong></td>
-                <td>09/10/2017 12:44</td>
-                <td>+ 433,986,342.00</td>
-                <td>GBP</td>
-                <td>DaddyNub(<strong>34aef3</strong>)</td>
-                <td>A spogtacular advance payment on your mortgereige</td>
-              </tr>
-            </tbody>
-          </table>
+          <vue-good-table
+          :columns="tables.transactions"
+          :rows="transactions"
+          :filterable="true"
+          :globalSearch="true"
+          :paginate="true"
+          >
+            <template slot="table-row" scope="props">
+              <td>{{ props.row._id }}</td>
+              <td>{{ props.row.created }}</td>
+              <td>{{ props.row.sign}}</td>
+              <td>{{ props.row.amount | currency }}</td>
+              <td><strong>{{ props.row.other._id }}</strong>{{ props.row.other.name }}</td>
+              <td>{{ props.row.description }}</td>
+            </template>
+          </vue-good-table>
           <div class="panel-footer">
             <button type="button" class="btn btn-primary">New Transaction</button>
           </div>
@@ -58,7 +52,7 @@
               <td>{{ props.row.description }}</td>
               <td>{{ props.row.value | currency}}</td>
               <td>{{ props.row.currency}}</td>
-              <td><button class="btn btn-danger" v-on:click="selectWage(props.row)" data-toggle="modal" data-target="#wageModal">Remove</button></td>
+              <td><button class="btn btn-danger" v-on:click="deleteWage(props.row)">Remove</button></td>
             </template>         
           </vue-good-table>
           <div class="panel-footer">
@@ -178,6 +172,8 @@ export default {
       wageToRequest: '',
       wageRequests: [],
       possibleWages: [],
+      transactions: [],
+      newTransaction: {},
       tables: {
         users: [
           {
@@ -213,6 +209,31 @@ export default {
           },
           {
             label: 'Delete'
+          }
+        ],
+        transactions: [
+          {
+            label: 'ID'
+          },
+          {
+            label: 'Date'
+          },
+          {
+            label: 'Positive/Negative'
+          },
+          {
+            label: 'Amount',
+            field: 'amount',
+            type: 'decimal'
+          },
+          {
+            label: 'Currency'
+          },
+          {
+            label: 'Other Account'
+          },
+          {
+            label: 'Description'
           }
         ],
         wagesList: [
@@ -290,6 +311,32 @@ export default {
         $this.fetchPossibleWages()
       }).catch(errorHandler)
     },
+    fetchTransactions: function () {
+      let $this = this
+      axios.request({
+        url: '/api/account/id/' + $this.$route.params.id + '/transaction',
+        method: 'get',
+        headers: {jwt: $this.$store.jwt}
+      }).then(function (response) {
+        let processedTransactions = []
+
+        response.data.forEach(function (transaction) {
+          let accountID = $this.$route.params.id
+
+          if (transaction.from === accountID) {
+            transaction.other = transaction.to
+            transaction.sign = '-'
+          } else if (transaction.to === accountID) {
+            transaction.other = transaction.from
+            transaction.sign = '+'
+          }
+
+          processedTransactions.push(transaction)
+        })
+
+        $this.transactions = processedTransactions
+      }).catch(errorHandler)
+    },
     processAccountData: function (responseData) {
       let userData = []
       for (let key in responseData.users) {
@@ -331,6 +378,26 @@ export default {
       }).then(function (response) {
         $this.processAccountData(response.data)
       }).catch(errorHandler)
+    },
+    deleteWage: function (wage) {
+      let $this = this
+      swal({
+        title: 'ARE YOU SURE?',
+        icon: 'warning',
+        text: 'Clicking \'ok\' will remove this wage!',
+        dangerMode: true,
+        buttons: true
+      }).then((choice) => {
+        if (choice === true) {
+          axios.request({
+            url: '/api/account/id/' + $this.$route.params.id + '/wage/' + wage._id,
+            method: 'delete',
+            headers: {jwt: $this.$store.jwt}
+          }).then(function (response) {
+            $this.fetchAccount()
+          }).catch(errorHandler)
+        }
+      })
     },
     requestWage: function (wageID) {
       let $this = this

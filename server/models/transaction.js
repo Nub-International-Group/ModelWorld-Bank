@@ -4,7 +4,7 @@ const shortid = require('shortid') // Smarter, shorter IDs than the default Mong
 let schema = new mongoose.Schema({
   _id: {type: String, default: shortid.generate},
   from: { type: String, ref: 'account' },
-  to: { type: String, ref: 'amount' },
+  to: { type: String, ref: 'account' },
   amount: Number,
   currency: String,
   description: String,
