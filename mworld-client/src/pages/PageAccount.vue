@@ -52,6 +52,7 @@
               <td>{{ props.row.created }}</td>
               <td>{{ props.row.sign}}</td>
               <td>{{ props.row.amount | currency }}</td>
+              <td>{{ props.row.currency }}</td>
               <td><strong>{{ props.row.other._id }}</strong>{{ props.row.other.name }}</td>
               <td>{{ props.row.description }}</td>
             </template>
@@ -169,7 +170,7 @@
           </div>
           <div class="panel-body">
             <button v-on:click="deleteAccount()" type="button" class="btn btn-danger">Delete Account</button>
-            <button type="button" class="btn btn-primary">Pay Wages</button>
+            <button type="button" v-on:click="payWages()" class="btn btn-primary">Pay Wages</button>
             <button type="button" class="btn btn-primary disabled">Place Hold</button>
           </div>
         </div>
@@ -518,6 +519,16 @@ export default {
           }).catch(errorHandler)
         }
       })
+    },
+    payWages: function () {
+      let $this = this
+      axios.request({
+        url: '/api/account/id/' + $this.$route.params.id + '/pay',
+        method: 'get',
+        headers: {jwt: $this.$store.jwt}
+      }).then(function (response) {
+        $this.fetchTransactions()
+      }).catch(errorHandler)
     }
   },
   mounted: function () {

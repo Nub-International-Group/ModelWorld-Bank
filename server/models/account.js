@@ -85,11 +85,29 @@ schema.methods.payWages = function (callback) {
 
     let yearsSinceLastwage = (moment().diff($this.lastPaid, 'years', true) * 10)
 
+    let transactions = []
     for (let currency in yearlyUnscaled) {
       if (yearlyUnscaled.hasOwnProperty(currency)) {
-        wageToPay[currency] = yearlyUnscaled[currency] * yearsSinceLastwage
+        wageToPay[currency] = +(yearlyUnscaled[currency] * yearsSinceLastwage).toFixed(2)
+
+        transactions.push({
+          to: $this._id,
+          from: '*economy*',
+          description: 'Wages Paid. Yearly wage: ' + yearlyUnscaled[currency] + ' ' + currency,
+          amount: wageToPay[currency],
+          currency: currency,
+          authoriser: 'SYSTEM'
+        })
       }
     }
+
+    Transaction.create(transactions, function (err) {
+      if (err) {
+        return callback(err)
+      }
+
+      return callback(null)
+    })
   })
 }
 

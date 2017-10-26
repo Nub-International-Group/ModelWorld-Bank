@@ -42,6 +42,8 @@ module.exports = function (req, res, next) {
               }
               return removeRequest(req, res, next)
             })
+          } else {
+            return removeRequest(req, res, next)
           }
         })
       } else {
