@@ -25,8 +25,12 @@ let schema = new mongoose.Schema({
 schema.methods.calculateBalance = function (callback) {
   // TODO: Consider an approach where the to and froms are found simultanously and totted up, then finally added together. Possible enhancement to perf. - Async JS?
   // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
-  Transaction.find({ 'to': this._id }, function (err, tos) {
-    if (err) { return callback(err) }
+  let $this = this
+  Transaction.find({ 'to': this._id }).sort('-created').exec(function (err, tos) {
+    if (err) {
+      return callback(err)
+    }
+
     let balance = {}
 
     tos.forEach(function (element) {
@@ -37,8 +41,10 @@ schema.methods.calculateBalance = function (callback) {
       }
     })
 
-    Transaction.find({ 'from': this._id }, function (err, froms) {
-      if (err) { return callback(err) }
+    Transaction.find({ 'from': $this._id }).sort('-created').exec(function (err, froms) {
+      if (err) {
+        return callback(err)
+      }
 
       froms.forEach(function (element) {
         if (balance[element.currency] === undefined) {
@@ -93,7 +99,7 @@ schema.methods.payWages = function (callback) {
         transactions.push({
           to: $this._id,
           from: '*economy*',
-          description: 'Wages Paid. Yearly wage: ' + yearlyUnscaled[currency] + ' ' + currency,
+          description: 'Wages Paid. Yearly wage: ' + yearlyUnscaled[currency].toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,') + ' ' + currency,
           amount: wageToPay[currency],
           currency: currency,
           authoriser: 'SYSTEM'
@@ -106,7 +112,16 @@ schema.methods.payWages = function (callback) {
         return callback(err)
       }
 
-      return callback(null)
+      $this.lastPaid = Date.now()
+      $this.markModified('lastPaid')
+
+      $this.save(function (err) {
+        if (err) {
+          return callback(err)
+        }
+
+        return callback(null)
+      })
     })
   })
 }

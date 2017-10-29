@@ -29,7 +29,7 @@
             <tbody>
               <tr v-for="(amount, currency) in balances">
                 <td>{{currency}}</td>
-                <td>{{amount}}</td>
+                <td>{{amount | currency}}</td>
               </tr>
             </tbody>
           </table>
@@ -53,7 +53,7 @@
               <td>{{ props.row.sign}}</td>
               <td>{{ props.row.amount | currency }}</td>
               <td>{{ props.row.currency }}</td>
-              <td><strong>{{ props.row.other._id }}</strong>{{ props.row.other.name }}</td>
+              <td><strong>{{ props.row.other }}</strong>{{ props.row.other.name }}</td>
               <td>{{ props.row.description }}</td>
             </template>
           </vue-good-table>
@@ -283,7 +283,8 @@ export default {
             label: 'ID'
           },
           {
-            label: 'Date'
+            label: 'Date',
+            field: 'created'
           },
           {
             label: 'Positive/Negative'
@@ -533,6 +534,7 @@ export default {
   },
   mounted: function () {
     this.fetchAccount()
+    this.fetchTransactions()
   },
   filters: {
     currency: function (value) {
