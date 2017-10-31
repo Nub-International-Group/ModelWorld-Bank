@@ -147,7 +147,7 @@ app.get('/api/auth/return', function (req, res, next) {
 app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
   jwt.sign({
     name: req.user.name.toLowerCase(),
-    admin: admins.includes(req.user.name)
+    admin: admins.includes(req.user.name.toLowerCase())
   }, config.secret, function (err, jwtString) {
     if (err) { return next(err) }
 
