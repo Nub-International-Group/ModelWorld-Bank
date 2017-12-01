@@ -19,7 +19,7 @@ module.exports = function (req, res, next) {
       }
 
       if (wageRequest === null) {
-        return res.status(404).json({err: {code: 404, desc: 'Document does not exist'}})
+        return res.status(404).json({err: {code: 404, desc: 'Wage Request does not exist'}})
       }
 
       if (req.body.accept === true) {
@@ -29,10 +29,10 @@ module.exports = function (req, res, next) {
           }
 
           if (account === null) {
-            return res.status(404).json({err: {code: 404, desc: 'Document does not exist'}})
+            return res.status(404).json({err: {code: 404, desc: 'Target account does not exist'}})
           }
 
-          if (account.wages.indexOf(wageRequest.wage._id) === -1) {
+          if (account.wages.indexOf(wageRequest.wage._id) === -1) { // If wage not already added
             account.wages.push(wageRequest.wage._id)
             account.markModified('wages')
 

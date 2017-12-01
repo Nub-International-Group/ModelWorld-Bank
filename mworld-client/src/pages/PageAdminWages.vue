@@ -95,6 +95,9 @@
               </td>
             </template>         
           </vue-good-table>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" v-on:click="acceptAllRequests()">Accept All</button>
+          </div>
         </div>
       </div>
     </div>
@@ -244,6 +247,27 @@ export default {
             method: 'post',
             headers: {jwt: this.$store.jwt},
             data: {accept: decision}
+          }).then(function (response) {
+            $this.fetchRequests()
+          }).catch(errorHandler)
+        }
+      })
+    },
+    acceptAllRequests: function () {
+      let $this = this
+      swal({
+        title: 'ARE YOU SURE?',
+        icon: 'warning',
+        text: 'Clicking \'ok\' will accept all requests!',
+        dangerMode: true,
+        buttons: true
+      }).then((choice) => {
+        if (choice === true) {
+          axios.request({
+            url: '/api/request/all',
+            method: 'post',
+            headers: {jwt: this.$store.jwt},
+            data: {}
           }).then(function (response) {
             $this.fetchRequests()
           }).catch(errorHandler)
