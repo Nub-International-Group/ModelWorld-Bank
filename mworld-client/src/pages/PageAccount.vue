@@ -117,6 +117,20 @@
               <td><button class="btn btn-danger" v-on:click="deleteWage(props.row)">Remove</button></td>
             </template>         
           </vue-good-table>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Currency</th>
+                <th>Total Wage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(amount, currency) in totalWages">
+                <td>{{currency}}</td>
+                <td>{{amount | currency}}</td>
+              </tr>
+            </tbody>
+          </table>
           <div class="panel-footer">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#wageRequestModal">Request Wage</button>
           </div>
@@ -240,6 +254,7 @@ export default {
       possibleWages: [],
       transactions: [],
       balances: {},
+      totalWages: {},
       newTransaction: {},
       tables: {
         users: [
@@ -408,6 +423,8 @@ export default {
     },
     processAccountData: function (responseData) {
       let userData = []
+      let $this = this
+
       for (let key in responseData.users) {
         if (responseData.users.hasOwnProperty(key)) {
           userData.push({name: key, level: responseData.users[key]})
@@ -415,8 +432,17 @@ export default {
       }
       responseData.users = userData
 
-      this.account = responseData
-      this.fetchWageRequests()
+      $this.account = responseData
+
+      responseData.wages.forEach(function (wage) {
+        if ($this.totalWages[wage.currency]) {
+          $this.totalWages[wage.currency] += wage.value
+        } else {
+          $this.totalWages[wage.currency] = wage.value
+        }
+      })
+
+      $this.fetchWageRequests()
     },
     processWageData: function (responseData) {
       let $this = this
