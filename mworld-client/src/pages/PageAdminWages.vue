@@ -96,7 +96,8 @@
             </template>         
           </vue-good-table>
           <div class="modal-footer">
-            <button type="button" class="btn btn-success" v-on:click="acceptAllRequests()">Accept All</button>
+            <button type="button" class="btn btn-success" v-on:click="decideAllRequests(true)">Accept All</button>
+            <button type="button" class="btn btn-danger" v-on:click="decideAllRequests(false)">Deny All</button>
           </div>
         </div>
       </div>
@@ -253,12 +254,12 @@ export default {
         }
       })
     },
-    acceptAllRequests: function () {
+    decideAllRequests: function (decision) {
       let $this = this
       swal({
         title: 'ARE YOU SURE?',
         icon: 'warning',
-        text: 'Clicking \'ok\' will accept all requests!',
+        text: 'Clicking \'ok\' will ' + (decision ? 'accept' : 'deny') + ' all requests!',
         dangerMode: true,
         buttons: true
       }).then((choice) => {
@@ -267,7 +268,7 @@ export default {
             url: '/api/request/all',
             method: 'post',
             headers: {jwt: this.$store.jwt},
-            data: {}
+            data: {decision}
           }).then(function (response) {
             $this.fetchRequests()
           }).catch(errorHandler)
