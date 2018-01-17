@@ -123,6 +123,55 @@ schema.methods.payWages = function (callback) {
           currency: currency,
           authoriser: 'SYSTEM'
         })
+
+        /*
+          Taxation System:
+        */
+
+        let tax = [
+          {
+            topEnd: 20000,
+            rate: 0
+          },
+          {
+            topEnd: 53000,
+            rate: 0.05
+          },
+          {
+            topEnd: 93000,
+            rate: 0.1
+          },
+          {
+            topEnd: Infinity,
+            rate: 0.15
+          }
+        ]
+
+        let unCalculated = yearlyUnscaled[currency]
+        let taxAmount = 0
+
+        for (let bracket = 0; bracket < tax.length; bracket++) {
+          let taxBracket = tax[bracket]
+
+          if (unCalculated >= taxBracket.topEnd) {
+            taxAmount += taxBracket.topEnd * taxBracket.rate
+            unCalculated -= taxBracket.topEnd
+          } else {
+            taxAmount += unCalculated * taxBracket.rate
+            break
+          }
+        }
+
+        let taxAmountScaled = +(taxAmount * yearsSinceLastwage).toFixed(2)
+
+        transactions.push({
+          to: '*economy*',
+          from: $this._id,
+          description: 'Taxes Paid. Total rate: Yearly tax: ' + ((taxAmount / yearlyUnscaled[currency]) * 100).toFixed(2) + '%',
+          amount: taxAmountScaled,
+          currency: currency,
+          authoriser: 'SYSTEM'
+        })
       }
     }
 
