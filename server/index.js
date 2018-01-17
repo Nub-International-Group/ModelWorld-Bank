@@ -116,6 +116,7 @@ app.get('/api/wage', ensureJWT, require('./routes/wage/root.js'))
 app.put('/api/wage/id/:id', ensureJWT, require('./routes/wage/update.js'))
 app.delete('/api/wage/id/:id', ensureJWT, require('./routes/wage/delete.js'))
 app.post('/api/wage', ensureJWT, require('./routes/wage/new.js'))
+app.post('/api/wage/purge', ensureJWT, require('./routes/wage/purge.js')) // Handles post GE wipe of wages
 
 let admins = [
   'strideynet',

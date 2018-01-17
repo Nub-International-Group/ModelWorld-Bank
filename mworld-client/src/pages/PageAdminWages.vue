@@ -95,9 +95,10 @@
               </td>
             </template>         
           </vue-good-table>
-          <div class="modal-footer">
+          <div class="panel-footer">
             <button type="button" class="btn btn-success" v-on:click="decideAllRequests(true)">Accept All</button>
             <button type="button" class="btn btn-danger" v-on:click="decideAllRequests(false)">Deny All</button>
+            <button type="button" class="btn btn-danger" v-on:click="purgeWages()">Purge All Wages</button>
           </div>
         </div>
       </div>
@@ -231,6 +232,26 @@ export default {
       }).then(function (response) {
         $this.wages = response.data
       }).catch(errorHandler)
+    },
+    purgeWages: function () {
+      swal({
+        title: 'ARE YOU SURE?',
+        icon: 'warning',
+        text: 'Clicking \'ok\' will clear all wages from all accounts!',
+        dangerMode: true,
+        buttons: true
+      }).then((choice) => {
+        if (choice === true) {
+          axios.request({
+            url: '/api/wage/purge',
+            method: 'post',
+            headers: {jwt: this.$store.jwt},
+            data: {}
+          }).then(function (response) {
+            swal('All wages have been purged...')
+          }).catch(errorHandler)
+        }
+      })
     },
     decideRequest: function (wageRequest, decision) {
       // Decision - True = Accept, Decision - False = Deny
