@@ -11,5 +11,4 @@ module.exports = function (req, res, next) {
   } else {
     return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
   }
-
 }

@@ -28,7 +28,7 @@ export default {
       console.log($this.jwt)
       $this.user = jwt.decode(response.data.jwt)
 
-      $this.$router.push('/')
+      $this.$router.push('/account')
     }).catch(function (err) {
       console.log(err)
       $this.$router.push('/login')
