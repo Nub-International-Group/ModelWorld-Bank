@@ -16,7 +16,7 @@ let schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now }
-})
+}, { collection: 'accounts' })
 
 schema.statics.payAll = function (callback) {
   this.model('account').find({}).populate('wages').exec(function (err, accounts) {

@@ -7,7 +7,7 @@ let schema = new mongoose.Schema({
   description: String,
   value: Number,
   currency: String
-})
+}, { collection: 'wages' })
 
 let model = mongoose.model('wage', schema)
 
