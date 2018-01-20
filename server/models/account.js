@@ -167,7 +167,7 @@ schema.methods.payWages = function (callback) {
         transactions.push({
           to: '*economy*',
           from: $this._id,
-          description: 'Taxes Paid. Total rate: Yearly tax: ' + ((taxAmount / yearlyUnscaled[currency]) * 100).toFixed(2) + '%',
+          description: 'Taxes Paid. Total rate: ' + ((taxAmount / yearlyUnscaled[currency]) * 100).toFixed(2) + '%',
           amount: taxAmountScaled,
           currency: currency,
           authoriser: 'SYSTEM'

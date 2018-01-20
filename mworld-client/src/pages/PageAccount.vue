@@ -239,8 +239,8 @@
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
+import {accessLevels} from '@/globalValues'
 
-let accessLevels = {0: 'Remove User', 1: 'Read', 2: 'Read/Write', 3: 'Full Ownership'}
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt', 'currencies'],

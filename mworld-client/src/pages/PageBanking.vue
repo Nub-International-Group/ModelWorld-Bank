@@ -20,10 +20,10 @@
                       {{account.name}}
                     </div>
                     <div class="panel-body">
-                        Balance: {{account.balance}} <br>
-                        Access: {{account.users[user.name]}} <br>
-                        Description: {{account.description}} <br>
-                        ID: {{account._id}}
+                        <strong> Access: </strong>{{account.users[user.name]| accessLevel}} <br>
+                        <strong> Description: </strong>{{account.description}} <br>
+                        <strong> ID: </strong>{{account._id}} <br>
+                        <strong> Balances </strong>
                     </div>
                     <div class="panel-footer">
                       <router-link :to="'/account/' + account._id" type="button" class="btn btn-primary">Access Account</router-link>
@@ -48,6 +48,7 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
+import {accessLevels} from '@/globalValues'
 
 export default {
   name: 'PageBanking',
@@ -66,6 +67,14 @@ export default {
     }).then(function (response) {
       $this.accounts = response.data
     }).catch(errorHandler)
+  },
+  filters: {
+    currency: function (value) {
+      return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+    },
+    accessLevel: function (level) {
+      return accessLevels[level]
+    }
   }
 }
 </script>
