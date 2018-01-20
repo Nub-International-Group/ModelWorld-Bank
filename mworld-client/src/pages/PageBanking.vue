@@ -1,5 +1,5 @@
 <template>
-  <div id="PageLoginSuccess">
+  <div>
     <div class="page-header">
       <h1>Banking
         <small>Our primary service</small>
@@ -14,22 +14,7 @@
           <div class="panel-body">
             <div class="row">
               <div v-if="accounts.length">
-                <div v-for="account in accounts" :key="account._id" class="col-md-4">
-                  <div class="panel panel-primary">
-                    <div class="panel-heading">
-                      {{account.name}}
-                    </div>
-                    <div class="panel-body">
-                        <strong> Access: </strong>{{account.users[user.name]| accessLevel}} <br>
-                        <strong> Description: </strong>{{account.description}} <br>
-                        <strong> ID: </strong>{{account._id}} <br>
-                        <strong> Balances </strong>
-                    </div>
-                    <div class="panel-footer">
-                      <router-link :to="'/account/' + account._id" type="button" class="btn btn-primary">Access Account</router-link>
-                    </div>
-                  </div>
-                </div>
+                <AccountOverviewPortal v-for="account in accounts" :key="account._id" :account="account"/>
               </div>
               <h4 v-else>You don't have any accounts registered to this username. Should you want to register an account speak to a member of staff on our Discord!</h4>
             </div>
@@ -48,11 +33,12 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
-import {accessLevels} from '@/globalValues'
+import AccountOverviewPortal from '@/components/AccountOverviewPortal.vue'
 
 export default {
   name: 'PageBanking',
   store: ['user', 'jwt'],
+  components: {AccountOverviewPortal},
   data: function () {
     return {
       accounts: []
@@ -67,14 +53,6 @@ export default {
     }).then(function (response) {
       $this.accounts = response.data
     }).catch(errorHandler)
-  },
-  filters: {
-    currency: function (value) {
-      return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
-    },
-    accessLevel: function (level) {
-      return accessLevels[level]
-    }
   }
 }
 </script>
