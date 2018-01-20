@@ -11,7 +11,7 @@ let schema = new mongoose.Schema({
   authoriser: String,
   created: {type: Date, default: Date.now},
   invalidated: {type: Boolean, default: false}
-})
+}, { collection: 'transactions' })
 
 let model = mongoose.model('transaction', schema)
 
