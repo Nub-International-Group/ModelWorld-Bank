@@ -32,13 +32,12 @@ export default {
     }
   },
   mounted: function () {
-    let $this = this
     axios.request({
-      url: '/api/account/id/' + $this.account._id + '/transaction',
+      url: '/api/account/id/' + this.account._id + '/transaction',
       method: 'get',
-      headers: {jwt: $this.$store.jwt}
-    }).then(function (response) {
-      $this.balances = response.data.balance
+      headers: {jwt: this.$store.jwt}
+    }).then((response) => {
+      this.balances = response.data.balance
     }).catch(errorHandler)
   },
   filters: {
