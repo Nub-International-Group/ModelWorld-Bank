@@ -8,7 +8,7 @@
         <strong> Access: </strong>{{account.users[user.name]| accessLevel}} <br>
         <strong> Description: </strong>{{account.description}} <br>
         <strong> ID: </strong>{{account._id}} <br>
-        <strong> Balance: </strong>{{balances}}
+        <strong> Balance: </strong>£{{balances['GBP'] | currency}}
       </div>
       <div class="panel-footer">
         <router-link :to="'/account/' + account._id" type="button" class="btn btn-primary">Access Account</router-link>
@@ -34,15 +34,19 @@ export default {
   mounted: function () {
     let $this = this
     axios.request({
-      url: '/api/account',
+      url: '/api/account/id/' + $this.account._id + '/transaction',
       method: 'get',
-      headers: {jwt: this.$store.jwt}
+      headers: {jwt: $this.$store.jwt}
     }).then(function (response) {
-      $this.accounts = response.data
+      $this.balances = response.data.balance
     }).catch(errorHandler)
   },
   filters: {
     currency: function (value) {
+      if (value === undefined) {
+        value = 0
+      }
+
       return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
     },
     accessLevel: function (level) {
