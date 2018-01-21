@@ -21,7 +21,7 @@ export default {
     window.localStorage.setItem('jwt', null)
     window.localStorage.setItem('user', null)
 
-    this.user.name = ''
+    this.user.name = null
     this.user.admin = null
     this.jwt = null
 
