@@ -8,12 +8,10 @@ import PageLogin from '@/pages/PageLogin'
 import PageLoginSuccess from '@/pages/PageLoginSuccess'
 import PageBanking from '@/pages/PageBanking'
 import PageAccount from '@/pages/PageAccount'
+import PageLogout from '@/pages/PageLogout'
 
 import PageAdminWages from '@/pages/PageAdminWages'
 import PageAdminAccounts from '@/pages/PageAdminAccount'
-
-import bootstrap from 'bootstrap'
-window.bootstrap = bootstrap
 
 Vue.use(Router)
 
@@ -32,6 +30,12 @@ const router = new Router({
       path: '/login',
       name: 'Login',
       component: PageLogin
+    },
+    {
+      path: '/logout',
+      name: 'Logout',
+      component: PageLogout,
+      meta: { authRequire: true }
     },
     {
       path: '/login/success',
