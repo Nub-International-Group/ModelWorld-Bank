@@ -39,7 +39,7 @@
                   <a href="#">Preferences</a>
                 </li>
                 <li>
-                  <a href="#">Log Out</a>
+                  <router-link to="/logout">Log Out</router-link>
                 </li>
               </ul>
             </li>

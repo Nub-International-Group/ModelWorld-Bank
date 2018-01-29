@@ -9,6 +9,7 @@ import PageLoginSuccess from '@/pages/PageLoginSuccess'
 import PageBanking from '@/pages/PageBanking'
 import PageAccount from '@/pages/PageAccount'
 import PageLogout from '@/pages/PageLogout'
+import PageHelp from '@/pages/PageHelp'
 
 import PageAdminWages from '@/pages/PageAdminWages'
 import PageAdminAccounts from '@/pages/PageAdminAccount'
@@ -36,6 +37,11 @@ const router = new Router({
       name: 'Logout',
       component: PageLogout,
       meta: { authRequire: true }
+    },
+    {
+      path: '/help',
+      name: 'Help',
+      component: PageHelp
     },
     {
       path: '/login/success',

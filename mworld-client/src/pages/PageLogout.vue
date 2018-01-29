@@ -21,8 +21,8 @@ export default {
     window.localStorage.setItem('jwt', null)
     window.localStorage.setItem('user', null)
 
-    this.user.name = null
-    this.user.admin = null
+    this.user.name = ''
+    this.user.admin = false
     this.jwt = null
 
     this.$router.push('/')

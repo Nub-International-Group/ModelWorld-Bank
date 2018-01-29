@@ -1,13 +1,12 @@
 <template>
   <div id="PageLoginSuccess">
     <div class="page-header">
-      <h1>Login Success
-        <small>Reddit API Succesfully Contacted</small>
+      <h1>Login In Progress
+        <small>Our server is communicating with Reddit</small>
       </h1>
     </div>
     <br>
     <p> This page will redirect once your session has been fully established. Please hold.</p>
-    <p> Name: {{user.name}} </p>
   </div>
 </template>
 
@@ -22,7 +21,9 @@ export default {
     return {}
   },
   created: function () {
+    console.log('Connecting to API')
     axios.get('/api/auth/jwt').then((response) => {
+      console.log('Response Recieved from API')
       this.jwt = response.data.jwt
       this.user = jwt.decode(response.data.jwt)
 
