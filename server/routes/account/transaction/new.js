@@ -37,7 +37,7 @@ module.exports = function (req, res, next) {
           }
 
           if (data.balance[req.body.currency]) {
-            if (data.balance[req.body.currency] >= amount) {
+            if (data.balance[req.body.currency] >= amount || sendingAccount._id === '*economy*') {
               let transaction = new Transaction({
                 from: sendingAccount._id,
                 to: targetAccount._id,

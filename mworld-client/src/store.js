@@ -1,6 +1,6 @@
 export default {
   user: {
-    name: null,
+    name: '',
     admin: false
   },
   jwt: null,

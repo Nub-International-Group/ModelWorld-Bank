@@ -39,12 +39,15 @@
                   <a href="#">Preferences</a>
                 </li>
                 <li>
-                  <a href="#">Log Out</a>
+                  <router-link to="/logout">Log Out</router-link>
                 </li>
               </ul>
             </li>
             <li v-else>
               <router-link to="/login">Login</router-link>
+            </li>
+            <li>
+              <router-link to="/help">Help</router-link>
             </li>
             <li>
               <a href="https://discord.gg/MXkYHyB">Discord</a>

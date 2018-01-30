@@ -6,7 +6,7 @@
         <br> <br>
         With a new account management system we aim to be where the growth is, connecting customers to opportunities, enabling businesses to thrive and economies to prosper, and ultimately helping people to fulfil their hopes and realise their ambitions.</p>
       <p>
-        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+        <router-link to="/help" class="btn btn-primary btn-lg" role="button">Learn more</router-link>
       </p>
     </div>
 
