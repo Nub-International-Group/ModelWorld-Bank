@@ -416,6 +416,7 @@ export default {
           }
 
           transaction.created = Date.parse(transaction.created)
+          console.log(transaction)
 
           processedTransactions.push(transaction)
         })
