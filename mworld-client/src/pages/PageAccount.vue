@@ -49,7 +49,7 @@
           >
             <template slot="table-row" scope="props">
               <td>{{ props.row._id }}</td>
-              <td>{{ props.row.created }}</td>
+              <td>{{ props.row.created | dateString}}</td>
               <td>{{ props.row.sign}}</td>
               <td>{{ props.row.amount | currency }}</td>
               <td>{{ props.row.currency }}</td>
@@ -101,7 +101,7 @@
           <div class="panel-heading">
             Wages
           </div>
-          <vue-good-table 
+          <vue-good-table
           :columns="tables.wages"
           :rows="account.wages"
           :filterable="true"
@@ -115,7 +115,7 @@
               <td>{{ props.row.value | currency}}</td>
               <td>{{ props.row.currency}}</td>
               <td><button class="btn btn-danger" v-on:click="deleteWage(props.row)">Remove</button></td>
-            </template>         
+            </template>
           </vue-good-table>
           <table class="table table-striped table-bordered">
             <thead>
@@ -200,7 +200,7 @@
           <div class="modal-body">
             <h4>Currently Requested</h4>
             <p>Your requests will be validated as soon as possible. Please be patient.</p>
-            <vue-good-table 
+            <vue-good-table
             :columns="tables.wageRequests"
             :rows="wageRequests"
             :filterable="true"
@@ -211,7 +211,7 @@
             <hr />
             <h4>Request New</h4>
             <p>Once requested, a site operator will validate and accept your request to have this wage added.</p>
-            <vue-good-table 
+            <vue-good-table
             :columns="tables.wagesList"
             :rows="possibleWages"
             :filterable="true"
@@ -299,7 +299,8 @@ export default {
           },
           {
             label: 'Date',
-            field: 'created'
+            field: 'created',
+            type: 'decimal'
           },
           {
             label: 'Positive/Negative'
@@ -413,6 +414,8 @@ export default {
             transaction.other = transaction.from
             transaction.sign = '+'
           }
+
+          transaction.created = Date.parse(transaction.created)
 
           processedTransactions.push(transaction)
         })
@@ -568,6 +571,11 @@ export default {
     },
     accessLevel: function (level) {
       return accessLevels[level]
+    },
+    dateString: function (dateIn) {
+      let date = new Date(dateIn)
+      let string = date.toLocaleString('en-GB')
+      return string
     }
   }
 }
