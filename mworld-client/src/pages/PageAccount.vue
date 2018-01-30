@@ -53,7 +53,7 @@
               <td>{{ props.row.sign}}</td>
               <td>{{ props.row.amount | currency }}</td>
               <td>{{ props.row.currency }}</td>
-              <td><strong>{{ props.row.other.name }}</strong></td>
+              <td :title="props.row.other._id"><strong>{{ props.row.other.name }}</strong></td>
               <td>{{ props.row.description }}</td>
             </template>
           </vue-good-table>
