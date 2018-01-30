@@ -416,7 +416,10 @@ export default {
           }
 
           transaction.created = Date.parse(transaction.created)
-          console.log(transaction)
+
+          if (transaction.other == null) {
+            transaction.other = {_id: 'deleted', name: 'Deleted Account'}
+          }
 
           processedTransactions.push(transaction)
         })
