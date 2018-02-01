@@ -46,6 +46,7 @@
           :filterable="true"
           :globalSearch="true"
           :paginate="true"
+          :defaultSortBy="{field: 'created', type: 'desc'}"
           >
             <template slot="table-row" scope="props">
               <td>{{ props.row._id }}</td>
