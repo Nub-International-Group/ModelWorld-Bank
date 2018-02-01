@@ -19,7 +19,8 @@
     "vue": "^2.4.2",
     "vue-good-table": "^1.14.3",
     "vue-router": "^2.7.0",
-    "vue-stash": "^2.0.1-beta"
+    "vue-stash": "^2.0.1-beta",
+    "fuse.js": "^3.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -58,39 +58,7 @@
             </template>
           </vue-good-table>
           <div class="panel-footer">
-            <form>
-              <div class="row">
-                <div class="col-md-6">
-                  <label for="account-name-field">Account ID:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon">Account ID:</span>
-                    <input v-model="newTransaction.target" type="text" id="account-name-field" class="form-control" />
-                  </div>
-                  <span class="help-block">Copy and paste their Account ID. This must be identical!</span>
-                  <br>
-                  <label for="amount-field">Amount:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon">Amount:</span>
-                    <input v-model="newTransaction.amount" type="text" id="amount-field" class="form-control" />
-                  </div>
-                  <br>
-                  <label for="description-field">Description:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon">Description:</span>
-                    <input v-model="newTransaction.description" type="text" id="description-field" class="form-control" />
-                  </div>
-                  <br>
-                  <div class="input-group">
-                    <label for="sel1">Currency:</label>
-                    <select v-model="newTransaction.currency" class="form-control" id="sel1">
-                      <option v-for='currency in currencies'>{{currency}}</option>
-                    </select>
-                  </div>
-                  <br>
-                  <button type="button" v-on:click="addTransaction" class="btn btn-primary">Submit Transaction</button>
-                </div>
-              </div>
-            </form>
+            <transaction-dialogue v-on:updateTransactions="fetchTransactions"></transaction-dialogue>
           </div>
         </div>
       </div>
@@ -240,10 +208,12 @@ import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
 import {accessLevels} from '@/globalValues'
+import TransactionDialogue from '@/components/TransactionDialogue'
 
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt', 'currencies'],
+  components: {TransactionDialogue},
   data: function () {
     return {
       account: {},
@@ -255,7 +225,6 @@ export default {
       transactions: [],
       balances: {},
       totalWages: {},
-      newTransaction: {},
       tables: {
         users: [
           {
@@ -480,27 +449,6 @@ export default {
       }).then(function (response) {
         $this.processAccountData(response.data)
       }).catch(errorHandler)
-    },
-    addTransaction: function () {
-      let $this = this
-      swal({
-        title: 'ARE YOU SURE?',
-        icon: 'warning',
-        text: 'Clicking \'ok\' will start the transaction!',
-        dangerMode: true,
-        buttons: true
-      }).then((choice) => {
-        if (choice === true) {
-          axios.request({
-            url: '/api/account/id/' + $this.$route.params.id + '/transaction',
-            method: 'post',
-            headers: {jwt: $this.$store.jwt},
-            data: $this.newTransaction
-          }).then(function (response) {
-            $this.fetchTransactions()
-          }).catch(errorHandler)
-        }
-      })
     },
     deleteWage: function (wage) {
       let $this = this
