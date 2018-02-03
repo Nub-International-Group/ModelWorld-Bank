@@ -50,6 +50,9 @@
               <router-link to="/help">Help</router-link>
             </li>
             <li>
+              <router-link to="/staff">Staff</router-link>
+            </li>
+            <li>
               <a href="https://discord.gg/MXkYHyB">Discord</a>
             </li>
             <li v-if="user.admin" class="dropdown">

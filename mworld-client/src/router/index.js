@@ -10,6 +10,7 @@ import PageBanking from '@/pages/PageBanking'
 import PageAccount from '@/pages/PageAccount'
 import PageLogout from '@/pages/PageLogout'
 import PageHelp from '@/pages/PageHelp'
+import PageStaff from '@/pages/PageStaff'
 
 import PageAdminWages from '@/pages/PageAdminWages'
 import PageAdminAccounts from '@/pages/PageAdminAccount'
@@ -42,6 +43,11 @@ const router = new Router({
       path: '/help',
       name: 'Help',
       component: PageHelp
+    },
+    {
+      path: '/staff',
+      name: 'Staff',
+      component: PageStaff
     },
     {
       path: '/login/success',
