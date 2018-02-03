@@ -144,6 +144,7 @@
           </div>
         </div>
       </div>
+      <account-description-dialogue v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
     </div>
     <div v-if="user.admin" class="row">
       <div class="col-md-12">
@@ -210,11 +211,12 @@ import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
 import {accessLevels} from '@/globalValues'
 import TransactionDialogue from '@/components/TransactionDialogue'
+import AccountDescriptionDialogue from '@/components/AccountDescriptionDialogue'
 
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt', 'currencies'],
-  components: {TransactionDialogue},
+  components: {TransactionDialogue, AccountDescriptionDialogue},
   data: function () {
     return {
       account: {},
@@ -401,6 +403,8 @@ export default {
     processAccountData: function (responseData) {
       let userData = []
       let $this = this
+
+      this.totalWages = {}
 
       for (let key in responseData.users) {
         if (responseData.users.hasOwnProperty(key)) {
