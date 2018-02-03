@@ -22,12 +22,14 @@
             <li>
               <router-link to="/account">Banking</router-link>
             </li>
+            <!--
             <li>
               <router-link to="/bet">Betting</router-link>
             </li>
             <li>
               <router-link to="/property">Broperty Market</router-link>
             </li>
+            -->
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li v-if="user.name" class="dropdown">
