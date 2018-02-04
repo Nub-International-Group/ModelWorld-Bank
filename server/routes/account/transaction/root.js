@@ -1,5 +1,4 @@
 const Account = require('../../../models/account.js')
-const Transaction = require('../../../models/transaction.js')
 
 module.exports = function (req, res, next) {
   Account.findOne({'_id': req.params.id}).exec(function (err, account) {

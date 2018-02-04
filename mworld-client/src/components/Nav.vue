@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">NiB mWorld Bank</a>
+          <a class="navbar-brand" href="#"><img height="100%"  src="../assets/logo.png"></a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -22,12 +22,14 @@
             <li>
               <router-link to="/account">Banking</router-link>
             </li>
+            <!--
             <li>
               <router-link to="/bet">Betting</router-link>
             </li>
             <li>
               <router-link to="/property">Broperty Market</router-link>
             </li>
+            -->
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li v-if="user.name" class="dropdown">
@@ -48,6 +50,9 @@
             </li>
             <li>
               <router-link to="/help">Help</router-link>
+            </li>
+            <li>
+              <router-link to="/staff">Staff</router-link>
             </li>
             <li>
               <a href="https://discord.gg/MXkYHyB">Discord</a>

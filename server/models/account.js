@@ -45,7 +45,7 @@ schema.methods.calculateBalance = function (callback) {
   // TODO: Consider an approach where the to and froms are found simultanously and totted up, then finally added together. Possible enhancement to perf. - Async JS?
   // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
   let $this = this
-  Transaction.find({ 'to': this._id }).sort('-created').exec(function (err, tos) {
+  Transaction.find({ 'to': this._id }).sort('-created').populate('from').exec(function (err, tos) {
     if (err) {
       return callback(err)
     }
@@ -60,7 +60,7 @@ schema.methods.calculateBalance = function (callback) {
       }
     })
 
-    Transaction.find({ 'from': $this._id }).sort('-created').exec(function (err, froms) {
+    Transaction.find({ 'from': $this._id }).sort('-created').populate('to').exec(function (err, froms) {
       if (err) {
         return callback(err)
       }
@@ -94,6 +94,16 @@ schema.methods.payWages = function (callback) {
   this.populate(function (err, account) { // Populate wage info
     if (err) {
       return callback(err)
+    }
+
+    if ($this.wages.length == 0) {
+      $this.wages.append({
+        _id: '*unemployed*',
+        name: 'Unemployment Benefits',
+        description: 'Unemployment Benefits',
+        value: 10000,
+        currency: 'GBP'
+      })
     }
 
     let yearlyUnscaled = {}

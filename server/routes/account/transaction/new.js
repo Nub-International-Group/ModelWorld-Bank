@@ -31,6 +31,10 @@ module.exports = function (req, res, next) {
           return res.status(500).json({err: {code: 500, desc: 'Invalid amount'}})
         }
 
+        if (amount <= 0) {
+          return res.status(500).json({err: {code: 500, desc: 'Don\'t be silly'}})
+        }
+
         sendingAccount.calculateBalance(function (err, data) {
           if (err) {
             return next(err)

@@ -46,51 +46,20 @@
           :filterable="true"
           :globalSearch="true"
           :paginate="true"
+          :defaultSortBy="{field: 'created', type: 'desc'}"
           >
             <template slot="table-row" scope="props">
               <td>{{ props.row._id }}</td>
-              <td>{{ props.row.created }}</td>
+              <td>{{ props.row.created | dateString}}</td>
               <td>{{ props.row.sign}}</td>
               <td>{{ props.row.amount | currency }}</td>
               <td>{{ props.row.currency }}</td>
-              <td><strong>{{ props.row.other }}</strong>{{ props.row.other.name }}</td>
+              <td :title="props.row.other._id"><strong>{{ props.row.other.name }}</strong></td>
               <td>{{ props.row.description }}</td>
             </template>
           </vue-good-table>
           <div class="panel-footer">
-            <form>
-              <div class="row">
-                <div class="col-md-6">
-                  <label for="account-name-field">Account ID:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon">Account ID:</span>
-                    <input v-model="newTransaction.target" type="text" id="account-name-field" class="form-control" />
-                  </div>
-                  <span class="help-block">Copy and paste their Account ID. This must be identical!</span>
-                  <br>
-                  <label for="amount-field">Amount:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon">Amount:</span>
-                    <input v-model="newTransaction.amount" type="text" id="amount-field" class="form-control" />
-                  </div>
-                  <br>
-                  <label for="description-field">Description:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon">Description:</span>
-                    <input v-model="newTransaction.description" type="text" id="description-field" class="form-control" />
-                  </div>
-                  <br>
-                  <div class="input-group">
-                    <label for="sel1">Currency:</label>
-                    <select v-model="newTransaction.currency" class="form-control" id="sel1">
-                      <option v-for='currency in currencies'>{{currency}}</option>
-                    </select>
-                  </div>
-                  <br>
-                  <button type="button" v-on:click="addTransaction" class="btn btn-primary">Submit Transaction</button>
-                </div>
-              </div>
-            </form>
+            <transaction-dialogue v-on:updateTransactions="fetchTransactions"></transaction-dialogue>
           </div>
         </div>
       </div>
@@ -101,7 +70,7 @@
           <div class="panel-heading">
             Wages
           </div>
-          <vue-good-table 
+          <vue-good-table
           :columns="tables.wages"
           :rows="account.wages"
           :filterable="true"
@@ -115,7 +84,7 @@
               <td>{{ props.row.value | currency}}</td>
               <td>{{ props.row.currency}}</td>
               <td><button class="btn btn-danger" v-on:click="deleteWage(props.row)">Remove</button></td>
-            </template>         
+            </template>
           </vue-good-table>
           <table class="table table-striped table-bordered">
             <thead>
@@ -175,6 +144,7 @@
           </div>
         </div>
       </div>
+      <account-description-dialogue v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
     </div>
     <div v-if="user.admin" class="row">
       <div class="col-md-12">
@@ -200,7 +170,7 @@
           <div class="modal-body">
             <h4>Currently Requested</h4>
             <p>Your requests will be validated as soon as possible. Please be patient.</p>
-            <vue-good-table 
+            <vue-good-table
             :columns="tables.wageRequests"
             :rows="wageRequests"
             :filterable="true"
@@ -211,7 +181,7 @@
             <hr />
             <h4>Request New</h4>
             <p>Once requested, a site operator will validate and accept your request to have this wage added.</p>
-            <vue-good-table 
+            <vue-good-table
             :columns="tables.wagesList"
             :rows="possibleWages"
             :filterable="true"
@@ -240,10 +210,13 @@ import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
 import {accessLevels} from '@/globalValues'
+import TransactionDialogue from '@/components/TransactionDialogue'
+import AccountDescriptionDialogue from '@/components/AccountDescriptionDialogue'
 
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt', 'currencies'],
+  components: {TransactionDialogue, AccountDescriptionDialogue},
   data: function () {
     return {
       account: {},
@@ -255,7 +228,6 @@ export default {
       transactions: [],
       balances: {},
       totalWages: {},
-      newTransaction: {},
       tables: {
         users: [
           {
@@ -299,7 +271,8 @@ export default {
           },
           {
             label: 'Date',
-            field: 'created'
+            field: 'created',
+            type: 'decimal'
           },
           {
             label: 'Positive/Negative'
@@ -414,6 +387,12 @@ export default {
             transaction.sign = '+'
           }
 
+          transaction.created = Date.parse(transaction.created)
+
+          if (transaction.other == null) {
+            transaction.other = {_id: 'deleted', name: 'Deleted Account'}
+          }
+
           processedTransactions.push(transaction)
         })
 
@@ -424,6 +403,8 @@ export default {
     processAccountData: function (responseData) {
       let userData = []
       let $this = this
+
+      this.totalWages = {}
 
       for (let key in responseData.users) {
         if (responseData.users.hasOwnProperty(key)) {
@@ -473,27 +454,6 @@ export default {
       }).then(function (response) {
         $this.processAccountData(response.data)
       }).catch(errorHandler)
-    },
-    addTransaction: function () {
-      let $this = this
-      swal({
-        title: 'ARE YOU SURE?',
-        icon: 'warning',
-        text: 'Clicking \'ok\' will start the transaction!',
-        dangerMode: true,
-        buttons: true
-      }).then((choice) => {
-        if (choice === true) {
-          axios.request({
-            url: '/api/account/id/' + $this.$route.params.id + '/transaction',
-            method: 'post',
-            headers: {jwt: $this.$store.jwt},
-            data: $this.newTransaction
-          }).then(function (response) {
-            $this.fetchTransactions()
-          }).catch(errorHandler)
-        }
-      })
     },
     deleteWage: function (wage) {
       let $this = this
@@ -568,6 +528,11 @@ export default {
     },
     accessLevel: function (level) {
       return accessLevels[level]
+    },
+    dateString: function (dateIn) {
+      let date = new Date(dateIn)
+      let string = date.toLocaleString('en-GB')
+      return string
     }
   }
 }

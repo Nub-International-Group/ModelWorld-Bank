@@ -99,11 +99,14 @@ app.post('/api/account', ensureJWT, require('./routes/account/new.js'))
 app.get('/api/account/id/:id', ensureJWT, require('./routes/account/individual.js'))
 app.delete('/api/account/id/:id', ensureJWT, require('./routes/account/delete.js'))
 app.post('/api/account/id/:id/user', ensureJWT, require('./routes/account/user/new.js'))
+app.put('/api/account/id/:id', ensureJWT, require('./routes/account/update.js'))
 
 app.get('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/root.js'))
 app.post('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/new.js'))
 app.delete('/api/account/id/:id/wage/:wageID', ensureJWT, require('./routes/account/wage/delete.js'))
 app.get('/api/account/id/:id/pay', ensureJWT, require('./routes/account/pay.js'))
+
+app.get('/api/account/typeahead', require('./routes/account/typeahead.js'))
 
 app.get('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/root.js'))
 app.post('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/new.js'))
