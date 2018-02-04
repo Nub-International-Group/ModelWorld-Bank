@@ -97,11 +97,11 @@ schema.methods.payWages = function (callback) {
     }
 
     if ($this.wages.length == 0) {
-      $this.wages.append({
+      $this.wages.push({
         _id: '*unemployed*',
         name: 'Unemployment Benefits',
         description: 'Unemployment Benefits',
-        value: 10000,
+        value: 12000,
         currency: 'GBP'
       })
     }

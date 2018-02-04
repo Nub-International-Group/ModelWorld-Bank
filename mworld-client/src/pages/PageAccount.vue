@@ -51,9 +51,7 @@
             <template slot="table-row" scope="props">
               <td>{{ props.row._id }}</td>
               <td>{{ props.row.created | dateString}}</td>
-              <td>{{ props.row.sign}}</td>
-              <td>{{ props.row.amount | currency }}</td>
-              <td>{{ props.row.currency }}</td>
+              <td>{{ props.row.amount | currency }} {{ props.row.currency }}</td>
               <td :title="props.row.other._id"><strong>{{ props.row.other.name }}</strong></td>
               <td>{{ props.row.description }}</td>
             </template>
@@ -275,15 +273,9 @@ export default {
             type: 'decimal'
           },
           {
-            label: 'Positive/Negative'
-          },
-          {
             label: 'Amount',
             field: 'amount',
             type: 'decimal'
-          },
-          {
-            label: 'Currency'
           },
           {
             label: 'Other Account'
@@ -392,6 +384,14 @@ export default {
           if (transaction.other == null) {
             transaction.other = {_id: 'deleted', name: 'Deleted Account'}
           }
+
+          let amount = Math.abs(transaction.amount)
+
+          if (transaction.sign === '-') {
+            amount = amount * (-1)
+          }
+
+          transaction.amount = amount
 
           processedTransactions.push(transaction)
         })
