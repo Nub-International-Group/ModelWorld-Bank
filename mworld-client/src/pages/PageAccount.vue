@@ -49,11 +49,10 @@
           :defaultSortBy="{field: 'created', type: 'desc'}"
           >
             <template slot="table-row" scope="props">
-              <td>{{ props.row._id }}</td>
               <td>{{ props.row.created | dateString}}</td>
               <td>{{ props.row.amount | currency }} {{ props.row.currency }}</td>
               <td :title="props.row.other._id"><strong>{{ props.row.other.name }}</strong></td>
-              <td>{{ props.row.description }}</td>
+              <td :title="props.row._id">{{ props.row.description }}</td>
             </template>
           </vue-good-table>
           <div class="panel-footer">
@@ -264,9 +263,6 @@ export default {
           }
         ],
         transactions: [
-          {
-            label: 'ID'
-          },
           {
             label: 'Date',
             field: 'created',
