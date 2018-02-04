@@ -96,6 +96,16 @@ schema.methods.payWages = function (callback) {
       return callback(err)
     }
 
+    if ($this.wages.length == 0) {
+      $this.wages.append({
+        _id: '*unemployed*',
+        name: 'Unemployment Benefits',
+        description: 'Unemployment Benefits',
+        value: 10000,
+        currency: 'GBP'
+      })
+    }
+
     let yearlyUnscaled = {}
 
     $this.wages.forEach(function (wage) {
