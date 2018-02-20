@@ -68,6 +68,9 @@
                 <li>
                   <router-link to="/admin/accounts">Account Management</router-link>
                 </li>
+                <li>
+                  <router-link to="/admin/transactions">Transaction Management</router-link>
+                </li>
                 <li role="separator" class="divider"></li>
                 <li>
                   <router-link to="/admin/economy">Economy Settings</router-link>
