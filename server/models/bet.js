@@ -23,6 +23,6 @@ let schema = new mongoose.Schema({
   options: [ betOption ]
 }, { collection: 'bets' })
 
-let model = mongoose.model('wage', schema)
+let model = mongoose.model('bet', schema)
 
 module.exports = model
