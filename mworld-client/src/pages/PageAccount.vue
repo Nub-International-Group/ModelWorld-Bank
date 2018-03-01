@@ -155,6 +155,7 @@
         </div>
       </div>
       <account-description-dialogue v-if="this.$route.params.sub == 'settings'" v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
+      <wager-list v-if="this.$route.params.sub == 'bets'"></wager-list>
     </div>
     <div v-if="user.admin && this.$route.params.sub == 'settings'" class="row">
       <div class="col-md-12">
@@ -220,13 +221,14 @@ import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
 import {accessLevels} from '@/globalValues'
-import TransactionDialogue from '@/components/TransactionDialogue'
-import AccountDescriptionDialogue from '@/components/AccountDescriptionDialogue'
+import TransactionDialogue from '@/pages/account/TransactionDialogue'
+import AccountDescriptionDialogue from '@/pages/account/AccountDescriptionDialogue'
+import WagerList from '@/pages/account/WagerList'
 
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt', 'currencies'],
-  components: {TransactionDialogue, AccountDescriptionDialogue},
+  components: {TransactionDialogue, AccountDescriptionDialogue, WagerList},
   data: function () {
     return {
       account: {},

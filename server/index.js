@@ -129,7 +129,7 @@ app.post('/api/bet', ensureJWT, require('./routes/bet/new.js'))
 app.put('/api/bet/id/:id', ensureJWT, require('./routes/bet/update.js'))
 
 app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.js'))
-app.get('/api/wager/bet/:id', ensureJWT, require('./routes/bet/bybet.js'))
+app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
 app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
 **/
 
