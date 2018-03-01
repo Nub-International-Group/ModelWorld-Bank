@@ -36,6 +36,19 @@
         </div>
       </div>
       <div class="col-md-12">
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <ul class="nav navbar-nav">
+              <li><router-link :to="'/account/' + this.$route.params.id + '/transactions'">Transactions</router-link></li>
+              <li><router-link :to="'/account/' + this.$route.params.id + '/wages'">Wages</router-link></li>
+              <li><router-link :to="'/account/' + this.$route.params.id + '/bets'">Bets</router-link></li>
+              <li><router-link :to="'/account/' + this.$route.params.id + '/property'">Property</router-link></li>
+              <li><router-link :to="'/account/' + this.$route.params.id + '/settings'">Settings</router-link></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="col-md-12" v-if="(this.$route.params.sub == undefined) || (this.$route.params.sub == 'transactions')">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Transactions
@@ -62,7 +75,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-12" v-if="this.$route.params.sub == 'wages'">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Wages
@@ -102,7 +115,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" v-if="this.$route.params.sub == 'settings'">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Users
@@ -141,9 +154,9 @@
           </div>
         </div>
       </div>
-      <account-description-dialogue v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
+      <account-description-dialogue v-if="this.$route.params.sub == 'settings'" v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
     </div>
-    <div v-if="user.admin" class="row">
+    <div v-if="user.admin && this.$route.params.sub == 'settings'" class="row">
       <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">

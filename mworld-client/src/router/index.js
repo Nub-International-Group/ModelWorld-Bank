@@ -62,6 +62,12 @@ const router = new Router({
       meta: { authRequire: true }
     },
     {
+      path: '/account/:id/:sub',
+      name: 'Account',
+      component: PageAccount,
+      meta: { authRequire: true }
+    },
+    {
       path: '/account/:id',
       name: 'Account',
       component: PageAccount,
