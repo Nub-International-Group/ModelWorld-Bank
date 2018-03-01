@@ -88,7 +88,7 @@
       }
     },
     methods: {
-      fetchTransactions: function ()
+      fetchTransactions: function () {
         axios.request({
           url: '/api/transaction',
           method: 'get',
