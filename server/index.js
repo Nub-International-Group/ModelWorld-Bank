@@ -123,15 +123,14 @@ app.delete('/api/wage/id/:id', ensureJWT, require('./routes/wage/delete.js'))
 app.post('/api/wage', ensureJWT, require('./routes/wage/new.js'))
 app.post('/api/wage/purge', ensureJWT, require('./routes/wage/purge.js')) // Handles post GE wipe of wages
 
-/**
 app.get('/api/bet', ensureJWT, require('./routes/bet/root.js'))
 app.post('/api/bet', ensureJWT, require('./routes/bet/new.js'))
-app.put('/api/bet/id/:id', ensureJWT, require('./routes/bet/update.js'))
+// app.put('/api/bet/id/:id', ensureJWT, require('./routes/bet/update.js'))
 
 app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.js'))
 app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
 app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
-**/
+
 
 let admins = [
   'strideynet',

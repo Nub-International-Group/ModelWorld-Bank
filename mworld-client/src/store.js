@@ -4,5 +4,6 @@ export default {
     admin: false
   },
   jwt: null,
-  currencies: ['GBP', 'USD']
+  currencies: ['GBP', 'USD'],
+  betStatus: ['Closed', 'Open', 'Paid Out']
 }

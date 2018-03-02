@@ -15,6 +15,7 @@ import PageStaff from '@/pages/PageStaff'
 import PageAdminWages from '@/pages/PageAdminWages'
 import PageAdminAccounts from '@/pages/PageAdminAccount'
 import PageAdminTransactions from '@/pages/PageAdminTransactions'
+import PageAdminBets from '@/pages/PageAdminBets'
 
 Vue.use(Router)
 
@@ -89,6 +90,12 @@ const router = new Router({
       path: '/admin/transactions',
       name: 'AdminTransactions',
       component: PageAdminTransactions,
+      meta: { adminRequire: true }
+    },
+    {
+      path: '/admin/bets',
+      name: 'AdminBets',
+      component: PageAdminBets,
       meta: { adminRequire: true }
     }
   ]
