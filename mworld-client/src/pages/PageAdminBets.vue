@@ -29,9 +29,41 @@
                   <option v-for='status in betStatus'>{{status}}</option>
                 </select>
               </div>
+              <br/>
+              <strong>Bet Options:</strong>
+              <div class="row">
+                <div class="col-md-4" v-for="option in newBet.options">
+                  <div class="panel panel-primary">
+                    <div class="panel-heading">
+                      {{option.name}}
+                    </div>
+                    <div class="panel-body">
+                      <div class="input-group">
+                        <span class="input-group-addon">Name:</span>
+                        <input v-model="option.name" type="text" class="form-control">
+                      </div>
+                      <br/>
+                      <div class="input-group">
+                        <span class="input-group-addon">Description:</span>
+                        <textarea v-model="option.description" type="text" class="form-control" style="height:100px; resize: none;"/>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <span class="input-group-addon">Odds:</span>
+                        <input v-model="option.currentOdds" type="text" class="form-control">
+                      </div>
+                      <br/>
+                    </div>
+                    <div class="panel-footer">
+                      <button v-on:click="removeOption(option)" type="button" class="btn btn-danger">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="panel-footer">
               <button v-on:click="submitNew" type="button" class="btn btn-primary">Submit Form</button>
+              <button v-on:click="addOption" type="button" class="btn btn-success">Add Option</button>
             </div>
           </form>
         </div>
@@ -78,7 +110,8 @@
         newBet: {
           name: 'XYZ BET',
           description: 'Bet decided upon XYZ based on X criterion by Z',
-          status: 'Open'
+          status: 'Open',
+          options: []
         },
         allAccounts: {
           columns: [
@@ -143,6 +176,19 @@
           console.log(response.data)
         }).catch(errorHandler)
       },
+      addOption: function () {
+        this.newBet.options.push({
+          name: 'Example Option',
+          description: 'Johnson Johnson wins the election.',
+          currentOdds: 3.76
+        })
+
+        console.log(this.newBet)
+      },
+      removeOption: function (option) {
+        let index = this.newBet.options.indexOf(option)
+        this.newBet.options.splice(index, 1)
+      },
       fetchAccounts: function () {
         let $this = this
         axios.request({
@@ -156,6 +202,7 @@
     },
     mounted: function () {
       this.fetchAccounts()
+      this.addOption()
     }
   }
 </script>
