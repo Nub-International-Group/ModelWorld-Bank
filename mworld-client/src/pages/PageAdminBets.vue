@@ -76,8 +76,8 @@
             Bet Management
           </div>
           <vue-good-table
-            :columns="allAccounts.columns"
-            :rows="allAccounts.rows"
+            :columns="allBets.columns"
+            :rows="allBets.rows"
             :filterable="true"
             :globalSearch="true"
             :paginate="true"
@@ -113,7 +113,7 @@
           status: 'Open',
           options: []
         },
-        allAccounts: {
+        allBets: {
           columns: [
             {
               label: 'ID',
@@ -145,35 +145,18 @@
     },
     methods: {
       submitNew: function (event) {
-        let $this = this
         axios.request({
-          url: '/api/account',
+          url: '/api/bet',
           method: 'post',
           headers: {jwt: this.$store.jwt},
-          data: {newDocument: $this.newAccount}
-        }).then(function (response) {
-          $this.allAccounts.rows.push(response.data) // Add new account to table onscreen
+          data: this.newBet
+        }).then((response) => {
+          this.allBets.rows.push(response.data) // Add new account to table onscreen
 
           swal({
             title: 'Creation Success!',
-            icon: 'success',
-            text: 'Account succesfully created!',
-            buttons: {
-              stay: {
-                text: 'Stay Here',
-                value: false
-              },
-              change: {
-                text: 'Visit Account',
-                value: true
-              }
-            }
-          }).then((choice) => {
-            if (choice) {
-              $this.$router.push('/account/' + response.data['_id']) // Redirect to account page
-            }
+            icon: 'success'
           })
-          console.log(response.data)
         }).catch(errorHandler)
       },
       addOption: function () {
@@ -182,8 +165,6 @@
           description: 'Johnson Johnson wins the election.',
           currentOdds: 3.76
         })
-
-        console.log(this.newBet)
       },
       removeOption: function (option) {
         let index = this.newBet.options.indexOf(option)
@@ -201,7 +182,7 @@
       }
     },
     mounted: function () {
-      this.fetchAccounts()
+      // this.fetchAccounts()
       this.addOption()
     }
   }
