@@ -22,10 +22,10 @@
             <li>
               <router-link to="/account">Banking</router-link>
             </li>
-            <!--
             <li>
-              <router-link to="/bet">Betting</router-link>
+              <router-link to="/betting">Betting</router-link>
             </li>
+            <!--
             <li>
               <router-link to="/property">Broperty Market</router-link>
             </li>

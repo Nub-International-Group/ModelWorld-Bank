@@ -42,7 +42,7 @@
               <li><router-link :to="'/account/' + this.$route.params.id + '/transactions'">Transactions</router-link></li>
               <li><router-link :to="'/account/' + this.$route.params.id + '/wages'">Wages</router-link></li>
               <li><router-link :to="'/account/' + this.$route.params.id + '/bets'">Bets</router-link></li>
-              <li><router-link :to="'/account/' + this.$route.params.id + '/property'">Property</router-link></li>
+              <!--<li><router-link :to="'/account/' + this.$route.params.id + '/property'">Property</router-link></li>-->
               <li><router-link :to="'/account/' + this.$route.params.id + '/settings'">Settings</router-link></li>
             </ul>
           </div>

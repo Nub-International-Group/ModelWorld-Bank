@@ -1,8 +1,10 @@
+const Wager = require('../../models/wager.js')
 const Account = require('../../models/account.js')
+const Bet = require('../../models/bet.js')
 
 module.exports = function (req, res, next) {
-  if (req.decoded.admin === true) {
-    let newAccount = new Account({
+  if (true) {
+    let newAccount = new Wager({
       name: req.body.newDocument.name,
       description: req.body.newDocument.description,
       public: (req.body.newDocument.public === 'true'), // Simple logical check to convert. We can roughly trust admin data.

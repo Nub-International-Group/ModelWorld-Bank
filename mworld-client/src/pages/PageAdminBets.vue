@@ -86,9 +86,9 @@
               <td><strong>{{ props.row._id }}</strong></td>
               <td>{{ props.row.name }}</td>
               <td>{{ props.row.description }}</td>
-              <td>{{ props.row.public}}</td>
+              <td>{{ props.row.status | statusConversion}}</td>
               <td>{{ props.row.created}}</td>
-              <td><router-link :to="'/account/' + props.row._id" type="button" class="btn btn-primary">Access Account</router-link></td>
+              <td><router-link :to="'/account/' + props.row._id" type="button" class="btn btn-primary">Edit Bet</router-link></td>
             </template>
           </vue-good-table>
         </div>
@@ -101,12 +101,14 @@
   import axios from 'axios'
   import errorHandler from '@/errorHandler'
   import swal from 'sweetalert'
+  import {betStatus} from '@/globalValues'
 
   export default {
     name: 'PageAdminBets',
-    store: ['user', 'jwt', 'betStatus'],
+    store: ['user', 'jwt'],
     data: function () {
       return {
+        betStatus,
         newBet: {
           name: 'XYZ BET',
           description: 'Bet decided upon XYZ based on X criterion by Z',
@@ -128,8 +130,8 @@
               field: 'description'
             },
             {
-              label: 'Public?',
-              field: 'public'
+              label: 'Status',
+              field: 'status'
             },
             {
               label: 'Created Date',
@@ -170,20 +172,25 @@
         let index = this.newBet.options.indexOf(option)
         this.newBet.options.splice(index, 1)
       },
-      fetchAccounts: function () {
+      fetchBets: function () {
         let $this = this
         axios.request({
-          url: '/api/account/admin',
+          url: '/api/bet',
           method: 'get',
           headers: {jwt: this.$store.jwt}
         }).then(function (response) {
-          $this.allAccounts.rows = response.data
+          $this.allBets.rows = response.data
         }).catch(errorHandler)
       }
     },
     mounted: function () {
-      // this.fetchAccounts()
+      this.fetchBets()
       this.addOption()
+    },
+    filters: {
+      statusConversion: function (number) {
+        return betStatus[number]
+      }
     }
   }
 </script>

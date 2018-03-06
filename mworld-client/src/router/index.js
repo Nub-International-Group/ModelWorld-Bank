@@ -12,6 +12,8 @@ import PageLogout from '@/pages/PageLogout'
 import PageHelp from '@/pages/PageHelp'
 import PageStaff from '@/pages/PageStaff'
 
+import PageBetting from '@/pages/PageBetting'
+
 import PageAdminWages from '@/pages/PageAdminWages'
 import PageAdminAccounts from '@/pages/PageAdminAccount'
 import PageAdminTransactions from '@/pages/PageAdminTransactions'
@@ -60,6 +62,12 @@ const router = new Router({
       path: '/account',
       name: 'Banking',
       component: PageBanking,
+      meta: { authRequire: true }
+    },
+    {
+      path: '/betting',
+      name: 'Betting',
+      component: PageBetting,
       meta: { authRequire: true }
     },
     {
