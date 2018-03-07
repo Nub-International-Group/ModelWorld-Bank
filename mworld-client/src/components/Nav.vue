@@ -22,10 +22,10 @@
             <li>
               <router-link to="/account">Banking</router-link>
             </li>
-            <!--
             <li>
-              <router-link to="/bet">Betting</router-link>
+              <router-link to="/betting">Betting</router-link>
             </li>
+            <!--
             <li>
               <router-link to="/property">Broperty Market</router-link>
             </li>
@@ -67,6 +67,12 @@
                 </li>
                 <li>
                   <router-link to="/admin/accounts">Account Management</router-link>
+                </li>
+                <li>
+                  <router-link to="/admin/transactions">Transaction Management</router-link>
+                </li>
+                <li>
+                  <router-link to="/admin/bets">Bet Management</router-link>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>

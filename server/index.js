@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo')(session)
 const RedditStrategy = require('passport-reddit').Strategy
 
 mongoose.connect(config.mongoURL)
+mongoose.Promise = Promise
 
 mongoose.connection.on('error', function (err) {
   console.log('DB Connection Error')
@@ -110,6 +111,8 @@ app.get('/api/account/typeahead', require('./routes/account/typeahead.js'))
 
 app.get('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/root.js'))
 app.post('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/new.js'))
+app.get('/api/transaction', ensureJWT, require('./routes/transaction/root.js'))
+app.delete('/api/transaction/id/:id', ensureJWT, require('./routes/transaction/delete.js'))
 
 app.get('/api/request', ensureJWT, require('./routes/request/root.js'))
 app.post('/api/request/id/:id', ensureJWT, require('./routes/request/update.js'))
@@ -120,6 +123,15 @@ app.put('/api/wage/id/:id', ensureJWT, require('./routes/wage/update.js'))
 app.delete('/api/wage/id/:id', ensureJWT, require('./routes/wage/delete.js'))
 app.post('/api/wage', ensureJWT, require('./routes/wage/new.js'))
 app.post('/api/wage/purge', ensureJWT, require('./routes/wage/purge.js')) // Handles post GE wipe of wages
+
+app.get('/api/bet', ensureJWT, require('./routes/bet/root.js'))
+app.post('/api/bet', ensureJWT, require('./routes/bet/new.js'))
+// app.put('/api/bet/id/:id', ensureJWT, require('./routes/bet/update.js'))
+
+app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.js'))
+app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
+app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
+
 
 let admins = [
   'strideynet',

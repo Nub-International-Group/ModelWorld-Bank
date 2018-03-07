@@ -36,6 +36,19 @@
         </div>
       </div>
       <div class="col-md-12">
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <ul class="nav navbar-nav">
+              <li><router-link :to="'/account/' + this.$route.params.id + '/transactions'">Transactions</router-link></li>
+              <li><router-link :to="'/account/' + this.$route.params.id + '/wages'">Wages</router-link></li>
+              <li><router-link :to="'/account/' + this.$route.params.id + '/bets'">Bets</router-link></li>
+              <!--<li><router-link :to="'/account/' + this.$route.params.id + '/property'">Property</router-link></li>-->
+              <li><router-link :to="'/account/' + this.$route.params.id + '/settings'">Settings</router-link></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="col-md-12" v-if="(this.$route.params.sub == undefined) || (this.$route.params.sub == 'transactions')">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Transactions
@@ -49,13 +62,10 @@
           :defaultSortBy="{field: 'created', type: 'desc'}"
           >
             <template slot="table-row" scope="props">
-              <td>{{ props.row._id }}</td>
               <td>{{ props.row.created | dateString}}</td>
-              <td>{{ props.row.sign}}</td>
-              <td>{{ props.row.amount | currency }}</td>
-              <td>{{ props.row.currency }}</td>
+              <td>{{ props.row.amount | currency }} {{ props.row.currency }}</td>
               <td :title="props.row.other._id"><strong>{{ props.row.other.name }}</strong></td>
-              <td>{{ props.row.description }}</td>
+              <td :title="props.row._id">{{ props.row.description }}</td>
             </template>
           </vue-good-table>
           <div class="panel-footer">
@@ -65,7 +75,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-12" v-if="this.$route.params.sub == 'wages'">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Wages
@@ -105,7 +115,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" v-if="this.$route.params.sub == 'settings'">
         <div class="panel panel-primary">
           <div class="panel-heading">
             Users
@@ -144,9 +154,10 @@
           </div>
         </div>
       </div>
-      <account-description-dialogue v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
+      <account-description-dialogue v-if="this.$route.params.sub == 'settings'" v-on:updatedAccountDescription="fetchAccount" :description="account.description"></account-description-dialogue>
+      <wager-list v-if="this.$route.params.sub == 'bets'"></wager-list>
     </div>
-    <div v-if="user.admin" class="row">
+    <div v-if="user.admin && this.$route.params.sub == 'settings'" class="row">
       <div class="col-md-12">
         <div class="panel panel-primary">
           <div class="panel-heading">
@@ -210,13 +221,14 @@ import axios from 'axios'
 import errorHandler from '@/errorHandler'
 import swal from 'sweetalert'
 import {accessLevels} from '@/globalValues'
-import TransactionDialogue from '@/components/TransactionDialogue'
-import AccountDescriptionDialogue from '@/components/AccountDescriptionDialogue'
+import TransactionDialogue from '@/pages/account/TransactionDialogue'
+import AccountDescriptionDialogue from '@/pages/account/AccountDescriptionDialogue'
+import WagerList from '@/pages/account/WagerList'
 
 export default {
   name: 'PageAccount',
   store: ['user', 'jwt', 'currencies'],
-  components: {TransactionDialogue, AccountDescriptionDialogue},
+  components: {TransactionDialogue, AccountDescriptionDialogue, WagerList},
   data: function () {
     return {
       account: {},
@@ -267,23 +279,14 @@ export default {
         ],
         transactions: [
           {
-            label: 'ID'
-          },
-          {
             label: 'Date',
             field: 'created',
             type: 'decimal'
           },
           {
-            label: 'Positive/Negative'
-          },
-          {
             label: 'Amount',
             field: 'amount',
             type: 'decimal'
-          },
-          {
-            label: 'Currency'
           },
           {
             label: 'Other Account'
@@ -392,6 +395,14 @@ export default {
           if (transaction.other == null) {
             transaction.other = {_id: 'deleted', name: 'Deleted Account'}
           }
+
+          let amount = Math.abs(transaction.amount)
+
+          if (transaction.sign === '-') {
+            amount = amount * (-1)
+          }
+
+          transaction.amount = amount
 
           processedTransactions.push(transaction)
         })

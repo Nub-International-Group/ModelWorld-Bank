@@ -12,8 +12,12 @@ import PageLogout from '@/pages/PageLogout'
 import PageHelp from '@/pages/PageHelp'
 import PageStaff from '@/pages/PageStaff'
 
+import PageBetting from '@/pages/PageBetting'
+
 import PageAdminWages from '@/pages/PageAdminWages'
 import PageAdminAccounts from '@/pages/PageAdminAccount'
+import PageAdminTransactions from '@/pages/PageAdminTransactions'
+import PageAdminBets from '@/pages/PageAdminBets'
 
 Vue.use(Router)
 
@@ -61,6 +65,18 @@ const router = new Router({
       meta: { authRequire: true }
     },
     {
+      path: '/betting',
+      name: 'Betting',
+      component: PageBetting,
+      meta: { authRequire: true }
+    },
+    {
+      path: '/account/:id/:sub',
+      name: 'Account',
+      component: PageAccount,
+      meta: { authRequire: true }
+    },
+    {
       path: '/account/:id',
       name: 'Account',
       component: PageAccount,
@@ -76,6 +92,18 @@ const router = new Router({
       path: '/admin/accounts',
       name: 'AdminAccounts',
       component: PageAdminAccounts,
+      meta: { adminRequire: true }
+    },
+    {
+      path: '/admin/transactions',
+      name: 'AdminTransactions',
+      component: PageAdminTransactions,
+      meta: { adminRequire: true }
+    },
+    {
+      path: '/admin/bets',
+      name: 'AdminBets',
+      component: PageAdminBets,
       meta: { adminRequire: true }
     }
   ]

@@ -16,7 +16,7 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "jsonwebtoken": "^8.0.1",
-    "moment": "^2.19.1",
+    "moment": "^2.21.0",
     "mongoose": "github:Automattic/mongoose#5.0",
     "node-schedule": "^1.2.5",
     "passport": "^0.4.0",
