@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo')(session)
 const RedditStrategy = require('passport-reddit').Strategy
 
 mongoose.connect(config.mongoURL)
+mongoose.Promise = Promise
 
 mongoose.connection.on('error', function (err) {
   console.log('DB Connection Error')

@@ -109,14 +109,13 @@
             bet: bet._id
           }
 
-          let $this = this
           axios.request({
             url: '/api/wager',
             method: 'post',
             headers: {jwt: this.$store.jwt},
             data: data
           }).then(function (response) {
-            $this.bets = response.data
+            swal('Success', 'Bet has been created', 'success')
           }).catch(errorHandler)
         } else {
           swal('Invalid amount', 'Bet amount must be a valid number', 'error')
