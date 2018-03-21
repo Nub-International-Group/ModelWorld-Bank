@@ -90,25 +90,19 @@ schema.methods.fetchWageRequests = function (callback) {
 }
 
 schema.methods.payWages = function (callback) {
-  let $this = this
-  this.populate(function (err, account) { // Populate wage info
+  if (this.wages.length == 0) {
+    this.wages = ['*unemployed*']
+    this.markModified('wages')
+  }
+
+  this.populate('wages', (err, account) => { // Populate wage info
     if (err) {
       return callback(err)
     }
 
-    if ($this.wages.length == 0) {
-      $this.wages.push({
-        _id: '*unemployed*',
-        name: 'Unemployment Benefits',
-        description: 'Unemployment Benefits',
-        value: 12000,
-        currency: 'GBP'
-      })
-    }
-
     let yearlyUnscaled = {}
 
-    $this.wages.forEach(function (wage) {
+    this.wages.forEach(function (wage) {
       if (yearlyUnscaled[wage.currency]) {
         yearlyUnscaled[wage.currency] += wage.value
       } else {
@@ -118,7 +112,7 @@ schema.methods.payWages = function (callback) {
 
     let wageToPay = {}
 
-    let yearsSinceLastwage = (moment().diff($this.lastPaid, 'years', true) * 10)
+    let yearsSinceLastwage = (moment().diff(this.lastPaid, 'years', true) * 10)
 
     let transactions = []
     for (let currency in yearlyUnscaled) {
@@ -126,7 +120,7 @@ schema.methods.payWages = function (callback) {
         wageToPay[currency] = +(yearlyUnscaled[currency] * yearsSinceLastwage).toFixed(2)
 
         transactions.push({
-          to: $this._id,
+          to: this._id,
           from: '*economy*',
           description: 'Wages Paid. Yearly wage: ' + yearlyUnscaled[currency].toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,') + ' ' + currency,
           amount: wageToPay[currency],
@@ -176,7 +170,7 @@ schema.methods.payWages = function (callback) {
 
         transactions.push({
           to: '*economy*',
-          from: $this._id,
+          from: this._id,
           description: 'Taxes Paid. Total rate: ' + ((taxAmount / yearlyUnscaled[currency]) * 100).toFixed(2) + '%',
           amount: taxAmountScaled,
           currency: currency,
@@ -185,15 +179,20 @@ schema.methods.payWages = function (callback) {
       }
     }
 
-    Transaction.create(transactions, function (err) {
+    Transaction.create(transactions, (err) => {
       if (err) {
         return callback(err)
       }
 
-      $this.lastPaid = Date.now()
-      $this.markModified('lastPaid')
+      this.lastPaid = Date.now()
+      this.markModified('lastPaid')
 
-      $this.save(function (err) {
+      if (this.wages == ['*unemployed*']) {
+        this.wages = []
+        this.markModified('wages')
+      }
+
+      this.save(function (err) {
         if (err) {
           return callback(err)
         }
