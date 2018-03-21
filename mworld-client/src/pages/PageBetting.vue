@@ -91,7 +91,7 @@
 
         let fraction = new Fraction(decimal)
 
-        return fraction.d + '/' + fraction.n
+        return fraction.n + '/' + fraction.d
       },
       currency: function (value) {
         return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
