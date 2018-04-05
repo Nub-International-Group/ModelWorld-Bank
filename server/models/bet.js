@@ -40,10 +40,20 @@ schema.methods.payOut = function (winner, callback) {
         }
 
         this.status = 2
-        callback(null)
+
+        this.markModified('status')
+        this.save((err) => {
+          if (err) {
+            return callback(err)
+          }
+
+          callback(null)
+        })
       })
     })
   }
+
+
 }
 
 let model = mongoose.model('bet', schema)

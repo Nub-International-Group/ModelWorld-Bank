@@ -10,8 +10,20 @@ module.exports = function (req, res, next) {
 
     let amount = parseFloat(req.body.amount)
 
+    if (!(account && bet)) {
+      throw new Error('Invalid references.')
+    }
+
     if (isNaN(amount)) {
       throw new Error('Invalid amount, cannot cast.')
+    }
+
+    if (amount <= 0) {
+      throw new Error('Invalid amount, you can\'t bet nothing.')
+    }
+
+    if (bet.status != 1) {
+      throw new Error('Bet is closed or paid out.')
     }
 
     if (account.users[req.decoded.name] >= 2) {

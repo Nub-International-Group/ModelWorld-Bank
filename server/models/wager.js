@@ -16,7 +16,12 @@ let schema = new mongoose.Schema({
 schema.methods.resolveWager = function(winningOption, callback) {
   if (winningOption = this.betOption) {
     Transaction.create({
-
+      from: '*NubBets*',
+      to: this.account,
+      amount: this.amount * this.odd,
+      currency: this.currency,
+      description: 'Original Bet: '+ this.amount + ' ' + this.currency + ' at ' + this.odd,
+      authoriser: 'SYSTEM'
     }, function(err, doc) {
       if (err) return callback(err)
 
