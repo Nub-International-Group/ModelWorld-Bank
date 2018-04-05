@@ -88,7 +88,13 @@
               <td>{{ props.row.description }}</td>
               <td>{{ props.row.status | statusConversion}}</td>
               <td>{{ props.row.created}}</td>
-              <td><router-link :to="'/account/' + props.row._id" type="button" class="btn btn-primary">Edit Bet</router-link></td>
+              <td>
+                <button type="button" class="btn btn-primary">Edit Bet</button>
+
+                <button v-if="props.row.status == 1" type="button" class="btn btn-primary">Close</button>
+                <button v-if="props.row.status == 0" type="button" class="btn btn-primary">Open</button>
+                <button v-if="props.row.status == 0" type="button" disabled class="btn btn-primary">Pay Out</button>
+              </td>
             </template>
           </vue-good-table>
         </div>
