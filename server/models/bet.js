@@ -27,13 +27,13 @@ let schema = new mongoose.Schema({
  */
 schema.methods.payOut = function (winner, callback) {
   if (this.status !== 2) {
-    Wager.find({bet: this._id}).exec(function (err, wagers) {
+    Wager.find({bet: this._id}).exec((err, wagers) => {
       if (err) {
         return callback(err)
       }
 
-      async.each(wagers, function (wager, callbackDeep) {
-        wager.resolveWager(winningOption, callbackDeep)
+      async.each(wagers, (wager, callbackDeep) => {
+        wager.resolveWager(winner, callbackDeep)
       }, (err) => {
         if (err) {
           return callback(err)

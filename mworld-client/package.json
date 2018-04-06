@@ -15,13 +15,13 @@
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
     "jsonwebtoken": "^8.0.1",
-    "sweetalert": "^2.0.5",
+    "sweetalert2": "^7.18.0",
     "vue": "^2.4.2",
     "vue-good-table": "^1.14.3",
     "vue-router": "^2.7.0",
     "vue-stash": "^2.0.1-beta",
     "fuse.js": "^3.2.0",
-    "fraction.js":"^4.0.4"
+    "fraction.js": "^4.0.4"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

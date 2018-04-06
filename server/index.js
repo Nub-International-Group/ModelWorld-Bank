@@ -126,7 +126,7 @@ app.post('/api/wage/purge', ensureJWT, require('./routes/wage/purge.js')) // Han
 
 app.get('/api/bet', ensureJWT, require('./routes/bet/root.js'))
 app.post('/api/bet', ensureJWT, require('./routes/bet/new.js'))
-// app.put('/api/bet/id/:id', ensureJWT, require('./routes/bet/update.js'))
+app.put('/api/bet/id/:id/status', ensureJWT, require('./routes/bet/status.js'))
 
 app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.js'))
 app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))

@@ -24,7 +24,7 @@
 <script>
   import axios from 'axios'
   import errorHandler from '@/errorHandler'
-  import swal from 'sweetalert'
+  import swal from 'sweetalert2'
 
   export default {
     name: 'TransactionDescriptionDialogue',
@@ -39,7 +39,7 @@
       updateDescription: function () {
         swal({
           title: 'ARE YOU SURE?',
-          icon: 'warning',
+          type: 'warning',
           text: 'Clicking \'ok\' will change the description',
           dangerMode: true,
           buttons: true
