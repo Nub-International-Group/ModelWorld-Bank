@@ -74,7 +74,7 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
-import swal from 'sweetalert'
+import swal from 'sweetalert2'
 
 export default {
   name: 'PageAdminAccounts',
@@ -130,7 +130,7 @@ export default {
 
         swal({
           title: 'Creation Success!',
-          icon: 'success',
+          type: 'success',
           text: 'Account succesfully created!',
           buttons: {
             stay: {

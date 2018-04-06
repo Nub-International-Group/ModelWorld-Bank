@@ -11,7 +11,7 @@
           <div class="panel-heading">
             Wages
           </div>
-          <vue-good-table 
+          <vue-good-table
           :columns="tables.wages"
           :rows="wages"
           :filterable="true"
@@ -25,7 +25,7 @@
               <td>{{ props.row.value | currency}}</td>
               <td>{{ props.row.currency}}</td>
               <td><button class="btn btn-primary" v-on:click="selectWage(props.row)" data-toggle="modal" data-target="#wageModal">Modify Wage</button></td>
-            </template>         
+            </template>
           </vue-good-table>
         </div>
       </div>
@@ -73,7 +73,7 @@
           <div class="panel-heading">
             Wage Requests
           </div>
-          <vue-good-table 
+          <vue-good-table
           :columns="tables.wageRequests"
           :rows="wageRequests"
           :filterable="true"
@@ -93,7 +93,7 @@
               <td>
                 <button class="btn btn-danger" v-on:click="decideRequest(props.row, false)">Deny</button>
               </td>
-            </template>         
+            </template>
           </vue-good-table>
           <div class="panel-footer">
             <button type="button" class="btn btn-success" v-on:click="decideAllRequests(true)">Accept All</button>
@@ -150,7 +150,7 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
-import swal from 'sweetalert'
+import swal from 'sweetalert2'
 
 export default {
   name: 'PageAdminWages',
@@ -236,7 +236,7 @@ export default {
     purgeWages: function () {
       swal({
         title: 'ARE YOU SURE?',
-        icon: 'warning',
+        type: 'warning',
         text: 'Clicking \'ok\' will clear all wages from all accounts!',
         dangerMode: true,
         buttons: true
@@ -258,7 +258,7 @@ export default {
       let $this = this
       swal({
         title: 'ARE YOU SURE?',
-        icon: 'warning',
+        type: 'warning',
         text: 'Clicking \'ok\' will complete this action!',
         dangerMode: true,
         buttons: true
@@ -279,7 +279,7 @@ export default {
       let $this = this
       swal({
         title: 'ARE YOU SURE?',
-        icon: 'warning',
+        type: 'warning',
         text: 'Clicking \'ok\' will ' + (decision ? 'accept' : 'deny') + ' all requests!',
         dangerMode: true,
         buttons: true
@@ -314,7 +314,7 @@ export default {
       let $this = this
       swal({
         title: 'ARE YOU SURE?',
-        icon: 'warning',
+        type: 'warning',
         text: 'Clicking \'ok\' will permenantly delete this wage!',
         dangerMode: true,
         buttons: true

@@ -1,9 +1,9 @@
-import swal from 'sweetalert'
+import swal from 'sweetalert2'
 
 function handleError (error) {
   console.log(error)
   swal({
-    icon: 'error',
+    type: 'error',
     title: 'Error: ' + error.response.data.err.code,
     text: error.response.data.err.desc
   })

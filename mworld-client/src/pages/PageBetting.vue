@@ -56,7 +56,7 @@
   import axios from 'axios'
   import errorHandler from '@/errorHandler'
   import Fraction from 'fraction.js'
-  import swal from 'sweetalert'
+  import swal from 'sweetalert2'
 
   export default {
     name: 'PageBetting',

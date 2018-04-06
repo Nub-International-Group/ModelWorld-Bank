@@ -219,7 +219,7 @@
 <script>
 import axios from 'axios'
 import errorHandler from '@/errorHandler'
-import swal from 'sweetalert'
+import swal from 'sweetalert2'
 import {accessLevels} from '@/globalValues'
 import TransactionDialogue from '@/pages/account/TransactionDialogue'
 import AccountDescriptionDialogue from '@/pages/account/AccountDescriptionDialogue'
@@ -470,12 +470,11 @@ export default {
       let $this = this
       swal({
         title: 'ARE YOU SURE?',
-        icon: 'warning',
+        type: 'warning',
         text: 'Clicking \'ok\' will remove this wage!',
-        dangerMode: true,
-        buttons: true
-      }).then((choice) => {
-        if (choice === true) {
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value === true) {
           axios.request({
             url: '/api/account/id/' + $this.$route.params.id + '/wage/' + wage._id,
             method: 'delete',
@@ -502,12 +501,12 @@ export default {
       let $this = this
       swal({
         title: 'ARE YOU SURE?',
-        icon: 'warning',
+        type: 'warning',
         text: 'Clicking \'ok\' will permenantly delete this account!',
-        dangerMode: true,
-        buttons: true
-      }).then((choice) => {
-        if (choice === true) {
+        confirmButtonText: 'Delete It!',
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value === true) {
           axios.request({
             url: '/api/account/id/' + $this.account._id,
             method: 'delete',

@@ -91,9 +91,9 @@
               <td>
                 <button type="button" class="btn btn-primary">Edit Bet</button>
 
-                <button v-if="props.row.status == 1" type="button" class="btn btn-primary">Close</button>
-                <button v-if="props.row.status == 0" type="button" class="btn btn-primary">Open</button>
-                <button v-if="props.row.status == 0" type="button" disabled class="btn btn-primary">Pay Out</button>
+                <button v-if="props.row.status == 1" v-on:click="updateStatus(props.row, 'Closed')" type="button" class="btn btn-primary">Close</button>
+                <button v-if="props.row.status == 0" v-on:click="updateStatus(props.row, 'Open')" type="button" class="btn btn-primary">Open</button>
+                <button v-if="props.row.status == 0" v-on:click="updateStatus(props.row, 'Paid')" type="button" class="btn btn-primary">Pay Out</button>
               </td>
             </template>
           </vue-good-table>
@@ -106,7 +106,7 @@
 <script>
   import axios from 'axios'
   import errorHandler from '@/errorHandler'
-  import swal from 'sweetalert'
+  import swal from 'sweetalert2'
   import {betStatus} from '@/globalValues'
 
   export default {
@@ -179,14 +179,49 @@
         this.newBet.options.splice(index, 1)
       },
       fetchBets: function () {
-        let $this = this
         axios.request({
           url: '/api/bet',
           method: 'get',
           headers: {jwt: this.$store.jwt}
-        }).then(function (response) {
-          $this.allBets.rows = response.data
+        }).then((response) => {
+          this.allBets.rows = response.data
         }).catch(errorHandler)
+      },
+      updateStatus: function (bet, status) {
+        if (status === 'Paid') {
+          let inputOptions = {} // Generate K-V dict of option id to option name
+
+          bet.options.forEach((item) => {
+            inputOptions[item._id] = item.name
+          })
+
+          swal({
+            title: 'Select Winner!',
+            text: 'Select the winning choice',
+            input: 'select',
+            inputOptions
+          }).then((result) => {
+            if (result.value) {
+              axios.request({
+                url: '/api/bet/id/' + bet._id + '/status',
+                method: 'put',
+                headers: {jwt: this.$store.jwt},
+                data: {status, winner: result.value}
+              }).then((response) => { // Handles resolution of either promise.
+                this.fetchBets()
+              }).catch(errorHandler)
+            }
+          })
+        } else {
+          axios.request({
+            url: '/api/bet/id/' + bet._id + '/status',
+            method: 'put',
+            headers: {jwt: this.$store.jwt},
+            data: {status}
+          }).then((response) => { // Handles resolution of either promise.
+            this.fetchBets()
+          }).catch(errorHandler)
+        }
       }
     },
     mounted: function () {

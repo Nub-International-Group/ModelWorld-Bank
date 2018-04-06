@@ -68,7 +68,7 @@
 <script>
   import axios from 'axios'
   import errorHandler from '@/errorHandler'
-  import swal from 'sweetalert'
+  import swal from 'sweetalert2'
   import Fuse from 'fuse.js'
 
   export default {
@@ -96,7 +96,7 @@
       addTransaction: function () {
         swal({
           title: 'ARE YOU SURE?',
-          icon: 'warning',
+          type: 'warning',
           text: 'Clicking \'ok\' will start the transaction!',
           dangerMode: true,
           buttons: true

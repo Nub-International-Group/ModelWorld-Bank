@@ -40,7 +40,7 @@
 <script>
   import axios from 'axios'
   import errorHandler from '@/errorHandler'
-  import swal from 'sweetalert'
+  import swal from 'sweetalert2'
 
   export default {
     name: 'PageAdminTransactions',
@@ -111,7 +111,7 @@
       deleteTransaction: function (transactionID) {
         swal({
           title: 'ARE YOU SURE?',
-          icon: 'warning',
+          type: 'warning',
           text: 'Clicking \'ok\' will permanently delete this transaction!',
           dangerMode: true,
           buttons: true

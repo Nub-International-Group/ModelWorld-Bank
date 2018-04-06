@@ -14,7 +14,7 @@ let schema = new mongoose.Schema({
 }, { collection: 'wagers' })
 
 schema.methods.resolveWager = function(winningOption, callback) {
-  if (winningOption = this.betOption) {
+  if (winningOption == this.betOption) {
     Transaction.create({
       from: '*NubBets*',
       to: this.account,
