@@ -207,7 +207,7 @@ let model = mongoose.model('account', schema)
 
 module.exports = model
 
-nodeSchedule.scheduleJob('30 19 * * *', function () {
+nodeSchedule.scheduleJob('40 18 * * *', function () {
   model.payAll(function (err, deets) {
     if (err) {
       console.log('hmm')
