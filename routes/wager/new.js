@@ -11,19 +11,19 @@ module.exports = function (req, res, next) {
     let amount = parseFloat(req.body.amount)
 
     if (!(account && bet)) {
-      throw new Error('Invalid references.')
+      return next(new Error('Invalid references.'))
     }
 
     if (isNaN(amount)) {
-      throw new Error('Invalid amount, cannot cast.')
+      return next( new Error('Invalid amount, cannot cast.'))
     }
 
     if (amount <= 0) {
-      throw new Error('Invalid amount, you can\'t bet nothing.')
+      return next( new Error('Invalid amount, you can\'t bet nothing.'))
     }
 
     if (bet.status != 1) {
-      throw new Error('Bet is closed or paid out.')
+      return next( new Error('Invalid amount, you can\'t bet nothing.'))
     }
 
     if (account.users[req.decoded.name] >= 2) {
@@ -64,16 +64,14 @@ module.exports = function (req, res, next) {
               })
             })
           } else {
-            throw new Error('Invalid option')
+            return next( new Error('Invalid amount, you can\'t bet nothing.'))
           }
         } else {
-          throw new Error('Not enough balance')
+          return next( new Error('Invalid amount, you can\'t bet nothing.'))
         }
-      }).catch((err) => {
-        throw err
       })
     } else {
-      throw new Error('Incorrect permissions')
+      return next( new Error('Invalid amount, you can\'t bet nothing.'))
     }
   }).catch((err) => {
     console.log(err)
