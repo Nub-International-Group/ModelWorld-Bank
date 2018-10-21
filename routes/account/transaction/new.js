@@ -35,11 +35,7 @@ module.exports = function (req, res, next) {
           return res.status(500).json({err: {code: 500, desc: 'Don\'t be silly'}})
         }
 
-        sendingAccount.calculateBalance(function (err, data) {
-          if (err) {
-            return next(err)
-          }
-
+        sendingAccount.calculateBalance().then((data) => {
           if (data.balance[req.body.currency] || sendingAccount._id === '*economy*') {
             if (data.balance[req.body.currency] >= (amount + 10) || sendingAccount._id === '*economy*') {
               let transactions = [{
@@ -59,20 +55,14 @@ module.exports = function (req, res, next) {
               }]
 
 
-              Transaction.insertMany(transactions, function (err) {
-                if (err) {
-                  return next(err)
-                }
-
-                return res.status(200).json({})
-              })
+              return Transaction.insertMany(transactions)
             } else {
-              return res.status(500).json({err: {code: 500, desc: 'Not enough balance'}})
+              throw new Error('Not enough balance')
             }
           } else {
-            return res.status(500).json({err: {code: 500, desc: 'No balance in currency'}})
+            throw new Error('No balance in currency')
           }
-        })
+        }).then(() => res.status(200).json({})).catch(next)
       })
     } else {
       return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})

@@ -7,74 +7,58 @@ module.exports = function (req, res, next) {
   Promise.all([ Account.findOne({_id: req.body.target}).exec(), Bet.findOne({_id: req.body.bet}).exec()]).then((values) => {
     let account = values[0]
     let bet = values[1]
-
-    let amount = parseFloat(req.body.amount)
-
+    
+    let amount = Number(req.body.amount)
     if (!(account && bet)) {
-      return next(new Error('Invalid references.'))
+      throw new Error('Invalid references.')
     }
 
     if (isNaN(amount)) {
-      return next( new Error('Invalid amount, cannot cast.'))
+      throw new Error('Invalid amount, cannot cast.')
     }
 
     if (amount <= 0) {
-      return next( new Error('Invalid amount, you can\'t bet nothing.'))
+      throw new Error('Invalid amount, you can\'t bet nothing.')
     }
 
     if (bet.status != 1) {
-      return next( new Error('Invalid amount, you can\'t bet nothing.'))
+      throw new Error('Bet is closed or paid out.')
     }
 
-    if (account.users[req.decoded.name] >= 2) {
-      let option = bet.options.id(req.body.option)
+    if (account.users[req.decoded.name] < 2) {
+      throw new Error('Incorrect permissions.')
+    }
 
-      account.calculateBalance((err, data) => {
-        if (data['balance']['GBP'] >= req.body.amount) {
-          if (option) {
-            let newWager = new Wager({
-              amount: req.body.amount,
-              currency: 'GBP',
-              bet: bet._id,
-              account: account._id,
-              betOption: option._id,
-              odd: option.currentOdds
-            })
+    let option = bet.options.id(req.body.option)
 
-            let newTransaction = new Transaction({
-              from: account._id,
-              to: '*NubBets*',
-              amount: req.body.amount,
-              currency: 'GBP',
-              description: 'Payment for Bet',
-              authoriser: 'SYSTEM'
-            })
+    return account.calculateBalance().then((data) => {
+      if (data['balance']['GBP'] < amount) {
+        throw new Error('Not enough balance.')
+      }
 
-            return newTransaction.save((err) => {
-              if (err) {
-                throw err
-              }
+      if (!option) {
+        throw new Error('Invalid option.')
+      }
 
-              newWager.save((err) => {
-                if (err) {
-                  throw err
-                }
-
-                res.status(200).json({})
-              })
-            })
-          } else {
-            return next( new Error('Invalid amount, you can\'t bet nothing.'))
-          }
-        } else {
-          return next( new Error('Invalid amount, you can\'t bet nothing.'))
-        }
+      let newWager = new Wager({
+        amount: amount,
+        currency: 'GBP',
+        bet: bet._id,
+        account: account._id,
+        betOption: option._id,
+        odd: option.currentOdds
       })
-    } else {
-      return next( new Error('Invalid amount, you can\'t bet nothing.'))
-    }
-  }).catch((err) => {
-    console.log(err)
-    return res.status(500).json({err: {code: 500, desc: 'Something went wrong.'}})
-  })
+
+      let newTransaction = new Transaction({
+        from: account._id,
+        to: '*NubBets*',
+        amount: amount,
+        currency: 'GBP',
+        description: 'Payment for Bet',
+        authoriser: 'SYSTEM'
+      })
+
+      return Promise.all([newTransaction.save(), newWager.save()])
+    })
+  }).then(() => res.status(200).json({})).catch(next)
 }
