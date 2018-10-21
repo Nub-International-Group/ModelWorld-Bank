@@ -69,6 +69,8 @@ module.exports = function (req, res, next) {
         } else {
           throw new Error('Not enough balance')
         }
+      }).catch((err) => {
+        throw err
       })
     } else {
       throw new Error('Incorrect permissions')
