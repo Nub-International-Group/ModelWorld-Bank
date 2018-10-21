@@ -153,8 +153,8 @@ app.get('/api/auth/login', function (req, res, next) {
  */
 app.get('/api/auth/return', function (req, res, next) {
   passport.authenticate('reddit', {
-    successRedirect: '/#/login/success',
-    failureRedirect: '/#/login'
+    successRedirect: settings.clientURL + '/#/login/success',
+    failureRedirect: settings.clientURL + '/#/login'
   })(req, res, next)
 })
 
@@ -190,4 +190,4 @@ app.use(function (err, req, res, next) {
   console.log(err)
 })
 
-app.listen(process.env.PORT || 8081)
+app.listen(process.env.PORT || 8080)
