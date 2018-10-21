@@ -21,8 +21,8 @@ mongoose.connection.on('error', function (err) {
 })
 
 const app = express()
-app.use(cors({credentials: true}))
-app.options('*', cors({credentials: true}))
+app.use(cors({credentials: true, origin: 'https://bank.nub.international'}))
+app.options('*', cors({credentials: true, origin: 'https://bank.nub.international'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
