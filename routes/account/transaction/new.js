@@ -40,7 +40,7 @@ module.exports = function (req, res, next) {
             return next(err)
           }
 
-          if (data.balance[req.body.currency]) {
+          if (data.balance[req.body.currency] || sendingAccount._id === '*economy*') {
             if (data.balance[req.body.currency] >= amount || sendingAccount._id === '*economy*') {
               let transaction = new Transaction({
                 from: sendingAccount._id,
