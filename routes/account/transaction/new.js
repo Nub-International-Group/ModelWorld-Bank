@@ -41,17 +41,25 @@ module.exports = function (req, res, next) {
           }
 
           if (data.balance[req.body.currency] || sendingAccount._id === '*economy*') {
-            if (data.balance[req.body.currency] >= amount || sendingAccount._id === '*economy*') {
-              let transaction = new Transaction({
+            if (data.balance[req.body.currency] >= (amount + 10) || sendingAccount._id === '*economy*') {
+              let transactions = [{
                 from: sendingAccount._id,
                 to: targetAccount._id,
                 amount: amount,
                 currency: req.body.currency,
                 description: req.body.description,
                 authoriser: req.decoded.name
-              })
+              }, {
+                from: sendingAccount._id,
+                to: 'SJS4nVQLG',
+                amount: 10,
+                currency: req.body.currency,
+                description: 'Tx Fee',
+                authoriser: req.decoded.name
+              }]
 
-              transaction.save(function (err) {
+
+              Transaction.insertMany(transactions, function (err) {
                 if (err) {
                   return next(err)
                 }

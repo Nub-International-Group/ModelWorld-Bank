@@ -21,8 +21,8 @@ mongoose.connection.on('error', function (err) {
 })
 
 const app = express()
-app.use(cors({credentials: true, origin: 'https://bank.nub.international'}))
-app.options('*', cors({credentials: true, origin: 'https://bank.nub.international'}))
+app.use(cors({credentials: true, origin: ['https://bank.nub.international', 'http://127.0.0.1:8081']}))
+app.options('*', cors({credentials: true, origin: ['https://bank.nub.international', 'http://127.0.0.1:8081']}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
@@ -52,7 +52,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new RedditStrategy({
   clientID: config.reddit.key,
   clientSecret: config.reddit.secret,
-  callbackURL: 'https://' + config.deploymentURL + '/api/auth/return'
+  callbackURL: config.deploymentURL + '/api/auth/return'
 }, function (accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
     // TODO: Grab extended user from the DATABASE

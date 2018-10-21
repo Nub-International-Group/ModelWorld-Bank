@@ -134,20 +134,20 @@ schema.methods.payWages = function (callback) {
 
         let tax = [
           {
-            topEnd: 20000,
+            topEnd: 12000,
             rate: 0
           },
           {
-            topEnd: 53000,
-            rate: 0.05
+            topEnd: 45000,
+            rate: 0.2
           },
           {
-            topEnd: 93000,
-            rate: 0.1
+            topEnd: 150000,
+            rate: 0.4
           },
           {
             topEnd: Infinity,
-            rate: 0.15
+            rate: 0.45
           }
         ]
 
