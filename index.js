@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const passport = require('passport')
@@ -20,7 +21,8 @@ mongoose.connection.on('error', function (err) {
 })
 
 const app = express()
-
+app.use(cors())
+app.options('*', cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
