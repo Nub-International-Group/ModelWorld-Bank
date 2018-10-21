@@ -6,7 +6,7 @@ const Account = require('../../models/account.js')
 
 module.exports = function (req, res, next) {
   if (req.decoded.admin === true) {
-    Account.update({}, {wages: []}, function (err, document) {
+    Account.update({}, {wages: []}, {multi: true}, function (err, document) {
       if (err) {
         return next(err)
       }
