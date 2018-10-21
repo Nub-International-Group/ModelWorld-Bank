@@ -38,44 +38,45 @@ schema.statics.payAll = function (callback) {
 /**
  * calculateBalance
  * @callback
- * @return err err
- * @return {balance: {'GBP': 12543332, 'USD': 12313}, transactions: [{MONGOOSE OBJ},{MONGOOSE OBJ}]}
+ * @return Promise
  */
-schema.methods.calculateBalance = function (callback) {
+schema.methods.calculateBalance = function () {
   // TODO: Consider an approach where the to and froms are found simultanously and totted up, then finally added together. Possible enhancement to perf. - Async JS?
   // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
-  let $this = this
-  Transaction.find({ 'to': this._id }).sort('-created').populate('from').exec(function (err, tos) {
-    if (err) {
-      return callback(err)
-    }
-
-    let balance = {}
-
-    tos.forEach(function (element) {
-      if (balance[element.currency] === undefined) {
-        balance[element.currency] = element.amount
-      } else {
-        balance[element.currency] += element.amount
-      }
-    })
-
-    Transaction.find({ 'from': $this._id }).sort('-created').populate('to').exec(function (err, froms) {
+  return new Promise((resolve, reject) => {
+    let $this = this
+    Transaction.find({'to': this._id}).sort('-created').populate('from').exec(function (err, tos) {
       if (err) {
-        return callback(err)
+        return reject(err)
       }
 
-      froms.forEach(function (element) {
+      let balance = {}
+
+      tos.forEach(function (element) {
         if (balance[element.currency] === undefined) {
-          balance[element.currency] = -element.amount
+          balance[element.currency] = element.amount
         } else {
-          balance[element.currency] -= element.amount
+          balance[element.currency] += element.amount
         }
       })
 
-      let transactions = tos.concat(froms)
+      Transaction.find({'from': $this._id}).sort('-created').populate('to').exec(function (err, froms) {
+        if (err) {
+          return reject(err)
+        }
 
-      return callback(null, {transactions, balance})
+        froms.forEach(function (element) {
+          if (balance[element.currency] === undefined) {
+            balance[element.currency] = -element.amount
+          } else {
+            balance[element.currency] -= element.amount
+          }
+        })
+
+        let transactions = tos.concat(froms)
+
+        return resolve({transactions, balance})
+      })
     })
   })
 }
