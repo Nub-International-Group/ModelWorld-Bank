@@ -155,8 +155,8 @@ app.get('/api/auth/login', function (req, res, next) {
  */
 app.get('/api/auth/return', function (req, res, next) {
   passport.authenticate('reddit', {
-    successRedirect: settings.clientURL + '/#/login/success',
-    failureRedirect: settings.clientURL + '/#/login'
+    successRedirect: config.clientURL + '/#/login/success',
+    failureRedirect: config.clientURL + '/#/login'
   })(req, res, next)
 })
 
