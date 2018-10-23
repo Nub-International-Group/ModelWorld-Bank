@@ -13,9 +13,9 @@ module.exports = function (req, res, next) {
     if ((document.users[req.decoded.name] >= 2) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
       for (let property in req.body.changes) {
         if (req.body.changes.hasOwnProperty(property)) {
-          const possibleFields = ['description']
+          const possibleFields = ['description', 'private']
 
-          if (possibleFields.indexOf(property) !== -1 ) {
+          if (possibleFields.includes(property) ) {
             document[property] = req.body.changes[property]
           }
         }
