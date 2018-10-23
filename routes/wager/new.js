@@ -21,6 +21,10 @@ module.exports = function (req, res, next) {
       throw new Error('Invalid amount, you can\'t bet nothing.')
     }
 
+    if (amount > 1000000) {
+      throw new Error('Invalid amount, you can only bet up to 1,000,000')
+    }
+
     if (bet.status != 1) {
       throw new Error('Bet is closed or paid out.')
     }
