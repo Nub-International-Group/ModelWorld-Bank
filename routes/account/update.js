@@ -13,7 +13,7 @@ module.exports = function (req, res, next) {
     if ((document.users[req.decoded.name] >= 2) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
       for (let property in req.body.changes) {
         if (req.body.changes.hasOwnProperty(property)) {
-          const possibleFields = ['description', 'private']
+          const possibleFields = ['description', 'public']
 
           if (possibleFields.includes(property) ) {
             document[property] = req.body.changes[property]
@@ -25,9 +25,7 @@ module.exports = function (req, res, next) {
         .then(() =>{
           res.status(200).json({})
         })
-        .catch((err) => {
-          next(err)
-        })
+        .catch(next)
     } else {
       return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
     }
