@@ -11,6 +11,7 @@ module.exports = function (req, res, next) {
       return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
     }
 
+    req.body.currency = 'GBP'
     if (['GBP', 'USD'].includes(req.body.currency) === false) {
       return res.status(500).json({err: {code: 500, desc: 'Invalid currency'}})
     }
