@@ -36,6 +36,10 @@ module.exports = function (req, res, next) {
     let option = bet.options.id(req.body.option)
 
     return account.calculateBalance().then((data) => {
+      if (!data['balance']['GBP']) {
+        throw new Error('No balance.')
+      }
+
       if (data['balance']['GBP'] < amount) {
         throw new Error('Not enough balance.')
       }
