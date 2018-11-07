@@ -1,9 +1,0 @@
-{
-    "mongoURL": "mongodb://127.0.0.1/mWorld",
-    "reddit": {
-        "key": null,
-        "secret": null
-    },
-    "deploymentURL": "localhost:8080",
-    "secret": "changeme"
-}

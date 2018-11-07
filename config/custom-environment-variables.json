@@ -1,0 +1,10 @@
+{
+  "mongoURL": "MWB_MONGO",
+  "reddit": {
+    "key": "MWB_REDDIT_KEY",
+    "secret": "MWB_REDDIT_SECRET"
+  },
+  "deploymentURL": "MWB_DEPLOYMENT_ADDRESS",
+  "clientURL": "MWB_CLIENT_ADDRESS",
+  "secret": "MWB_SECRET"
+}
