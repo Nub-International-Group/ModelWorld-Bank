@@ -10,6 +10,8 @@ const jwt = require('jsonwebtoken')
 const MongoStore = require('connect-mongo')(session)
 const RedditStrategy = require('passport-reddit').Strategy
 
+const pfile = require('./package')
+
 mongoose.connect(config.mongoURL)
 mongoose.Promise = Promise
 
@@ -135,6 +137,9 @@ app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.j
 app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
 app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({version: pfile.version})
+})
 
 let admins = [
   'strideynet',
