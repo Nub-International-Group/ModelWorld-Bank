@@ -15,11 +15,12 @@ let schema = new mongoose.Schema({
   wages: [{ type: String, ref: 'wage' }], // wages: ['fdsuf923', 'ushdushfui', 'uishdfuis']
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
-  lastPaid: { type: Date, default: Date.now }
+  lastPaid: { type: Date, default: Date.now },
+  company: {type: Boolean, default: false}
 }, { collection: 'accounts' })
 
 schema.statics.payAll = function (callback) {
-  this.model('account').find({}).populate('wages').exec(function (err, accounts) {
+  this.model('account').find({company: false}).populate('wages').exec(function (err, accounts) {
     if (err) {
       return callback(err)
     }
@@ -91,7 +92,7 @@ schema.methods.fetchWageRequests = function (callback) {
 }
 
 schema.methods.payWages = function (callback) {
-  if (this.wages.length == 0) {
+  if (this.wages.length === 0) {
     this.wages = ['*unemployed*']
     this.markModified('wages')
   }
