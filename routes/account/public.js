@@ -3,14 +3,18 @@ const Transaction = require('../../models/transaction')
 const nodeSchedule = require('node-schedule')
 
 let leaderboard = []
-let lastUpdated = null;
+let companyLeaderboard = []
+
+let lastUpdated = null
 
 module.exports = function (req, res) {
-  return res.status(200).json({leaderboard, lastUpdated})
+  let company = req.query.type === 'company'
+
+  return res.status(200).json({leaderboard: (company ? companyLeaderboard : leaderboard), lastUpdated})
 }
 
 function updateLeaderboard () {
-  Account.find({public: true}).exec((err, accounts) =>{
+  Account.find({public: true}).exec((err, accounts) => {
     if (err) {
       console.log(err)
     }
@@ -29,21 +33,29 @@ function updateLeaderboard () {
         balances[el.from][el.currency] = (balances[el.from][el.currency] || 0) - el.amount
       })
       leaderboard = []
+      companyLeaderboard = []
 
       accounts.forEach((acc) => {
         let bal = 0
         if (balances[acc._id]) bal = balances[acc._id]['GBP'] || 0
 
-        leaderboard.push({
-          name: acc.name,
-          description: acc.description,
-          balance: bal
-        })
+        if (!acc.company) {
+          leaderboard.push({
+            name: acc.name,
+            description: acc.description,
+            balance: bal
+          })
+        } else {
+          companyLeaderboard.push({
+            name: acc.name,
+            description: acc.description,
+            balance: bal
+          })
+        }
 
         lastUpdated = Date.now()
       })
     })
-
   })
 }
 

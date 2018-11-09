@@ -7,6 +7,7 @@ module.exports = function (req, res, next) {
       description: req.body.newDocument.description,
       public: (req.body.newDocument.public === 'true'), // Simple logical check to convert. We can roughly trust admin data.
       verified: true,
+      company: (req.body.newDocument.company === 'true'),
       users: {}
     })
 
