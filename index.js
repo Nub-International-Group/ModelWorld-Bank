@@ -139,7 +139,8 @@ app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
 
 let admins = [
   'strideynet',
-  'padanub'
+  'padanub',
+  'viljow'
 ]
 
  /**
