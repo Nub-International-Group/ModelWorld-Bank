@@ -10,6 +10,8 @@ const jwt = require('jsonwebtoken')
 const MongoStore = require('connect-mongo')(session)
 const RedditStrategy = require('passport-reddit').Strategy
 
+const pfile = require('./package')
+
 mongoose.connect(config.mongoURL)
 mongoose.Promise = Promise
 
@@ -89,7 +91,7 @@ app.use(passport.session())
  * Health Endpoint. Sends 200 if up
  */
 app.get('/api/health', function (req, res, next) {
-  res.status(200).json({time: new Date(), uptime: process.uptime(), memory: process.memoryUsage()})
+  res.status(200).json({time: new Date(), uptime: process.uptime(), memory: process.memoryUsage(), version: pfile.version})
 })
 
 /**
@@ -134,7 +136,6 @@ app.put('/api/bet/id/:id/status', ensureJWT, require('./routes/bet/status.js'))
 app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.js'))
 app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
 app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
-
 
 let admins = [
   'strideynet',
