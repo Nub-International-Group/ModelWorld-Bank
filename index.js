@@ -90,7 +90,7 @@ app.use(passport.session())
 /**
  * Health Endpoint. Sends 200 if up
  */
-app.get('/api/health', function (req, res, next) {
+app.get('/v1/healthz', function (req, res, next) {
   res.status(200).json({time: new Date(), uptime: process.uptime(), memory: process.memoryUsage(), version: pfile.version})
 })
 
@@ -100,40 +100,42 @@ app.get('/api/health', function (req, res, next) {
 app.get('/v1/users/me/accounts', ensureJWT, require('./routes/account/user-accounts.js'))
 
 app.get('/v1/accounts', ensureJWT, require('./routes/account/root.js'))
-app.get('/v1/accounts/:id', ensureJWT, require('./routes/account/individual.js'))
 app.post('/v1/accounts', ensureJWT, require('./routes/account/new.js'))
 
+app.get('/v1/accounts/:id', ensureJWT, require('./routes/account/individual.js'))
 app.delete('/v1/accounts/:id', ensureJWT, require('./routes/account/delete.js'))
-app.post('/v1/accounts/:id/user', ensureJWT, require('./routes/account/user/new.js'))
 app.put('/v1/accounts/:id', ensureJWT, require('./routes/account/update.js'))
 
-app.get('/v1/accounts/:id/wage', ensureJWT, require('./routes/account/wage/root.js'))
-app.post('/v1/accounts/:id/wage', ensureJWT, require('./routes/account/wage/new.js'))
-app.delete('/v1/accounts/:id/wage/:wageID', ensureJWT, require('./routes/account/wage/delete.js'))
+app.post('/v1/accounts/:id/users', ensureJWT, require('./routes/account/user/new.js'))
+
+app.get('/v1/accounts/:id/wages', ensureJWT, require('./routes/account/wage/root.js'))
+app.post('/v1/accounts/:id/wages', ensureJWT, require('./routes/account/wage/new.js'))
+app.delete('/v1/accounts/:id/wages/:wageID', ensureJWT, require('./routes/account/wage/delete.js'))
 app.get('/v1/accounts/:id/pay', ensureJWT, require('./routes/account/pay.js'))
 
-app.get('/v1/accounts/:id/transaction', ensureJWT, require('./routes/account/transaction/root.js'))
-app.post('/v1/accounts/:id/transaction', ensureJWT, require('./routes/account/transaction/new.js'))
-app.get('/api/transaction', ensureJWT, require('./routes/transaction/root.js'))
-app.delete('/api/transaction/id/:id', ensureJWT, require('./routes/transaction/delete.js'))
+app.get('/v1/accounts/:id/transactions', ensureJWT, require('./routes/account/transaction/root.js'))
+app.post('/v1/accounts/:id/transactions', ensureJWT, require('./routes/account/transaction/new.js'))
 
-app.get('/api/request', ensureJWT, require('./routes/request/root.js'))
-app.post('/api/request/id/:id', ensureJWT, require('./routes/request/update.js'))
-app.post('/api/request/all', ensureJWT, require('./routes/request/all.js'))
+app.get('/v1/accounts/:id/wagers', ensureJWT, require('./routes/wager/byaccount.js'))
 
-app.get('/api/wage', ensureJWT, require('./routes/wage/root.js'))
-app.put('/api/wage/id/:id', ensureJWT, require('./routes/wage/update.js'))
-app.delete('/api/wage/id/:id', ensureJWT, require('./routes/wage/delete.js'))
-app.post('/api/wage', ensureJWT, require('./routes/wage/new.js'))
-app.post('/api/wage/purge', ensureJWT, require('./routes/wage/purge.js')) // Handles post GE wipe of wages
+app.get('/v1/transactions', ensureJWT, require('./routes/transaction/root.js'))
+app.delete('/v1/transactions/:id', ensureJWT, require('./routes/transaction/delete.js'))
 
-app.get('/api/bet', ensureJWT, require('./routes/bet/root.js'))
-app.post('/api/bet', ensureJWT, require('./routes/bet/new.js'))
-app.put('/api/bet/id/:id/status', ensureJWT, require('./routes/bet/status.js'))
+app.get('/v1/requests', ensureJWT, require('./routes/request/root.js'))
+app.post('/v1/request/:id', ensureJWT, require('./routes/request/update.js'))
 
-app.get('/api/wager/account/:id', ensureJWT, require('./routes/wager/byaccount.js'))
-app.get('/api/wager/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
-app.post('/api/wager', ensureJWT, require('./routes/wager/new.js'))
+app.get('/v1/wages', ensureJWT, require('./routes/wage/root.js'))
+app.put('/v1/wages/:id', ensureJWT, require('./routes/wage/update.js'))
+app.delete('/v1/wages/:id', ensureJWT, require('./routes/wage/delete.js'))
+app.post('/v1/wages', ensureJWT, require('./routes/wage/new.js'))
+app.post('/v1/wages/purge', ensureJWT, require('./routes/wage/purge.js')) // Handles post GE wipe of wages
+
+app.get('/v1/bets', ensureJWT, require('./routes/bet/root.js'))
+app.post('/v1/bets', ensureJWT, require('./routes/bet/new.js'))
+app.put('/v1/bets/:id/status', ensureJWT, require('./routes/bet/status.js'))
+
+app.get('/v1/wagers/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
+app.post('/v1/wagers', ensureJWT, require('./routes/wager/new.js'))
 
 let admins = [
   'strideynet',
