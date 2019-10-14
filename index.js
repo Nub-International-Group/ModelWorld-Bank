@@ -54,7 +54,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new RedditStrategy({
   clientID: config.reddit.key,
   clientSecret: config.reddit.secret,
-  callbackURL: config.deploymentURL + '/api/auth/callback'
+  callbackURL: config.deploymentURL + '/v1/auth/callback'
 }, function (accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
     // TODO: Grab extended user from the DATABASE
