@@ -54,7 +54,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new RedditStrategy({
   clientID: config.reddit.key,
   clientSecret: config.reddit.secret,
-  callbackURL: config.deploymentURL + '/api/auth/return'
+  callbackURL: config.deploymentURL + '/api/auth/callback'
 }, function (accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
     // TODO: Grab extended user from the DATABASE
@@ -137,7 +137,7 @@ app.put('/v1/bets/:id/status', ensureJWT, require('./routes/bet/status.js'))
 app.get('/v1/wagers/bet/:id', ensureJWT, require('./routes/wager/bybet.js'))
 app.post('/v1/wagers', ensureJWT, require('./routes/wager/new.js'))
 
-let admins = [
+const admins = [
   'strideynet',
   'padanub',
   'ohprkl'
@@ -146,7 +146,7 @@ let admins = [
  /**
   * Gets the redirect url and sends it to the client which will then redirect
   */
-app.get('/api/auth/login', function (req, res, next) {
+app.get('/v1/auth', function (req, res, next) {
   passport.authenticate('reddit', {
     state: 'test',
     duration: 'permanent'
@@ -156,7 +156,7 @@ app.get('/api/auth/login', function (req, res, next) {
 /**
  * Handles the return from the reddit site
  */
-app.get('/api/auth/return', function (req, res, next) {
+app.get('/v1/auth/callback', function (req, res, next) {
   passport.authenticate('reddit', {
     successRedirect: config.clientURL + '/#/login/success',
     failureRedirect: config.clientURL + '/#/login'
