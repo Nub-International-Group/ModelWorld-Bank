@@ -191,7 +191,7 @@ app.use(function (req, res, next) {
  * Error Handler
  */
 app.use(function (err, req, res, next) {
-  res.status(500).json({err: {code: 500, desc: err.message}})
+  res.status(err.code).json({err: {code: err.code, desc: err.message}})
   console.log(err)
 })
 
