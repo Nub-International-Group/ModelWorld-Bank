@@ -24,5 +24,8 @@
     "passport": "^0.4.0",
     "passport-reddit": "^0.2.4",
     "shortid": "^2.2.8"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1"
   }
 }
