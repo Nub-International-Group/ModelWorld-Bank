@@ -97,25 +97,23 @@ app.get('/api/health', function (req, res, next) {
 /**
  * Auth Endpoints Begin
  */
-app.get('/api/account', ensureJWT, require('./routes/account/root.js'))
-app.get('/api/account/public', ensureJWT, require('./routes/account/public.js'))
-app.get('/api/account/admin', ensureJWT, require('./routes/account/admin.js'))
-app.post('/api/account', ensureJWT, require('./routes/account/new.js'))
+app.get('/v1/users/me/accounts', ensureJWT, require('./routes/account/user-accounts.js'))
 
-app.get('/api/account/id/:id', ensureJWT, require('./routes/account/individual.js'))
-app.delete('/api/account/id/:id', ensureJWT, require('./routes/account/delete.js'))
-app.post('/api/account/id/:id/user', ensureJWT, require('./routes/account/user/new.js'))
-app.put('/api/account/id/:id', ensureJWT, require('./routes/account/update.js'))
+app.get('/v1/accounts', ensureJWT, require('./routes/account/root.js'))
+app.get('/v1/accounts/:id', ensureJWT, require('./routes/account/individual.js'))
+app.post('/v1/accounts', ensureJWT, require('./routes/account/new.js'))
 
-app.get('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/root.js'))
-app.post('/api/account/id/:id/wage', ensureJWT, require('./routes/account/wage/new.js'))
-app.delete('/api/account/id/:id/wage/:wageID', ensureJWT, require('./routes/account/wage/delete.js'))
-app.get('/api/account/id/:id/pay', ensureJWT, require('./routes/account/pay.js'))
+app.delete('/v1/accounts/:id', ensureJWT, require('./routes/account/delete.js'))
+app.post('/v1/accounts/:id/user', ensureJWT, require('./routes/account/user/new.js'))
+app.put('/v1/accounts/:id', ensureJWT, require('./routes/account/update.js'))
 
-app.get('/api/account/typeahead', require('./routes/account/typeahead.js'))
+app.get('/v1/accounts/:id/wage', ensureJWT, require('./routes/account/wage/root.js'))
+app.post('/v1/accounts/:id/wage', ensureJWT, require('./routes/account/wage/new.js'))
+app.delete('/v1/accounts/:id/wage/:wageID', ensureJWT, require('./routes/account/wage/delete.js'))
+app.get('/v1/accounts/:id/pay', ensureJWT, require('./routes/account/pay.js'))
 
-app.get('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/root.js'))
-app.post('/api/account/id/:id/transaction', ensureJWT, require('./routes/account/transaction/new.js'))
+app.get('/v1/accounts/:id/transaction', ensureJWT, require('./routes/account/transaction/root.js'))
+app.post('/v1/accounts/:id/transaction', ensureJWT, require('./routes/account/transaction/new.js'))
 app.get('/api/transaction', ensureJWT, require('./routes/transaction/root.js'))
 app.delete('/api/transaction/id/:id', ensureJWT, require('./routes/transaction/delete.js'))
 
@@ -166,7 +164,7 @@ app.get('/api/auth/return', function (req, res, next) {
 /**
  * Handles the client requesting a JWT
  */
-app.get('/api/auth/jwt', ensureAuthenticated, function (req, res, next) {
+app.get('/v1/auth/jwt', ensureAuthenticated, function (req, res, next) {
   jwt.sign({
     name: req.user.name.toLowerCase(),
     admin: admins.includes(req.user.name.toLowerCase())
