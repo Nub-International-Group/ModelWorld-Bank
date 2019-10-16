@@ -191,8 +191,17 @@ app.use(function (req, res, next) {
  * Error Handler
  */
 app.use(function (err, req, res, next) {
+  if (!err.code) err.code = 500
+
+  if (err.code === 500) {
+    console.log('an error occurred handling a request:')
+    console.log(err)
+
+    err.message = 'Something went wrong! Blame nub...'
+  }
+
   res.status(err.code).json({err: {code: err.code, desc: err.message}})
-  console.log(err)
+
 })
 
 app.listen(process.env.PORT || 8080)
