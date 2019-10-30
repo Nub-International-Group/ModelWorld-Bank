@@ -23,8 +23,10 @@ mongoose.connection.on('error', function (err) {
 })
 
 const app = express()
-app.use(cors({credentials: true, origin: ['https://bank.nub.international', 'http://127.0.0.1:8080']}))
-app.options('*', cors({credentials: true, origin: ['https://bank.nub.international', 'http://127.0.0.1:8080']}))
+
+app.use(cors({credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080']}))
+app.options('*', cors({credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080']}))
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
@@ -62,12 +64,12 @@ passport.use(new RedditStrategy({
   })
 }))
 
-function ensureAuthenticated (req, res, next) {
+const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) { return next() }
   res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
 }
 
-function ensureJWT (req, res, next) {
+const ensureJWT = (req, res, next) => {
   if (req.headers.jwt) {
     jwt.verify(req.headers.jwt, config.secret, function (err, decoded) {
       if (err) {
@@ -80,6 +82,18 @@ function ensureJWT (req, res, next) {
     res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
   }
 }
+
+const ensureAdmin = (req, res, next) => {
+  if (req.decoded.admin) {
+    return next()
+  }
+
+  const err = new Error('You need higher privileges to complete this action.')
+  err.code = 403
+
+  next(err)
+}
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -103,7 +117,7 @@ app.get('/v1/accounts', ensureJWT, require('./routes/account/root.js'))
 app.post('/v1/accounts', ensureJWT, require('./routes/account/new.js'))
 
 app.get('/v1/accounts/:id', ensureJWT, require('./routes/account/individual.js'))
-app.delete('/v1/accounts/:id', ensureJWT, require('./routes/account/delete.js'))
+app.delete('/v1/accounts/:id', ensureJWT, ensureAdmin, require('./routes/account/delete.js'))
 app.put('/v1/accounts/:id', ensureJWT, require('./routes/account/update.js'))
 
 app.post('/v1/accounts/:id/users', ensureJWT, require('./routes/account/user/new.js'))
@@ -204,4 +218,4 @@ app.use(function (err, req, res, next) {
 
 })
 
-app.listen(process.env.PORT || 8080)
+app.listen(process.env.PORT || 4040)

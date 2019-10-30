@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile]
+    environment:
+      TEST: 'TEST'
+    image: mwb-api
+    networks:
+    - mwb-workspace
+    ports:
+    - '4040:4040'
+    volumes:
+    - $PWD/index.js:/app/index.js
+    - $PWD/models:/app/models
+    - $PWD/routes:/app/routes
+    - $PWD/configs:/app/configs
+networks:
+  mwb-workspace:
+    name: mwb-workspace
