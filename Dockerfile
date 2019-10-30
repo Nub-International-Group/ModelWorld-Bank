@@ -1,6 +1,6 @@
 FROM node:8
 
-WORKDIR /opt/mw-bank
+WORKDIR /app
 
 COPY yarn.lock package*.json ./
 
