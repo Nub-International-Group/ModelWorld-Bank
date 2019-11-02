@@ -6,8 +6,6 @@ module.exports = function (req, res, next) {
       return next(err)
     }
 
-    console.log(documents)
-
     return res.status(200).json(documents)
   })
 }
