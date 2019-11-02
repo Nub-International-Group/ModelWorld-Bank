@@ -11,6 +11,6 @@ module.exports = function (req, res, next) {
       return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
     }
 
-    return wageRoot(req, res, next) // Returns document with updated data
+    return res.status(200).json(document)
   })
 }
