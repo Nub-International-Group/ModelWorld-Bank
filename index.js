@@ -140,7 +140,7 @@ app.post('/v1/requests/:id', ensureJWT, require('./routes/request/update.js'))
 
 app.get('/v1/wages', ensureJWT, require('./routes/wage/root.js'))
 app.put('/v1/wages/:id', ensureJWT, ensureAdmin, require('./routes/wage/update.js'))
-app.delete('/v1/wages/:id', ensureJWT, require('./routes/wage/delete.js'))
+app.delete('/v1/wages/:id', ensureJWT, ensureAdmin, require('./routes/wage/delete.js'))
 app.post('/v1/wages', ensureJWT, require('./routes/wage/new.js'))
 app.post('/v1/wages/purge', ensureJWT, require('./routes/wage/purge.js')) // Handles post GE wipe of wages
 
