@@ -2,7 +2,7 @@ const wage = require('../../models/wage.js')
 const wageRoot = require('./root.js')
 
 module.exports = function (req, res, next) {
-  wage.findOneAndUpdate({'_id': req.params.id}, req.body.updatedDocument, function (err, document) {
+  wage.findOneAndUpdate({'_id': req.params.id}, req.body, function (err, document) {
     if (err) {
       return next(err)
     }
