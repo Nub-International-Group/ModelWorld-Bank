@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
     await wage.remove({'_id': req.params.id})
     await wageRequest.remove({ 'wage': req.params.id })
 
-    await wageRoot(req, res, next)
+    return res.status(204).end()
   } catch (err) {
     next(err)
   }
