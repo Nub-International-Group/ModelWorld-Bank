@@ -1,16 +1,20 @@
 const wage = require('../../models/wage.js')
 const wageRoot = require('./root.js')
 
-module.exports = function (req, res, next) {
-  wage.findOneAndUpdate({'_id': req.params.id}, req.body, function (err, document) {
-    if (err) {
-      return next(err)
-    }
+module.exports = async (req, res, next) => {
+  try {
+    const updatedDoc = await wage.findOneAndUpdate({'_id': req.params.id}, req.body).exec()
 
-    if (document == null) {
-      return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
+    if (!updatedDoc) {
+      const err = new Error('Resource not found')
+      err.code = 404
+
+      throw err
     }
 
     return res.status(200).json(document)
-  })
+  } catch (err) {
+    next(err)
+  }
+
 }
