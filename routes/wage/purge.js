@@ -4,16 +4,12 @@
 
 const Account = require('../../models/account.js')
 
-module.exports = function (req, res, next) {
-  if (req.decoded.admin === true) {
-    Account.update({}, {wages: []}, {multi: true}, function (err, document) {
-      if (err) {
-        return next(err)
-      }
+module.exports = async (req, res, next) => {
+  try {
+    await Account.update({}, {wages: []}, {multi: true}).exec()
 
-      return res.status(200).json({}) // Returns document with updated data
-    })
-  } else {
-    return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
+    return res.status(204).end()
+  } catch (err) {
+    next(err)
   }
 }
