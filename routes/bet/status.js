@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
         req.body.status = statuses.indexOf(req.body.status)
 
         if (req.body.status == -1) {
-          return res.status(500).json({err: {code: 500, desc: 'Invalid data entry, Status invalid...'}})
+          return res.status(500).json({ err: { code: 500, desc: 'Invalid data entry, Status invalid...' } })
         }
 
         if (req.body.status !== 2) {
@@ -31,14 +31,13 @@ module.exports = function (req, res, next) {
             return res.status(200).json({})
           })
         }
-
       } else {
         throw new Error(404)
       }
     }).catch((err) => {
-      return res.status(500).json({err: {code: 500, desc: 'Something went wrong.'}})
+      return res.status(500).json({ err: { code: 500, desc: 'Something went wrong.' } })
     })
   } else {
-    return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
+    return res.status(403).json({ err: { code: 403, desc: 'You do not have permission' } })
   }
 }

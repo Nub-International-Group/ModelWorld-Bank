@@ -15,14 +15,14 @@ module.exports = async function (req, res, next) {
 
         return res.status(200).json(accounts)
       } else {
-        return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
+        return res.status(403).json({ err: { code: 403, desc: 'You do not have permission' } })
       }
     }
 
     if (req.query.public !== undefined) {
       const company = req.query.type === 'company'
 
-      return res.status(200).json({leaderboard: (company ? companyLeaderboard : leaderboard), lastUpdated})
+      return res.status(200).json({ leaderboard: (company ? companyLeaderboard : leaderboard), lastUpdated })
     }
 
     if (req.query.typeahead !== undefined) {
@@ -36,7 +36,7 @@ module.exports = async function (req, res, next) {
 }
 
 function updateLeaderboard () {
-  Account.find({public: true}).exec((err, accounts) => {
+  Account.find({ public: true }).exec((err, accounts) => {
     if (err) {
       console.log(err)
     }

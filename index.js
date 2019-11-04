@@ -24,8 +24,8 @@ mongoose.connection.on('error', function (err) {
 
 const app = express()
 
-app.use(cors({credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080']}))
-app.options('*', cors({credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080']}))
+app.use(cors({ credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080'] }))
+app.options('*', cors({ credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080'] }))
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -33,7 +33,7 @@ app.use(bodyParser.json())
 // sessions are only used for the authentication pathway. JWTs are usually used instead.
 app.use(session({
   secret: config.secret,
-  store: new MongoStore({mongooseConnection: mongoose.connection})
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
 
 /**
@@ -66,20 +66,20 @@ passport.use(new RedditStrategy({
 
 const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) { return next() }
-  res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
+  res.status(401).json({ err: { code: 401, desc: 'Not logged in' } })
 }
 
 const ensureJWT = (req, res, next) => {
   if (req.headers.jwt) {
     jwt.verify(req.headers.jwt, config.secret, function (err, decoded) {
       if (err) {
-        return res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
+        return res.status(401).json({ err: { code: 401, desc: 'Not logged in' } })
       }
       req.decoded = decoded
       next()
     })
   } else {
-    res.status(401).json({err: {code: 401, desc: 'Not logged in'}})
+    res.status(401).json({ err: { code: 401, desc: 'Not logged in' } })
   }
 }
 
@@ -105,7 +105,7 @@ app.use(passport.session())
  * Health Endpoint. Sends 200 if up
  */
 app.get('/v1/healthz', function (req, res, next) {
-  res.status(200).json({time: new Date(), uptime: process.uptime(), memory: process.memoryUsage(), version: pfile.version})
+  res.status(200).json({ time: new Date(), uptime: process.uptime(), memory: process.memoryUsage(), version: pfile.version })
 })
 
 /**
@@ -157,7 +157,7 @@ const admins = [
   'ohprkl'
 ]
 
- /**
+/**
   * Gets the redirect url and sends it to the client which will then redirect
   */
 app.get('/v1/auth', function (req, res, next) {
@@ -187,7 +187,7 @@ app.get('/v1/auth/jwt', ensureAuthenticated, function (req, res, next) {
   }, config.secret, function (err, jwtString) {
     if (err) { return next(err) }
 
-    res.status(200).json({'jwt': jwtString})
+    res.status(200).json({ 'jwt': jwtString })
 
     req.session.destroy() // Terminate the login and user. JWT then becomes the soul form of session.
     req.user = null
@@ -198,7 +198,7 @@ app.get('/v1/auth/jwt', ensureAuthenticated, function (req, res, next) {
  * 404 Handler
  */
 app.use(function (req, res, next) {
-  res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
+  res.status(404).json({ err: { code: 404, desc: 'Resource not found' } })
 })
 
 /**
@@ -214,8 +214,7 @@ app.use(function (err, req, res, next) {
     err.message = 'Something went wrong! Blame nub...'
   }
 
-  res.status(err.code).json({err: {code: err.code, desc: err.message}})
-
+  res.status(err.code).json({ err: { code: err.code, desc: err.message } })
 })
 
 app.listen(process.env.PORT || 4040)

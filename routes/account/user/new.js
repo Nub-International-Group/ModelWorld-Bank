@@ -1,25 +1,25 @@
 const Account = require('../../../models/account.js')
 
 module.exports = function (req, res, next) {
-  Account.findOne({'_id': req.params.id}).populate('wages').exec(function (err, document) {
+  Account.findOne({ '_id': req.params.id }).populate('wages').exec(function (err, document) {
     if (err) {
       return next(err)
     }
 
     if (document == null) {
-      return res.status(404).json({err: {code: 404, desc: 'Resource not found'}})
+      return res.status(404).json({ err: { code: 404, desc: 'Resource not found' } })
     }
 
     if ((document.users[req.decoded.name] === 3) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
       req.body.newDocument.name = req.body.newDocument.name.toLowerCase()
 
       if (req.body.newDocument.name === req.decoded.name) {
-        return res.status(500).json({err: {code: 500, desc: 'You can\'t adjust your own permissions'}})
+        return res.status(500).json({ err: { code: 500, desc: 'You can\'t adjust your own permissions' } })
       }
 
       let parsedLevel = parseInt(req.body.newDocument.level)
       if (isNaN(parsedLevel)) {
-        return res.status(500).json({err: {code: 500, desc: 'Invalid level entry'}})
+        return res.status(500).json({ err: { code: 500, desc: 'Invalid level entry' } })
       }
 
       if (parsedLevel <= 3 && parsedLevel > 0) {
@@ -28,7 +28,7 @@ module.exports = function (req, res, next) {
         if (document.users[req.body.newDocument.name] !== undefined) {
           delete document.users[req.body.newDocument.name]
         } else {
-          return res.status(500).json({err: {code: 500, desc: 'You can\'t remove a user that doesn\'t exist'}})
+          return res.status(500).json({ err: { code: 500, desc: 'You can\'t remove a user that doesn\'t exist' } })
         }
       }
 
@@ -42,7 +42,7 @@ module.exports = function (req, res, next) {
         return res.status(200).json(document)
       })
     } else {
-      return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
+      return res.status(403).json({ err: { code: 403, desc: 'You do not have permission' } })
     }
   })
 }

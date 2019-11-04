@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const Transaction = require('./transaction')
 
-let schema = new mongoose.Schema({
-  _id: {type: String, default: shortid.generate},
+const schema = new mongoose.Schema({
+  _id: { type: String, default: shortid.generate },
   amount: Number,
   currency: String,
   created: { type: Date, default: Date.now },
@@ -13,16 +13,16 @@ let schema = new mongoose.Schema({
   odd: Number
 }, { collection: 'wagers' })
 
-schema.methods.resolveWager = function(winningOption, callback) {
-  if (winningOption == this.betOption) {
+schema.methods.resolveWager = function (winningOption, callback) {
+  if (winningOption === this.betOption) {
     Transaction.create({
       from: '*NubBets*',
       to: this.account,
       amount: this.amount * this.odd,
       currency: this.currency,
-      description: 'Original Bet: '+ this.amount + ' ' + this.currency + ' at ' + this.odd,
+      description: 'Original Bet: ' + this.amount + ' ' + this.currency + ' at ' + this.odd,
       authoriser: 'SYSTEM'
-    }, function(err, doc) {
+    }, function (err, doc) {
       if (err) return callback(err)
 
       callback(null)
@@ -32,6 +32,6 @@ schema.methods.resolveWager = function(winningOption, callback) {
   }
 }
 
-let model = mongoose.model('wager', schema)
+const model = mongoose.model('wager', schema)
 
 module.exports = model

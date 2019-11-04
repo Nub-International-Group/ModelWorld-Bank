@@ -3,19 +3,19 @@ const shortid = require('shortid') // Smarter, shorter IDs than the default Mong
 const async = require('async')
 const Wager = require('./wager.js')
 
-let betOption = new mongoose.Schema({
-  _id: {type: String, default: shortid.generate},
+const betOption = new mongoose.Schema({
+  _id: { type: String, default: shortid.generate },
   name: String,
   description: String,
   currentOdds: Number
 })
 
-let schema = new mongoose.Schema({
-  _id: {type: String, default: shortid.generate},
+const schema = new mongoose.Schema({
+  _id: { type: String, default: shortid.generate },
   name: String,
   description: String,
   created: { type: Date, default: Date.now },
-  options: [ betOption ],
+  options: [betOption],
   status: Number // 0 - Not Open 1 - Open 2 - Paid out
 }, { collection: 'bets' })
 
@@ -27,7 +27,7 @@ let schema = new mongoose.Schema({
  */
 schema.methods.payOut = function (winner, callback) {
   if (this.status !== 2) {
-    Wager.find({bet: this._id}).exec((err, wagers) => {
+    Wager.find({ bet: this._id }).exec((err, wagers) => {
       if (err) {
         return callback(err)
       }
@@ -52,10 +52,8 @@ schema.methods.payOut = function (winner, callback) {
       })
     })
   }
-
-
 }
 
-let model = mongoose.model('bet', schema)
+const model = mongoose.model('bet', schema)
 
 module.exports = model
