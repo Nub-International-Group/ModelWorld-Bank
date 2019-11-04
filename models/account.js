@@ -6,7 +6,7 @@ const Transaction = require('./transaction.js')
 const WageRequest = require('./wageRequest')
 const nodeSchedule = require('node-schedule')
 
-let schema = new mongoose.Schema({
+const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   name: String,
   description: String,
@@ -16,11 +16,11 @@ let schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now },
-  company: {type: Boolean, default: false}
+  company: { type: Boolean, default: false }
 }, { collection: 'accounts' })
 
 schema.statics.payAll = function (callback) {
-  this.model('account').find({company: false}).populate('wages').exec(function (err, accounts) {
+  this.model('account').find({ company: false }).populate('wages').exec(function (err, accounts) {
     if (err) {
       return callback(err)
     }
@@ -46,7 +46,7 @@ schema.methods.calculateBalance = function () {
   // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
   return new Promise((resolve, reject) => {
     let $this = this
-    Transaction.find({'to': this._id}).sort('-created').populate('from').exec(function (err, tos) {
+    Transaction.find({ 'to': this._id }).sort('-created').populate('from').exec(function (err, tos) {
       if (err) {
         return reject(err)
       }
@@ -61,7 +61,7 @@ schema.methods.calculateBalance = function () {
         }
       })
 
-      Transaction.find({'from': $this._id}).sort('-created').populate('to').exec(function (err, froms) {
+      Transaction.find({ 'from': $this._id }).sort('-created').populate('to').exec(function (err, froms) {
         if (err) {
           return reject(err)
         }
@@ -76,14 +76,14 @@ schema.methods.calculateBalance = function () {
 
         let transactions = tos.concat(froms)
 
-        return resolve({transactions, balance})
+        return resolve({ transactions, balance })
       })
     })
   })
 }
 
 schema.methods.fetchWageRequests = function (callback) {
-  WageRequest.find({account: this._id}).populate('wage').exec(function (err, wageRequests) {
+  WageRequest.find({ account: this._id }).populate('wage').exec(function (err, wageRequests) {
     if (err) {
       return callback(err)
     }
@@ -102,7 +102,7 @@ schema.methods.payWages = function (callback) {
       return callback(err)
     }
 
-    let yearlyUnscaled = {}
+    const yearlyUnscaled = {}
 
     this.wages.forEach(function (wage) {
       if (yearlyUnscaled[wage.currency]) {
@@ -112,12 +112,12 @@ schema.methods.payWages = function (callback) {
       }
     })
 
-    let wageToPay = {}
+    const wageToPay = {}
 
-    let yearsSinceLastwage = (moment().diff(this.lastPaid, 'years', true) * 10)
+    const yearsSinceLastwage = (moment().diff(this.lastPaid, 'years', true) * 10)
 
-    let transactions = []
-    for (let currency in yearlyUnscaled) {
+    const transactions = []
+    for (const currency in yearlyUnscaled) {
       if (yearlyUnscaled.hasOwnProperty(currency)) {
         wageToPay[currency] = +(yearlyUnscaled[currency] * yearsSinceLastwage).toFixed(2)
 
@@ -134,7 +134,7 @@ schema.methods.payWages = function (callback) {
           Taxation System:
         */
 
-        let tax = [
+        const tax = [
           {
             topEnd: 12000,
             rate: 0
@@ -157,7 +157,7 @@ schema.methods.payWages = function (callback) {
         let taxAmount = 0
 
         for (let bracket = 0; bracket < tax.length; bracket++) {
-          let taxBracket = tax[bracket]
+          const taxBracket = tax[bracket]
 
           if (unCalculated >= taxBracket.topEnd) {
             taxAmount += taxBracket.topEnd * taxBracket.rate
@@ -168,7 +168,7 @@ schema.methods.payWages = function (callback) {
           }
         }
 
-        let taxAmountScaled = +(taxAmount * yearsSinceLastwage).toFixed(2)
+        const taxAmountScaled = +(taxAmount * yearsSinceLastwage).toFixed(2)
 
         transactions.push({
           to: '*economy*',
@@ -189,7 +189,7 @@ schema.methods.payWages = function (callback) {
       this.lastPaid = Date.now()
       this.markModified('lastPaid')
 
-      if (this.wages == ['*unemployed*']) {
+      if (this.wages === ['*unemployed*']) {
         this.wages = []
         this.markModified('wages')
       }
@@ -205,14 +205,15 @@ schema.methods.payWages = function (callback) {
   })
 }
 
-let model = mongoose.model('account', schema)
+const model = mongoose.model('account', schema)
 
 module.exports = model
 
 nodeSchedule.scheduleJob('40 18 * * *', function () {
   model.payAll(function (err, deets) {
     if (err) {
-      console.log('hmm')
+      console.log('An error occured in the payment job')
+      console.log(err)
     }
   })
 })

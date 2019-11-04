@@ -4,10 +4,10 @@ const Transaction = require('../../models/transaction.js')
 const Bet = require('../../models/bet.js')
 
 module.exports = function (req, res, next) {
-  Promise.all([ Account.findOne({_id: req.body.target}).exec(), Bet.findOne({_id: req.body.bet}).exec()]).then((values) => {
+  Promise.all([ Account.findOne({ _id: req.body.target }).exec(), Bet.findOne({ _id: req.body.bet }).exec()]).then((values) => {
     let account = values[0]
     let bet = values[1]
-    
+
     let amount = Number(req.body.amount)
     if (!(account && bet)) {
       throw new Error('Invalid references.')

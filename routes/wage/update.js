@@ -3,7 +3,7 @@ const wageRoot = require('./root.js')
 
 module.exports = async (req, res, next) => {
   try {
-    const updatedDoc = await wage.findOneAndUpdate({'_id': req.params.id}, req.body).exec()
+    const updatedDoc = await wage.findOneAndUpdate({ '_id': req.params.id }, req.body).exec()
 
     if (!updatedDoc) {
       const err = new Error('Resource not found')
@@ -16,5 +16,4 @@ module.exports = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
-
 }

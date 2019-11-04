@@ -17,6 +17,6 @@ module.exports = function (req, res, next) {
       return wageRoot(req, res, next) // Returns document with updated data
     })
   } else {
-    return res.status(403).json({err: {code: 403, desc: 'You do not have permission'}})
+    return res.status(403).json({ err: { code: 403, desc: 'You do not have permission' } })
   }
 }
