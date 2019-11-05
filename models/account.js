@@ -16,7 +16,7 @@ const schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now },
-  company: { type: Boolean, default: false }
+  accountType: { type: String, ref: 'AccountType' }
 }, { collection: 'accounts' })
 
 schema.statics.payAll = function (callback) {
@@ -45,13 +45,12 @@ schema.methods.calculateBalance = function () {
   // TODO: Consider an approach where the to and froms are found simultanously and totted up, then finally added together. Possible enhancement to perf. - Async JS?
   // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
   return new Promise((resolve, reject) => {
-    let $this = this
-    Transaction.find({ 'to': this._id }).sort('-created').populate('from').exec(function (err, tos) {
+    Transaction.find({ to: this._id }).sort('-created').populate('from').exec((err, tos) => {
       if (err) {
         return reject(err)
       }
 
-      let balance = {}
+      const balance = {}
 
       tos.forEach(function (element) {
         if (balance[element.currency] === undefined) {
@@ -61,7 +60,7 @@ schema.methods.calculateBalance = function () {
         }
       })
 
-      Transaction.find({ 'from': $this._id }).sort('-created').populate('to').exec(function (err, froms) {
+      Transaction.find({ from: this._id }).sort('-created').populate('to').exec((err, froms) => {
         if (err) {
           return reject(err)
         }
@@ -74,7 +73,7 @@ schema.methods.calculateBalance = function () {
           }
         })
 
-        let transactions = tos.concat(froms)
+        const transactions = tos.concat(froms)
 
         return resolve({ transactions, balance })
       })
@@ -205,14 +204,14 @@ schema.methods.payWages = function (callback) {
   })
 }
 
-const model = mongoose.model('account', schema)
+const model = mongoose.model('Account', schema)
 
 module.exports = model
 
 nodeSchedule.scheduleJob('40 18 * * *', function () {
   model.payAll(function (err, deets) {
     if (err) {
-      console.log('An error occured in the payment job')
+      console.log('An error occurred in the payment job')
       console.log(err)
     }
   })

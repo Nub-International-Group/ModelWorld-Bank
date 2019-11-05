@@ -9,6 +9,6 @@ const schema = new mongoose.Schema({
   currency: String
 }, { collection: 'wages' })
 
-const model = mongoose.model('wage', schema)
+const model = mongoose.model('Wage', schema)
 
 module.exports = model

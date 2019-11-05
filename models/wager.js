@@ -7,8 +7,8 @@ const schema = new mongoose.Schema({
   amount: Number,
   currency: String,
   created: { type: Date, default: Date.now },
-  bet: { type: String, ref: 'bet' },
-  account: { type: String, ref: 'account' },
+  bet: { type: String, ref: 'Bet' },
+  account: { type: String, ref: 'Account' },
   betOption: String,
   odd: Number
 }, { collection: 'wagers' })
@@ -32,6 +32,6 @@ schema.methods.resolveWager = function (winningOption, callback) {
   }
 }
 
-const model = mongoose.model('wager', schema)
+const model = mongoose.model('Wager', schema)
 
 module.exports = model
