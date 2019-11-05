@@ -31,6 +31,6 @@ const schema = new mongoose.Schema({
   }
 }, { collection: 'account-types' })
 
-const model = mongoose.model('account-type', schema)
+const model = mongoose.model('AccountType', schema)
 
 module.exports = model

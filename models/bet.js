@@ -54,6 +54,6 @@ schema.methods.payOut = function (winner, callback) {
   }
 }
 
-const model = mongoose.model('bet', schema)
+const model = mongoose.model('Bet', schema)
 
 module.exports = model
