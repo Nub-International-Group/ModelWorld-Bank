@@ -77,7 +77,7 @@ app.use(passport.session())
 /**
  * Health Endpoint. Sends 200 if up
  */
-app.get('/v1/healthz', (req, res, next) => {
+app.get('/v1/healthz', (req, res) => {
   res.status(200).json({ time: new Date(), uptime: process.uptime(), memory: process.memoryUsage(), version: pfile.version })
 })
 
@@ -85,25 +85,6 @@ app.get('/v1/healthz', (req, res, next) => {
  * Auth Endpoints Begin
  */
 app.get('/v1/users/me/accounts', middleware.ensureJWT, require('./controllers/account/user-accounts.js'))
-
-app.get('/v1/accounts', middleware.ensureJWT, require('./controllers/account/root.js'))
-app.post('/v1/accounts', middleware.ensureJWT, require('./controllers/account/new.js'))
-
-app.get('/v1/accounts/:id', middleware.ensureJWT, require('./controllers/account/individual.js'))
-app.delete('/v1/accounts/:id', middleware.ensureJWT, middleware.ensureAdmin, require('./controllers/account/delete.js'))
-app.put('/v1/accounts/:id', middleware.ensureJWT, require('./controllers/account/update.js'))
-
-app.post('/v1/accounts/:id/users', middleware.ensureJWT, require('./controllers/account/user/new.js'))
-
-app.get('/v1/accounts/:id/wages', middleware.ensureJWT, require('./controllers/account/wage/root.js'))
-app.post('/v1/accounts/:id/wages', middleware.ensureJWT, require('./controllers/account/wage/new.js'))
-app.delete('/v1/accounts/:id/wages/:wageID', middleware.ensureJWT, require('./controllers/account/wage/delete.js'))
-app.get('/v1/accounts/:id/pay', middleware.ensureJWT, require('./controllers/account/pay.js'))
-
-app.get('/v1/accounts/:id/transactions', middleware.ensureJWT, require('./controllers/account/transaction/root.js'))
-app.post('/v1/accounts/:id/transactions', middleware.ensureJWT, require('./controllers/account/transaction/new.js'))
-
-app.get('/v1/accounts/:id/wagers', middleware.ensureJWT, controllers.wager.findByAccount)ß
 
 app.use('/v1/accounts', middleware.ensureJWT, controllers.account.router)
 app.use('/v1/bets', middleware.ensureJWT, controllers.bet.router)

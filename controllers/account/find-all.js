@@ -59,7 +59,7 @@ function updateLeaderboard () {
 
       accounts.forEach((acc) => {
         let bal = 0
-        if (balances[acc._id]) bal = balances[acc._id]['GBP'] || 0
+        if (balances[acc._id]) bal = balances[acc._id].GBP || 0
 
         if (!acc.company) {
           leaderboard.push({
