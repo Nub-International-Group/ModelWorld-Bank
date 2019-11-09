@@ -3,32 +3,18 @@ const router = (require('express')).Router()
 const Account = require('../../models/account.js')
 
 const controllers = require('../index')
-const middleware = require('../../middleware')
+const middleware = { ...require('../../middleware'), ...require('./middleware') }
+
+const subControllers = {
+  transaction: require('./transaction'),
+  wage: require('./wage'),
+  user: require('./user')
+}
 
 const findAll = require('./find-all')
 
 const findById = async (req, res, next) => {
-  try {
-    const account = await Account.findOne({ _id: req.params.id }).populate('wages').exec()
-
-    if (!account) {
-      const e = new Error('account does not exist')
-      e.statusCode = 404
-
-      throw e
-    }
-
-    if (!(account.users[req.decoded.name] >= 1 || req.decoded.admin === true)) {
-      const e = new Error('You do not have permission to access this account')
-      e.statusCode(403)
-
-      throw e
-    }
-
-    res.status(200).json(account)
-  } catch (e) {
-    next(e)
-  }
+  res.status(200).json(req.account)
 }
 
 const create = async (req, res, next) => {
@@ -52,7 +38,7 @@ const create = async (req, res, next) => {
 
 const deleteById = async (req, res, next) => {
   try {
-    await Account.remove({ _id: req.params.id })
+    await Account.remove({ _id: req.params.accountId })
 
     res.status(204).json({})
   } catch (e) {
@@ -62,33 +48,19 @@ const deleteById = async (req, res, next) => {
 
 const updateById = async (req, res, next) => {
   try {
-    const account = await Account.findOne({ _id: req.params.id }).populate('wages').exec()
-
-    if (account === null) {
-      const e = new Error('Resource not found')
-      e.statusCode = 404
-
-      throw e
-    }
-
-    if (!(document.users[req.decoded.name] >= 2 || req.decoded.admin === true)) {
-      const e = new Error('You do not have permissions')
-      e.statusCode = 403
-
-      throw e
-    }
+    const account = req.account
 
     for (const property in req.body.changes) {
       if (req.body.changes.hasOwnProperty(property)) {
         const possibleFields = ['description', 'public']
 
         if (possibleFields.includes(property)) {
-          document[property] = req.body.changes[property]
+          account[property] = req.body.changes[property]
         }
       }
     }
 
-    await document.save()
+    await account.save()
   } catch (e) {
     next(e)
   }
@@ -108,16 +80,7 @@ const payWagesPromisified = (account) => {
 
 const triggerWagePayment = async (req, res, next) => {
   try {
-    const account = await Account.findOne({ _id: req.params.id }).populate('wages').exec()
-
-    if (account === null) {
-      const e = new Error('Resource not found')
-      e.statusCode = 404
-
-      throw e
-    }
-
-    await payWagesPromisified(account)
+    await payWagesPromisified(req.account)
 
     res.status(204).end()
   } catch (err) {
@@ -127,21 +90,16 @@ const triggerWagePayment = async (req, res, next) => {
 
 router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
-router.get('/:id', findById)
-router.delete('/:id', deleteById)
-router.post('/:id', updateById)
-router.post('/:id/pay', middleware.ensureAdmin, triggerWagePayment)
+router.get('/:accountId', middleware.accountWithPerms(1), findById)
+router.delete('/:accountId', deleteById)
+router.post('/:accountId', middleware.accountWithPerms(2), updateById)
+router.post('/:accountId/pay', middleware.ensureAdmin, middleware.accountWithPerms(), triggerWagePayment)
 
-// TODO: Rewrite sub controllers or delegate these to the controllers for the related object
-router.get('/:id/wagers', controllers.wager.findByAccount)
-router.post('/:id/users', require('./user/new.js'))
+router.get('/:accountId/wagers', controllers.wager.findByAccount)
 
-router.get('/:id/wages', require('./wage/root.js'))
-router.post('/:id/wages', require('./wage/new.js'))
-router.delete('/:id/wages/:wageID', require('./wage/delete.js'))
-
-router.get('/:id/transactions', require('./transaction/root.js'))
-router.post('/:id/transactions', require('./transaction/new.js'))
+router.use('/:accountId/transactions', subControllers.transaction.router)
+router.use('/:accountId/wages', subControllers.wage.router)
+router.use('/:accountId/users', subControllers.user.router)
 
 module.exports = {
   router
