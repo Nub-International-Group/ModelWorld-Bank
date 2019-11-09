@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
   description: String,
   public: Boolean,
   verified: Boolean,
-  wages: [{ type: String, ref: 'wage' }], // wages: ['fdsuf923', 'ushdushfui', 'uishdfuis']
+  wages: [{ type: String, ref: 'Wage' }], // wages: ['fdsuf923', 'ushdushfui', 'uishdfuis']
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now },

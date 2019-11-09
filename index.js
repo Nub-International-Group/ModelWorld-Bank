@@ -8,7 +8,7 @@ const config = require('config')
 const session = require('express-session')
 const jwt = require('jsonwebtoken')
 
-const controllers = require('./controllers/index.js')
+const controllers = require('./controllers')
 
 const MongoStore = require('connect-mongo')(session)
 const RedditStrategy = require('passport-reddit').Strategy
