@@ -2,18 +2,20 @@ const router = (require('express')).Router()
 
 const Account = require('../../models/account.js')
 
-const controllers = require('../index')
-const middleware = { ...require('../../middleware'), ...require('./middleware') }
-
+const middleware = {
+  ...require('../../middleware'),
+  ...require('./middleware')
+}
 const subControllers = {
   transaction: require('./transaction'),
   wage: require('./wage'),
-  user: require('./user')
+  user: require('./user'),
+  wager: require('./wager')
 }
 
 const findAll = require('./find-all')
 
-const findById = async (req, res, next) => {
+const findById = async (req, res) => {
   res.status(200).json(req.account)
 }
 
@@ -95,11 +97,12 @@ router.delete('/:accountId', deleteById)
 router.post('/:accountId', middleware.accountWithPerms(2), updateById)
 router.post('/:accountId/pay', middleware.ensureAdmin, middleware.accountWithPerms(), triggerWagePayment)
 
-router.get('/:accountId/wagers', controllers.wager.findByAccount)
-
 router.use('/:accountId/transactions', subControllers.transaction.router)
 router.use('/:accountId/wages', subControllers.wage.router)
 router.use('/:accountId/users', subControllers.user.router)
+router.use('/:accountId/wagers', subControllers.wager.router)
+
+router.param('accountId', middleware.fetchAccount)
 
 module.exports = {
   router

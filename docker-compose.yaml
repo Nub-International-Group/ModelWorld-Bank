@@ -14,7 +14,8 @@ services:
     volumes:
     - $PWD/index.js:/app/index.js
     - $PWD/models:/app/models
-    - $PWD/routes:/app/routes
+    - $PWD/controllers:/app/controllers
+    - $PWD/middleware:/app/middleware
     - $PWD/configs:/app/configs
 networks:
   mwb-workspace:

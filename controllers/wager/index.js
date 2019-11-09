@@ -15,16 +15,6 @@ const findByBet = async (req, res, next) => {
   }
 }
 
-const findByAccount = async (req, res, next) => {
-  try {
-    const wagers = await Wager.find({ account: req.params.id }).populate('bet').exec()
-
-    res.status(200).json(wagers)
-  } catch (err) {
-    next(err)
-  }
-}
-
 const create = async (req, res, next) => {
   try {
     const account = await Account.findOne({ _id: req.body.target }).exec()
@@ -101,7 +91,6 @@ router.get('/bet/:id', findByBet)
 router.post('/', create)
 
 module.exports = {
-  findByAccount,
   findByBet,
   create,
   router

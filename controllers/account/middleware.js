@@ -1,13 +1,24 @@
 const Account = require('../../models/account.js')
 
+const fetchAccount = async (req, res, next) => {
+  try {
+    const account = await Account.findOne({ _id: req.params.accountId }).populate('wages').exec()
+
+    req.account = account
+    next()
+  } catch (e) {
+    return next(e)
+  }
+}
+
 const accountWithPerms = (permLevel) => {
-  return async (req, res, next) => {
+  return (req, res, next) => {
     try {
-      const account = await Account.findOne({ _id: req.params.accountId }).populate('wages').exec()
+      const account = req.account
 
       if (!account) {
         const e = new Error('account does not exist')
-        e.statusCode = 404
+        e.code = 404
 
         throw e
       }
@@ -15,13 +26,12 @@ const accountWithPerms = (permLevel) => {
       if (permLevel) {
         if (!(account.users[req.decoded.name] >= permLevel || req.decoded.admin === true)) {
           const e = new Error('You do not have permission to access this account')
-          e.statusCode(403)
+          e.code = 403
 
           throw e
         }
       }
-
-      req.account = account
+      next()
     } catch (e) {
       next(e)
     }
@@ -29,5 +39,6 @@ const accountWithPerms = (permLevel) => {
 }
 
 module.exports = {
-  accountWithPerms
+  accountWithPerms,
+  fetchAccount
 }
