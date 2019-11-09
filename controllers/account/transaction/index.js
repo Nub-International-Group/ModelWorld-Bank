@@ -17,7 +17,7 @@ const findByAccount = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const sendingAccount = await Account.findOne({ _id: req.params.accountId }).exec()
+    const sendingAccount = req.account
 
     if (sendingAccount == null) {
       const err = new Error('Sending account not found')
@@ -36,7 +36,7 @@ const create = async (req, res, next) => {
 
     if ((sendingAccount.users[req.decoded.name] === 3) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
       const targetAccount = await Account.findOne({ _id: req.body.target }).exec()
-      if (sendingAccount === null) {
+      if (targetAccount === null) {
         const err = new Error('Target account not found')
         err.code = 404
 

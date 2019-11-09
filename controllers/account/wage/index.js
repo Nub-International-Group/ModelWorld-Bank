@@ -7,7 +7,7 @@ const middleware = require('../middleware')
 const findByAccount = async (req, res, next) => {
   try {
     const account = req.account
-    const wageRequests = WageRequest.find({ account: account._id }).populate('wage').exec()
+    const wageRequests = await WageRequest.find({ account: account._id }).populate('wage').exec()
 
     res.status(200).json(wageRequests)
   } catch (e) {
