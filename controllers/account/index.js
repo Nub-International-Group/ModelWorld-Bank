@@ -17,7 +17,6 @@ const findAll = require('./find-all')
 
 const findById = async (req, res, next) => {
   try {
-    await req.account.populate('wages').execPopulate()
     res.status(200).json(req.account)
   } catch (e) {
     next(e)
