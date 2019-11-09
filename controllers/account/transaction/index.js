@@ -1,9 +1,23 @@
-const Account = require('../../../models/account.js')
-const Transaction = require('../../../models/transaction.js')
+const router = (require('express')).Router()
 
-module.exports = async function (req, res, next) {
+const Account = require('../../../models/account.js')
+const Transaction = require('../../../models/transaction')
+
+const middleware = require('../middleware')
+
+const findByAccount = async (req, res, next) => {
   try {
-    const sendingAccount = await Account.findOne({ '_id': req.params.id }).exec()
+    req.account.calculateBalance().then((data) => {
+      res.status(200).json(data)
+    }).catch(next)
+  } catch (e) {
+    next(e)
+  }
+}
+
+const create = async (req, res, next) => {
+  try {
+    const sendingAccount = await Account.findOne({ _id: req.params.accountId }).exec()
 
     if (sendingAccount == null) {
       const err = new Error('Sending account not found')
@@ -21,15 +35,15 @@ module.exports = async function (req, res, next) {
     }
 
     if ((sendingAccount.users[req.decoded.name] === 3) || (req.decoded.admin === true)) { // Permission level greater than 1 or they are admin
-      const targetAccount = await Account.findOne({ '_id': req.body.target }).exec()
-      if (sendingAccount == null) {
+      const targetAccount = await Account.findOne({ _id: req.body.target }).exec()
+      if (sendingAccount === null) {
         const err = new Error('Target account not found')
         err.code = 404
 
         throw err
       }
 
-      let amount = Number(req.body.amount)
+      const amount = Number(req.body.amount)
 
       if (isNaN(amount)) {
         const err = new Error('Invalid amount')
@@ -48,7 +62,7 @@ module.exports = async function (req, res, next) {
       const data = await sendingAccount.calculateBalance()
       if (data.balance[req.body.currency] || sendingAccount._id === '*economy*') {
         if (data.balance[req.body.currency] >= (amount + 10) || sendingAccount._id === '*economy*') {
-          let transactions = [{
+          const transactions = [{
             from: sendingAccount._id,
             to: targetAccount._id,
             amount: amount,
@@ -65,7 +79,7 @@ module.exports = async function (req, res, next) {
           }]
 
           await Transaction.insertMany(transactions)
-          return res.status(200).json({})
+          res.status(204).end()
         } else {
           throw new Error('Not enough balance')
         }
@@ -81,4 +95,11 @@ module.exports = async function (req, res, next) {
   } catch (err) {
     next(err)
   }
+}
+
+router.get('/', middleware.accountWithPerms(1), findByAccount)
+router.post('/', create)
+
+module.exports = {
+  router
 }
