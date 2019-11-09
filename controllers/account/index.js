@@ -15,8 +15,13 @@ const subControllers = {
 
 const findAll = require('./find-all')
 
-const findById = async (req, res) => {
-  res.status(200).json(req.account)
+const findById = async (req, res, next) => {
+  try {
+    await req.account.populate('wages').execPopulate()
+    res.status(200).json(req.account)
+  } catch (e) {
+    next(e)
+  }
 }
 
 const create = async (req, res, next) => {
@@ -24,7 +29,7 @@ const create = async (req, res, next) => {
     const newAccount = await Account.create({
       name: req.body.newDocument.name,
       description: req.body.newDocument.description,
-      public: (req.body.newDocument.public === 'true'), // Simple logical check to convert. We can roughly trust admin data.
+      public: (req.body.newDocument.public === 'true'),
       verified: true,
       company: (req.body.newDocument.company === 'true'),
       users: {

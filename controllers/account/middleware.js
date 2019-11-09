@@ -2,7 +2,7 @@ const Account = require('../../models/account.js')
 
 const fetchAccount = async (req, res, next) => {
   try {
-    const account = await Account.findOne({ _id: req.params.accountId }).populate('wages').exec()
+    const account = await Account.findOne({ _id: req.params.accountId }).exec()
 
     req.account = account
     next()
