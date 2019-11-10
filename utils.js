@@ -3,6 +3,13 @@ const generateParamMiddleware = (Model, name) => {
     try {
       const doc = await Model.findOne({ _id: req.params[name + 'Id'] }).exec()
 
+      if (!doc) {
+        const e = new Error(`Resource (${name}) by id (${req.params[name + 'Id']}) not found.`)
+        e.code = 404
+
+        throw e
+      }
+
       req[name] = doc
       next()
     } catch (e) {
