@@ -13,6 +13,7 @@ services:
     - '4040:4040'
     volumes:
     - $PWD/index.js:/app/index.js
+    - $PWD/utils.js:/app/utils.js
     - $PWD/models:/app/models
     - $PWD/controllers:/app/controllers
     - $PWD/middleware:/app/middleware

@@ -13,6 +13,8 @@ const subControllers = {
   wager: require('./wager')
 }
 
+const utils = require('../../utils')
+
 const findAll = require('./find-all')
 
 const findById = async (req, res, next) => {
@@ -106,7 +108,7 @@ router.use('/:accountId/wages', subControllers.wage.router)
 router.use('/:accountId/users', subControllers.user.router)
 router.use('/:accountId/wagers', subControllers.wager.router)
 
-router.param('accountId', middleware.fetchAccount)
+router.param('accountId', utils.generateParamMiddleware(Account, 'account'))
 
 module.exports = {
   router
