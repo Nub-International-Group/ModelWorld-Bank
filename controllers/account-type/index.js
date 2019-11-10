@@ -28,16 +28,19 @@ const findAll = async (req, res, next) => {
 
 const updateById = async (req, res, next) => {
   try {
-    const accountType = await AccountType.findOneAndUpdate({ _id: req.params.accountTypeId }, req.body).exec()
+    for (const property in req.body) {
+      if (req.body.hasOwnProperty(property)) {
+        const possibleFields = ['fields here']
 
-    if (!accountType) {
-      const err = new Error('Resource not found')
-      err.code = 404
-
-      throw err
+        if (possibleFields.includes(property)) {
+          req.accountType[property] = req.body[property]
+        }
+      }
     }
 
-    res.status(200).json(accountType)
+    await req.accountType.save()
+
+    res.status(200).json(req.accountType)
   } catch (err) {
     next(err)
   }
