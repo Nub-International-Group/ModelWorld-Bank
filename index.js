@@ -89,6 +89,7 @@ app.get('/v1/users/me/accounts', middleware.ensureJWT, require('./controllers/ac
 app.use('/v1/accounts', middleware.ensureJWT, controllers.account.router)
 app.use('/v1/account-types', middleware.ensureJWT, controllers.accountType.router)
 app.use('/v1/bets', middleware.ensureJWT, controllers.bet.router)
+app.use('/v1/properties', middleware.ensureJWT, controllers.property.router)
 app.use('/v1/requests', middleware.ensureJWT, controllers.request.router)
 app.use('/v1/transactions', middleware.ensureJWT, controllers.transaction.router)
 app.use('/v1/wages', middleware.ensureJWT, controllers.wage.router)
