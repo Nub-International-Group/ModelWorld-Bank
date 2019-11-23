@@ -9,7 +9,6 @@ const schema = new mongoose.Schema({
   name: String,
   description: String,
   corporate: Boolean,
-  verified: Boolean,
   options: {
     salary: Boolean,
     benefits: Boolean,
