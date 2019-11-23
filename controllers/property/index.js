@@ -1,17 +1,17 @@
 const router = (require('express')).Router()
 
-const AccountType = require('../../models/account-type.js')
+const Property = require('../../models/property.js')
 
 const middleware = require('../../middleware')
 const utils = require('../../utils')
 
 const create = async (req, res, next) => {
   try {
-    const newAccountType = await AccountType.create({
+    const newProperty = await Property.create({
       ...req.body
     })
 
-    res.status(200).json(newAccountType)
+    res.status(200).json(newProperty)
   } catch (err) {
     next(err)
   }
@@ -19,8 +19,8 @@ const create = async (req, res, next) => {
 
 const findAll = async (req, res, next) => {
   try {
-    const accountTypes = await AccountType.find({}).exec()
-    res.status(200).json(accountTypes)
+    const properties = await Property.find({}).exec()
+    res.status(200).json(properties)
   } catch (e) {
     next(e)
   }
@@ -38,12 +38,12 @@ const updateById = async (req, res, next) => {
         throw e
       }
 
-      req.accountType[field] = value
+      req.property[field] = value
     }
 
-    await req.accountType.save()
+    await req.property.save()
 
-    res.status(200).json(req.accountType)
+    res.status(200).json(req.property)
   } catch (err) {
     next(err)
   }
@@ -51,9 +51,9 @@ const updateById = async (req, res, next) => {
 
 router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
-router.put('/:accountTypeId', middleware.ensureAdmin, updateById)
+router.put('/:propertyId', updateById)
 
-router.param('accountTypeId', utils.generateParamMiddleware(AccountType, 'accountType'))
+router.param('propertyId', utils.generateParamMiddleware(Property, 'property'))
 
 module.exports = {
   router
