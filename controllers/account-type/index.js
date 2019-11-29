@@ -7,6 +7,7 @@ const utils = require('../../utils')
 
 const create = async (req, res, next) => {
   try {
+    delete req.body._id
     const newAccountType = await AccountType.create({
       ...req.body
     })
@@ -26,19 +27,10 @@ const findAll = async (req, res, next) => {
   }
 }
 
-const whitelistedFieldsForUpdate = ['fields here']
 const updateById = async (req, res, next) => {
   try {
     for (const field in req.body) {
-      const value = req.body[field]
-      if (!whitelistedFieldsForUpdate.includes(field)) {
-        const e = new Error('Forbidden to modify protected field')
-        e.code = 403
-
-        throw e
-      }
-
-      req.accountType[field] = value
+      req.accountType[field] = req.body[field]
     }
 
     await req.accountType.save()
