@@ -27,14 +27,14 @@ const findById = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
+    const owner = req.body.owner
+    delete req.body.owner
+    delete req.body._id
+
     const newAccount = await Account.create({
-      name: req.body.newDocument.name,
-      description: req.body.newDocument.description,
-      public: (req.body.newDocument.public === 'true'),
-      verified: true,
-      company: (req.body.newDocument.company === 'true'),
+      ...req.body,
       users: {
-        [req.body.newDocument.owner.toLowerCase()]: 3
+        [owner.toLowerCase()]: 3
       }
     })
 
@@ -58,17 +58,13 @@ const updateById = async (req, res, next) => {
   try {
     const account = req.account
 
-    for (const property in req.body.changes) {
-      if (req.body.changes.hasOwnProperty(property)) {
-        const possibleFields = ['description', 'public']
-
-        if (possibleFields.includes(property)) {
-          account[property] = req.body.changes[property]
-        }
-      }
+    for (const property in req.body) {
+      account[property] = req.body[property]
     }
 
     await account.save()
+
+    res.status(200).json(account)
   } catch (e) {
     next(e)
   }
@@ -100,7 +96,7 @@ router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
 router.get('/:accountId', middleware.accountWithPerms(1), findById)
 router.delete('/:accountId', deleteById)
-router.post('/:accountId', middleware.accountWithPerms(2), updateById)
+router.put('/:accountId', middleware.ensureAdmin, updateById)
 router.post('/:accountId/pay', middleware.ensureAdmin, middleware.accountWithPerms(), triggerWagePayment)
 
 router.use('/:accountId/transactions', subControllers.transaction.router)

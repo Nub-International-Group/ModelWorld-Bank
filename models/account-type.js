@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
     transactionFee: {
       mechanism: {
         type: String,
-        enum: ['absolute']
+        enum: ['percentage']
       },
       rate: Number
     },
@@ -26,7 +26,8 @@ const schema = new mongoose.Schema({
       },
       rate: Number
     },
-    betting: Boolean
+    betting: Boolean,
+    property: Boolean
   }
 }, { collection: 'account-types' })
 
