@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const config = require('config')
 const logger = require('pino')()
-const Account = require('./models/account')
+const { Account } = require('./models')
 
 mongoose.connect(config.mongoURL)
 mongoose.Promise = Promise

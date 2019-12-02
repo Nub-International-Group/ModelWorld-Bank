@@ -23,7 +23,7 @@ spec:
         runAsUser: 0
       containers:
       - image: gcr.io/main-219410/mw-bank-api:latest
-        command: ['/bin/node']
+        command: ['node']
         args: ['/app/index.js']
         imagePullPolicy: Always
         name: mwbank
@@ -40,6 +40,8 @@ spec:
           value: 2EX52elJz-qVdw
         - name: MWB_REDDIT_SECRET
           value: Ej2zfQXoFQ_j6Ea_QCnKQcujLT4
+        - name: PORT
+          value: '8080'
         ports:
         - containerPort: 8080
           name: web

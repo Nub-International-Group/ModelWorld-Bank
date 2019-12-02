@@ -1,7 +1,7 @@
 const router = (require('express')).Router()
 
 const Account = require('../../models/account.js')
-const WageRequest = require('../../models/wageRequest.js')
+const WageRequest = require('../../models/wage-request.js')
 
 const middleware = require('../../middleware')
 

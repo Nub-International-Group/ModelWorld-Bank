@@ -2,8 +2,7 @@ const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const moment = require('moment')
 
-const Transaction = require('./transaction.js')
-const WageRequest = require('./wageRequest')
+const { Transaction, WageRequest } = require('./index')
 
 const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
