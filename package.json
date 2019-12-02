@@ -24,6 +24,7 @@
     "node-schedule": "^1.2.5",
     "passport": "^0.4.0",
     "passport-reddit": "^0.2.4",
+    "pino": "^5.14.0",
     "shortid": "^2.2.8"
   },
   "devDependencies": {
