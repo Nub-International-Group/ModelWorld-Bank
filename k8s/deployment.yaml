@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mwbank
+  labels:
+    app: mwbank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mwbank
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mwbank
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+      - image: gcr.io/main-219410/mw-bank-api:latest
+        command: ['/bin/node']
+        args: ['/app/index.js']
+        imagePullPolicy: Always
+        name: mwbank
+        env:
+        - name: MWB_MONGO
+          value: "mongodb://mongo-0.mongo.default.svc.cluster.local/mWorldProd"
+        - name: MWB_DEPLOYMENT_ADDRESS
+          value: https://api.nub.international
+        - name: MWB_CLIENT_ADDRESS
+          value: https://bank.nub.international
+        - name: MWB_SECRET
+          value: RubbishSecret
+        - name: MWB_REDDIT_KEY
+          value: 2EX52elJz-qVdw
+        - name: MWB_REDDIT_SECRET
+          value: Ej2zfQXoFQ_j6Ea_QCnKQcujLT4
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 10m

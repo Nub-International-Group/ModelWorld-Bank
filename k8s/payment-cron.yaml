@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: mwbank
+  name: payment-cron
+spec:
+  schedule: "0 18 * * *"
+jobTemplate:
+  spec:
+    template:
+      spec:
+        containers:
+        - image: gcr.io/main-219410/mw-bank-api:latest
+          command: ['/bin/node']
+          args: ['/app/payment-cron.js']
+          imagePullPolicy: Always
+          name: payment-cron
+          env:
+          - name: MWB_MONGO
+            value: "mongodb://mongo-0.mongo.default.svc.cluster.local/mWorldProd"
+          resources:
+            requests:
+              cpu: 10m
+restartPolicy: OnFailure

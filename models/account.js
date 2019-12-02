@@ -1,10 +1,9 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const moment = require('moment')
-const async = require('async')
+
 const Transaction = require('./transaction.js')
 const WageRequest = require('./wageRequest')
-const nodeSchedule = require('node-schedule')
 
 const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
@@ -19,23 +18,6 @@ const schema = new mongoose.Schema({
   accountType: { type: String, ref: 'AccountType' }
 }, { collection: 'accounts' })
 
-schema.statics.payAll = function (callback) {
-  this.model('account').find({ company: false }).populate('wages').exec(function (err, accounts) {
-    if (err) {
-      return callback(err)
-    }
-
-    async.each(accounts, function (account, callbackDeep) {
-      account.payWages(callbackDeep)
-    }, function (err) {
-      if (err) {
-        callback(err)
-      }
-
-      callback(null, true)
-    })
-  })
-}
 /**
  * calculateBalance
  * @callback
@@ -207,12 +189,3 @@ schema.methods.payWages = function (callback) {
 const model = mongoose.model('Account', schema)
 
 module.exports = model
-
-nodeSchedule.scheduleJob('40 18 * * *', function () {
-  model.payAll(function (err, deets) {
-    if (err) {
-      console.log('An error occurred in the payment job')
-      console.log(err)
-    }
-  })
-})

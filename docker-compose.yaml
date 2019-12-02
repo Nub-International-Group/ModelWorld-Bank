@@ -3,7 +3,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile]
+      dockerfile: Dockerfile
     environment:
       TEST: 'TEST'
     image: mwb-api
