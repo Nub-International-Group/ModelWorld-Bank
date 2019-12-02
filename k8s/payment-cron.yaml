@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - image: gcr.io/main-219410/mw-bank-api:latest
-            command: ['/bin/node']
+            command: ['node']
             args: ['/app/payment-cron.js']
             imagePullPolicy: Always
             name: payment-cron

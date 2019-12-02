@@ -3,7 +3,7 @@ const router = (require('express')).Router()
 const middleware = require('../../middleware')
 
 const Wage = require('../../models/wage.js')
-const WageRequest = require('../../models/wageRequest.js')
+const WageRequest = require('../../models/wage-request.js')
 const Account = require('../../models/account.js')
 
 const deleteById = async (req, res, next) => {

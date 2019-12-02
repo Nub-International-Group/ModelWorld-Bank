@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const async = require('async')
-const Wager = require('./wager.js')
+const { Wager } = require('./index')
 
 const betOption = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },

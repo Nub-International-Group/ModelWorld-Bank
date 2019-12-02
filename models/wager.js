@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
-const Transaction = require('./transaction')
+const { Transaction } = require('./index')
 
 const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },

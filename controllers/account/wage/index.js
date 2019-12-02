@@ -1,6 +1,6 @@
 const router = (require('express')).Router()
 
-const WageRequest = require('../../../models/wageRequest')
+const WageRequest = require('../../../models/wage-request')
 
 const middleware = require('../middleware')
 
