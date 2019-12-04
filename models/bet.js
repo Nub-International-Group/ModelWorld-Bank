@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const async = require('async')
-const { Wager } = require('./index')
 
 const betOption = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
@@ -26,6 +25,7 @@ const schema = new mongoose.Schema({
  * @param callback
  */
 schema.methods.payOut = function (winner, callback) {
+  const { Wager } = mongoose.models
   if (this.status !== 2) {
     Wager.find({ bet: this._id }).exec((err, wagers) => {
       if (err) {
