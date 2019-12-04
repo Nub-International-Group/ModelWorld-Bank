@@ -2,8 +2,6 @@ const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const moment = require('moment')
 
-const { Transaction, WageRequest } = require('./index')
-
 const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   name: String,
@@ -23,8 +21,7 @@ const schema = new mongoose.Schema({
  * @return Promise
  */
 schema.methods.calculateBalance = function () {
-  // TODO: Consider an approach where the to and froms are found simultanously and totted up, then finally added together. Possible enhancement to perf. - Async JS?
-  // TODO: Grab Tos and Froms at the same time to reduce database access and make good use of our local memory - Simple
+  const { Transaction } = mongoose.models
   return new Promise((resolve, reject) => {
     Transaction.find({ to: this._id }).sort('-created').populate('from').exec((err, tos) => {
       if (err) {
@@ -63,6 +60,7 @@ schema.methods.calculateBalance = function () {
 }
 
 schema.methods.fetchWageRequests = function (callback) {
+  const { WageRequest } = mongoose.models
   WageRequest.find({ account: this._id }).populate('wage').exec(function (err, wageRequests) {
     if (err) {
       return callback(err)
@@ -72,6 +70,7 @@ schema.methods.fetchWageRequests = function (callback) {
 }
 
 schema.methods.payWages = function (callback) {
+  const { Transaction } = mongoose.models
   if (this.wages.length === 0) {
     this.wages = ['*unemployed*']
     this.markModified('wages')
