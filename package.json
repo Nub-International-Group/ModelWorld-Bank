@@ -21,6 +21,7 @@
     "jsonwebtoken": "^8.0.1",
     "moment": "^2.21.0",
     "mongoose": "github:Automattic/mongoose#5.0",
+    "mongoose-autopopulate": "^0.9.1",
     "node-schedule": "^1.2.5",
     "passport": "^0.4.0",
     "passport-reddit": "^0.2.4",

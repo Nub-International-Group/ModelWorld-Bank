@@ -53,39 +53,37 @@ const create = async (req, res, next) => {
       }
 
       if (amount <= 0) {
-        const err = new Error('Cannot send negative')
+        const err = new Error('Cannot send negative or zero')
         err.code = 422
 
         throw err
       }
 
-      const data = await sendingAccount.calculateBalance()
-      if (data.balance[req.body.currency] || sendingAccount._id === '*economy*') {
-        if (data.balance[req.body.currency] >= (amount + 10) || sendingAccount._id === '*economy*') {
-          const transactions = [{
-            from: sendingAccount._id,
-            to: targetAccount._id,
-            amount: amount,
-            currency: req.body.currency,
-            description: req.body.description,
-            authoriser: req.decoded.name
-          }, {
-            from: sendingAccount._id,
-            to: 'SJS4nVQLG',
-            amount: 10,
-            currency: req.body.currency,
-            description: 'Tx Fee',
-            authoriser: req.decoded.name
-          }]
+      const fee = Math.floor(amount * sendingAccount.accountType.options.transactionFee.rate * 100) / 100 // floor to 2 dp
 
-          await Transaction.insertMany(transactions)
-          res.status(204).end()
-        } else {
-          throw new Error('Not enough balance')
-        }
-      } else {
-        throw new Error('No balance in currency')
+      const data = await sendingAccount.calculateBalance()
+      if (!data.balance[req.body.currency] || data.balance[req.body.currency] < (amount + fee)) {
+        throw new Error('Not enough balance in selected currency')
       }
+
+      const transactions = [{
+        from: sendingAccount._id,
+        to: targetAccount._id,
+        amount: amount,
+        currency: req.body.currency,
+        description: req.body.description,
+        authoriser: req.decoded.name
+      }, {
+        from: sendingAccount._id,
+        to: 'SJS4nVQLG',
+        amount: fee,
+        currency: req.body.currency,
+        description: 'Tx Fee',
+        authoriser: req.decoded.name
+      }]
+
+      await Transaction.insertMany(transactions)
+      res.status(204).end()
     } else {
       const err = new Error('You don\'t have permission to transfer from this account')
       err.code = 403

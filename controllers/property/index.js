@@ -26,17 +26,10 @@ const findAll = async (req, res, next) => {
   }
 }
 
-const whitelistedFieldsForUpdate = ['fields here']
 const updateById = async (req, res, next) => {
   try {
     for (const field in req.body) {
       const value = req.body[field]
-      if (!whitelistedFieldsForUpdate.includes(field)) {
-        const e = new Error('Forbidden to modify protected field')
-        e.code = 403
-
-        throw e
-      }
 
       req.property[field] = value
     }
