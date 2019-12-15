@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now },
-  accountType: { type: String, ref: 'AccountType' }
+  accountType: { type: String, ref: 'AccountType', autopopulate: true }
 }, { collection: 'accounts' })
 
 /**
@@ -183,6 +183,8 @@ schema.methods.payWages = function (callback) {
     })
   })
 }
+
+schema.plugin(require('mongoose-autopopulate'))
 
 const model = mongoose.model('Account', schema)
 
