@@ -10,7 +10,13 @@ const schema = new mongoose.Schema({
   description: String,
   returnRate: Number,
   image: String,
-  owner: { type: String, ref: 'Account' }
+  owner: { type: String, ref: 'Account' },
+  currency: String,
+  valuations: [{
+    user: String,
+    amount: Number,
+    created: { type: Date, default: Date.now }
+  }]
 }, { collection: 'properties' })
 
 const model = mongoose.model('Property', schema)

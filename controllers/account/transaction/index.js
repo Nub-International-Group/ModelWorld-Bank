@@ -70,12 +70,18 @@ const create = async (req, res, next) => {
         from: sendingAccount._id,
         to: targetAccount._id,
         amount: amount,
+        type: 'TRANSFER',
         currency: req.body.currency,
         description: req.body.description,
-        authoriser: req.decoded.name
+        authoriser: req.decoded.name,
+        meta: {
+          feePaid: fee,
+          feeRate: sendingAccount.accountType.options.transactionFee.rate
+        }
       }, {
         from: sendingAccount._id,
-        to: 'SJS4nVQLG',
+        to: '*fees*',
+        type: 'MISC',
         amount: fee,
         currency: req.body.currency,
         description: 'Tx Fee',

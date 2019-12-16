@@ -18,7 +18,7 @@ const payAccounts = async () => {
 
   const promises = accounts.map(account => {
     return new Promise((resolve, reject) => {
-      account.payWages((err) => {
+      account.handlePaymentJob((err) => {
         if (err) {
           return reject(err)
         }

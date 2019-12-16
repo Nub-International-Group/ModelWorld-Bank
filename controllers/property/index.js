@@ -6,9 +6,19 @@ const middleware = require('../../middleware')
 const utils = require('../../utils')
 
 const create = async (req, res, next) => {
+  delete req.body._id
+
+  const initialValuation = req.body.initialValuation
+  delete req.body.initialValuation
   try {
     const newProperty = await Property.create({
-      ...req.body
+      ...req.body,
+      valuations: [
+        {
+          amount: initialValuation,
+          user: req.decoded.name
+        }
+      ]
     })
 
     res.status(200).json(newProperty)
