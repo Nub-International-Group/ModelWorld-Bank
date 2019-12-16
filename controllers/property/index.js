@@ -27,6 +27,16 @@ const create = async (req, res, next) => {
   }
 }
 
+const deleteById = async (req, res, next) => {
+  try {
+    await Property.remove({ _id: req.property._id }).exec()
+
+    res.status(204).end()
+  } catch (err) {
+    next(err)
+  }
+}
+
 const findAll = async (req, res, next) => {
   try {
     const properties = await Property.find({}).exec()
@@ -55,7 +65,7 @@ const updateById = async (req, res, next) => {
 router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
 router.put('/:propertyId', updateById)
-
+router.delete('/:propertyId', deleteById)
 router.param('propertyId', utils.generateParamMiddleware(Property, 'property'))
 
 module.exports = {
