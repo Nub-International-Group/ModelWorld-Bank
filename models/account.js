@@ -69,119 +69,103 @@ schema.methods.fetchWageRequests = function (callback) {
   })
 }
 
-schema.methods.payWages = function (callback) {
-  const { Transaction } = mongoose.models
-  if (this.wages.length === 0) {
-    this.wages = ['*unemployed*']
-    this.markModified('wages')
+const calculateTaxDue = (annualGross) => {
+  const taxBrackets = [
+    {
+      topEnd: 12000,
+      rate: 0
+    },
+    {
+      topEnd: 45000,
+      rate: 0.2
+    },
+    {
+      topEnd: 150000,
+      rate: 0.4
+    },
+    {
+      topEnd: Infinity,
+      rate: 0.45
+    }
+  ]
+  let unallocated = annualGross
+  let taxDueAnnually = 0
+
+  for (const taxBracket of taxBrackets) {
+    if (unallocated >= taxBracket.topEnd) {
+      taxDueAnnually += taxBracket.topEnd * taxBracket.rate
+      unallocated -= taxBracket.topEnd
+    } else {
+      taxDueAnnually += unallocated * taxBracket.rate
+      break
+    }
   }
 
-  this.populate('wages', (err, account) => { // Populate wage info
-    if (err) {
-      return callback(err)
+  return taxDueAnnually
+}
+
+schema.methods.getSalaries = async function () {
+  const incomePerCurrency = {}
+  let wages = []
+  if (wages.length === 0) {
+    wages = ['*unemployed*']
+  }
+
+  await this.populate('wages').execPopulate()
+  for (const wage of wages) {
+    if (incomePerCurrency[wage.currency]) {
+      incomePerCurrency[wage.currency] += wage.value
+    } else {
+      incomePerCurrency[wage.currency] = wage.value
     }
+  }
 
-    const yearlyUnscaled = {}
+  return incomePerCurrency
+}
 
-    this.wages.forEach(function (wage) {
-      if (yearlyUnscaled[wage.currency]) {
-        yearlyUnscaled[wage.currency] += wage.value
-      } else {
-        yearlyUnscaled[wage.currency] = wage.value
+schema.methods.getPropertyIncomes = async function () {
+  const incomePerCurrency = {}
+
+  return incomePerCurrency
+}
+
+schema.methods.handlePaymentJob = async function (callback) {
+  const { Transaction } = mongoose.models
+
+  // get annual values
+  const salaries = await this.getSalaries()
+  const propertyIncomes = await this.getPropertyIncomes()
+
+  // get multiplier values
+  const yearsSinceLastWage = (moment().diff(this.lastPaid, 'years', true) * 10)
+
+  const transactions = []
+  for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
+    const grossAnnual = salaries[currency] + propertyIncomes[currency]
+    const taxDueAnnually = calculateTaxDue(grossAnnual)
+    const periodGross = +(grossAnnual * yearsSinceLastWage).toFixed(2)
+    const periodTax = +(taxDueAnnually * yearsSinceLastWage).toFixed(2)
+
+    transactions.push({
+      to: this._id,
+      from: '*economy*',
+      description: 'Income',
+      amount: periodGross - periodTax,
+      currency: currency,
+      type: 'INCOME',
+      authoriser: 'SYSTEM',
+      meta: {
+        gross: grossAnnual,
+        salary: salaries[currency],
+        property: propertyIncomes[currency],
+        tax: taxDueAnnually
       }
     })
+  }
 
-    const wageToPay = {}
-
-    const yearsSinceLastwage = (moment().diff(this.lastPaid, 'years', true) * 10)
-
-    const transactions = []
-    for (const currency in yearlyUnscaled) {
-      if (yearlyUnscaled.hasOwnProperty(currency)) {
-        wageToPay[currency] = +(yearlyUnscaled[currency] * yearsSinceLastwage).toFixed(2)
-
-        transactions.push({
-          to: this._id,
-          from: '*economy*',
-          description: 'Wages Paid. Yearly wage: ' + yearlyUnscaled[currency].toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,') + ' ' + currency,
-          amount: wageToPay[currency],
-          currency: currency,
-          authoriser: 'SYSTEM'
-        })
-
-        /*
-          Taxation System:
-        */
-
-        const tax = [
-          {
-            topEnd: 12000,
-            rate: 0
-          },
-          {
-            topEnd: 45000,
-            rate: 0.2
-          },
-          {
-            topEnd: 150000,
-            rate: 0.4
-          },
-          {
-            topEnd: Infinity,
-            rate: 0.45
-          }
-        ]
-
-        let unCalculated = yearlyUnscaled[currency]
-        let taxAmount = 0
-
-        for (let bracket = 0; bracket < tax.length; bracket++) {
-          const taxBracket = tax[bracket]
-
-          if (unCalculated >= taxBracket.topEnd) {
-            taxAmount += taxBracket.topEnd * taxBracket.rate
-            unCalculated -= taxBracket.topEnd
-          } else {
-            taxAmount += unCalculated * taxBracket.rate
-            break
-          }
-        }
-
-        const taxAmountScaled = +(taxAmount * yearsSinceLastwage).toFixed(2)
-
-        transactions.push({
-          to: '*economy*',
-          from: this._id,
-          description: 'Taxes Paid. Total rate: ' + ((taxAmount / yearlyUnscaled[currency]) * 100).toFixed(2) + '%',
-          amount: taxAmountScaled,
-          currency: currency,
-          authoriser: 'SYSTEM'
-        })
-      }
-    }
-
-    Transaction.create(transactions, (err) => {
-      if (err) {
-        return callback(err)
-      }
-
-      this.lastPaid = Date.now()
-      this.markModified('lastPaid')
-
-      if (this.wages === ['*unemployed*']) {
-        this.wages = []
-        this.markModified('wages')
-      }
-
-      this.save(function (err) {
-        if (err) {
-          return callback(err)
-        }
-
-        return callback(null)
-      })
-    })
-  })
+  await Transaction.create(transactions)
+  await this.update({ lastPaid: Date.now() }).exec()
+  await this.save()
 }
 
 schema.plugin(require('mongoose-autopopulate'))

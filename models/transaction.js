@@ -9,8 +9,12 @@ const schema = new mongoose.Schema({
   currency: String,
   description: String,
   authoriser: String,
+  meta: Object,
   created: { type: Date, default: Date.now },
-  invalidated: { type: Boolean, default: false }
+  type: {
+    type: String,
+    enum: ['INCOME', 'TRANSFER', 'MISC']
+  }
 }, { collection: 'transactions' })
 
 const model = mongoose.model('Transaction', schema)

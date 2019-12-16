@@ -75,7 +75,8 @@ const create = async (req, res, next) => {
       amount: amount,
       currency: 'GBP',
       description: 'Payment for Bet',
-      authoriser: 'SYSTEM'
+      authoriser: 'SYSTEM',
+      type: 'WAGER_PLACED'
     })
 
     await newTransaction.save()

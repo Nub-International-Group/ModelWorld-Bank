@@ -16,12 +16,13 @@ schema.methods.resolveWager = function (winningOption, callback) {
   const { Transaction } = mongoose.models
   if (winningOption === this.betOption) {
     Transaction.create({
-      from: '*NubBets*',
+      from: '*bets*',
       to: this.account,
       amount: this.amount * this.odd,
       currency: this.currency,
       description: 'Original Bet: ' + this.amount + ' ' + this.currency + ' at ' + this.odd,
-      authoriser: 'SYSTEM'
+      authoriser: 'SYSTEM',
+      type: 'WAGER_PAYOUT'
     }, function (err, doc) {
       if (err) return callback(err)
 
