@@ -19,13 +19,7 @@ const deleteById = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    req.body.newDocument.value = Number(req.body.newDocument.value)
-
-    if (isNaN(req.body.newDocument.value)) {
-      throw new Error('Invalid Data Entry')
-    }
-
-    const wage = await Wage.create(req.body.newDocument)
+    const wage = await Wage.create(req.body)
     res.status(200).json(wage)
   } catch (err) {
     next(err)
@@ -63,7 +57,7 @@ const update = async (req, res, next) => {
       throw err
     }
 
-    res.status(200).json(document)
+    res.status(200).json(updatedDoc)
   } catch (err) {
     next(err)
   }
