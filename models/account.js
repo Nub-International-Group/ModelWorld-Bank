@@ -129,7 +129,7 @@ schema.methods.getPropertyIncomes = async function () {
   return incomePerCurrency
 }
 
-schema.methods.handlePaymentJob = async function (callback) {
+schema.methods.handlePaymentJob = async function () {
   const { Transaction } = mongoose.models
 
   // get annual values
@@ -143,22 +143,22 @@ schema.methods.handlePaymentJob = async function (callback) {
   for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
     const grossAnnual = salaries[currency] + propertyIncomes[currency]
     const taxDueAnnually = calculateTaxDue(grossAnnual)
-    const periodGross = +(grossAnnual * yearsSinceLastWage).toFixed(2)
-    const periodTax = +(taxDueAnnually * yearsSinceLastWage).toFixed(2)
+    const periodGross = (grossAnnual * yearsSinceLastWage)
+    const periodTax = (taxDueAnnually * yearsSinceLastWage)
 
     transactions.push({
       to: this._id,
       from: '*economy*',
       description: 'Income',
-      amount: periodGross - periodTax,
+      amount: (periodGross - periodTax).toFixed(2),
       currency: currency,
       type: 'INCOME',
       authoriser: 'SYSTEM',
       meta: {
-        gross: grossAnnual,
-        salary: salaries[currency],
-        property: propertyIncomes[currency],
-        tax: taxDueAnnually
+        gross: grossAnnual.toFixed(2),
+        salary: salaries[currency].toFixed(2),
+        property: propertyIncomes[currency].toFixed(2),
+        tax: taxDueAnnually.toFixed(2)
       }
     })
   }
