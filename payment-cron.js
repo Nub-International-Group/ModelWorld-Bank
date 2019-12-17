@@ -16,16 +16,7 @@ const payAccounts = async () => {
   const accounts = await Account.find({ company: false }).populate('wages').exec()
   logger.info(`${accounts.length} accounts to process wages for.`)
 
-  const promises = accounts.map(account => {
-    return new Promise((resolve, reject) => {
-      account.handlePaymentJob((err) => {
-        if (err) {
-          return reject(err)
-        }
-        resolve()
-      })
-    })
-  })
+  const promises = accounts.map(account => account.handlePaymentJob)
 
   return Promise.all(promises)
 }
