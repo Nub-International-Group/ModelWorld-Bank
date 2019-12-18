@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 const config = require('config')
-const logger = require('pino')()
+const logger = require('pino')({
+  name: 'payment-cron',
+  level: process.env.LOG_LEVEL || 'info'
+})
 const { Account } = require('./models')
 
 mongoose.connect(config.mongoURL)
@@ -16,9 +19,10 @@ const payAccounts = async () => {
   const accounts = await Account.find({ company: false }).populate('wages').exec()
   logger.info(`${accounts.length} accounts to process wages for.`)
 
-  const promises = accounts.map(account => account.handlePaymentJob())
-
-  return Promise.all(promises)
+  for (const account of accounts) {
+    const paymentInfo = await account.handlePaymentJob()
+    logger.info(paymentInfo, `account ${account._id} paid`)
+  }
 }
 
 logger.info('starting account payment cron job')
