@@ -129,6 +129,7 @@ schema.methods.getPropertyIncomes = async function () {
   return incomePerCurrency
 }
 
+const roundCurrency = val => Math.floor(val * 100) / 100
 schema.methods.handlePaymentJob = async function () {
   const { Transaction } = mongoose.models
 
@@ -137,29 +138,31 @@ schema.methods.handlePaymentJob = async function () {
   const propertyIncomes = await this.getPropertyIncomes()
 
   // get multiplier values
-  const yearsSinceLastWage = (moment().diff(this.lastPaid, 'years', true) * 10)
+  const yearsSinceLastWage = moment().diff(this.lastPaid, 'years', true) * 10
 
   const transactions = []
   for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
-    const grossAnnual = salaries[currency] + propertyIncomes[currency]
-    const taxDueAnnually = calculateTaxDue(grossAnnual)
-    const periodGross = (grossAnnual * yearsSinceLastWage)
-    const periodTax = (taxDueAnnually * yearsSinceLastWage)
+    const grossAnnual = roundCurrency(salaries[currency] + propertyIncomes[currency])
+    const taxDue = roundCurrency(calculateTaxDue(grossAnnual))
+    const netAnnual = grossAnnual - taxDue
+    const periodNet = roundCurrency(netAnnual * yearsSinceLastWage)
+
+    const meta = {
+      gross: grossAnnual,
+      salary: salaries[currency],
+      property: propertyIncomes[currency],
+      tax: taxDue
+    }
 
     transactions.push({
       to: this._id,
       from: '*economy*',
       description: 'Income',
-      amount: (periodGross - periodTax).toFixed(2),
+      amount: periodNet,
       currency: currency,
       type: 'INCOME',
       authoriser: 'SYSTEM',
-      meta: {
-        gross: grossAnnual.toFixed(2),
-        salary: salaries[currency].toFixed(2),
-        property: propertyIncomes[currency].toFixed(2),
-        tax: taxDueAnnually.toFixed(2)
-      }
+      meta
     })
   }
 
