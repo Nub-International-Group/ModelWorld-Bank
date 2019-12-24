@@ -47,12 +47,12 @@ const create = async (req, res, next) => {
 
     const option = bet.options.id(req.body.option)
 
-    const balanceData = await account.calculateBalance()
-    if (!balanceData.balance.GBP) {
+    const { balances } = await account.calculateBalance()
+    if (!balances.GBP) {
       throw new Error('No balance.')
     }
 
-    if (balanceData.balance.GBP < amount) {
+    if (balances.GBP < amount) {
       throw new Error('Not enough balance.')
     }
 

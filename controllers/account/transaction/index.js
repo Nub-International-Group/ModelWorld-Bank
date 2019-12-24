@@ -7,8 +7,11 @@ const middleware = require('../middleware')
 
 const findByAccount = async (req, res, next) => {
   try {
-    req.account.calculateBalance().then((data) => {
-      res.status(200).json(data)
+    req.account.calculateBalances().then(({ transactions, balances }) => {
+      res.status(200).json({
+        transactions,
+        balance: balances
+      })
     }).catch(next)
   } catch (e) {
     next(e)
@@ -61,8 +64,8 @@ const create = async (req, res, next) => {
 
       const fee = Math.floor(amount * sendingAccount.accountType.options.transactionFee.rate * 100) / 100 // floor to 2 dp
 
-      const data = await sendingAccount.calculateBalance()
-      if (!data.balance[req.body.currency] || data.balance[req.body.currency] < (amount + fee)) {
+      const { balances } = await sendingAccount.calculateBalances()
+      if (!balances[req.body.currency] || balances[req.body.currency] < (amount + fee)) {
         throw new Error('Not enough balance in selected currency')
       }
 
@@ -80,7 +83,7 @@ const create = async (req, res, next) => {
         }
       }, {
         from: sendingAccount._id,
-        to: '*fees*',
+        to: '*NubBank*',
         type: 'MISC',
         amount: fee,
         currency: req.body.currency,
