@@ -16,7 +16,7 @@ mongoose.connection.on('error', function (err) {
 })
 
 const payAccounts = async () => {
-  const accounts = await Account.find({ company: false }).populate('wages').exec()
+  const accounts = await Account.find({}).exec()
   logger.info(`${accounts.length} accounts to process wages for.`)
 
   for (const account of accounts) {

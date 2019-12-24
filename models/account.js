@@ -15,58 +15,43 @@ const schema = new mongoose.Schema({
   accountType: { type: String, ref: 'AccountType', autopopulate: true }
 }, { collection: 'accounts' })
 
+const calculateBalancesFromTransactions = (transactions) => {
+  return transactions.reduce((acc, transaction) => {
+    const currencyBalance = acc[transaction.currency] || 0
+
+    if (transaction.to === this._id) {
+      return {
+        ...acc,
+        [transaction.currency]: currencyBalance + transaction.amount
+      }
+    } else if (transaction.from === this._id) {
+      return {
+        ...acc,
+        [transaction.currency]: currencyBalance - transaction.amount
+      }
+    } else {
+      return acc
+    }
+  }, {})
+}
+schema.calculateBalancesFromTransactions = calculateBalancesFromTransactions
+
 /**
  * calculateBalance
  * @callback
  * @return Promise
  */
-schema.methods.calculateBalance = function () {
+schema.methods.calculateBalances = async function () {
   const { Transaction } = mongoose.models
-  return new Promise((resolve, reject) => {
-    Transaction.find({ to: this._id }).sort('-created').populate('from').exec((err, tos) => {
-      if (err) {
-        return reject(err)
-      }
+  const transactions = [
+    ...(await Transaction.find({ to: this._id }).populate('from')),
+    ...(await Transaction.find({ from: this._id }).populate('to'))
+  ]
 
-      const balance = {}
-
-      tos.forEach(function (element) {
-        if (balance[element.currency] === undefined) {
-          balance[element.currency] = element.amount
-        } else {
-          balance[element.currency] += element.amount
-        }
-      })
-
-      Transaction.find({ from: this._id }).sort('-created').populate('to').exec((err, froms) => {
-        if (err) {
-          return reject(err)
-        }
-
-        froms.forEach(function (element) {
-          if (balance[element.currency] === undefined) {
-            balance[element.currency] = -element.amount
-          } else {
-            balance[element.currency] -= element.amount
-          }
-        })
-
-        const transactions = tos.concat(froms)
-
-        return resolve({ transactions, balance })
-      })
-    })
-  })
-}
-
-schema.methods.fetchWageRequests = function (callback) {
-  const { WageRequest } = mongoose.models
-  WageRequest.find({ account: this._id }).populate('wage').exec(function (err, wageRequests) {
-    if (err) {
-      return callback(err)
-    }
-    callback(null, wageRequests)
-  })
+  return {
+    transactions,
+    balances: calculateBalancesFromTransactions(transactions)
+  }
 }
 
 const calculateTaxDue = (annualGross) => {
@@ -105,28 +90,29 @@ const calculateTaxDue = (annualGross) => {
 }
 
 schema.methods.getSalaries = async function () {
-  const incomePerCurrency = {}
-  let wages = []
-  if (wages.length === 0) {
-    wages = ['*unemployed*']
+  if (this.wages.length === 0) {
+    this.wages = ['*unemployed*']
   }
 
   await this.populate('wages').execPopulate()
-  for (const wage of wages) {
-    if (incomePerCurrency[wage.currency]) {
-      incomePerCurrency[wage.currency] += wage.value
-    } else {
-      incomePerCurrency[wage.currency] = wage.value
-    }
-  }
 
-  return incomePerCurrency
+  return this.wages.reduce((acc, wage) => ({
+    ...acc,
+    [wage.currency]: (acc[wage.currency] || 0) + wage.value
+  }), {})
 }
 
 schema.methods.getPropertyIncomes = async function () {
-  const incomePerCurrency = {}
+  const { Property } = mongoose.models
 
-  return incomePerCurrency
+  const ownedProperties = await Property.find({
+    owner: this._id
+  })
+
+  return ownedProperties.reduce((acc, property) => ({
+    ...acc,
+    [property.currency]: (acc[property.currency] || 0) + property.returnRate
+  }), {})
 }
 
 const roundCurrency = val => Math.floor(val * 100) / 100
@@ -134,12 +120,13 @@ schema.methods.handlePaymentJob = async function () {
   const { Transaction } = mongoose.models
 
   // get annual values
-  const salaries = await this.getSalaries()
-  const propertyIncomes = await this.getPropertyIncomes()
+  const salaries = this.accountType.options.salary ? await this.getSalaries() : {}
+  const propertyIncomes = this.accountType.options.property ? await this.getPropertyIncomes() : {}
 
   // get multiplier values
   const yearsSinceLastWage = moment().diff(this.lastPaid, 'years', true) * 10
 
+  // create transactions for salaries/property income and apply tax
   const transactions = []
   for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
     const grossAnnual = roundCurrency(salaries[currency] + propertyIncomes[currency])
@@ -164,6 +151,28 @@ schema.methods.handlePaymentJob = async function () {
       authoriser: 'SYSTEM',
       meta
     })
+  }
+
+  // create transactions for savings
+  if (this.accountType.options.interest.rate) {
+    const rateToPay = Math.pow(this.accountType.options.interest.rate, yearsSinceLastWage)
+
+    const { balances } = await this.calculateBalances()
+
+    for (const [currency, amount] of Object.entries(balances)) {
+      transactions.push({
+        to: this._id,
+        from: '*NubBank*',
+        description: 'Interest on account',
+        amount: roundCurrency(amount * rateToPay),
+        currency,
+        type: 'INTEREST',
+        authoriser: 'SYSTEM',
+        meta: {
+          AER: this.accountType.options.interest.rate
+        }
+      })
+    }
   }
 
   await Transaction.create(transactions)
