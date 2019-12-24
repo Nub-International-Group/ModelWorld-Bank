@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const moment = require('moment')
 
+const logger = require('pino')({
+  name: 'model:account',
+  level: process.env.LOG_LEVEL || 'info'
+})
+
 const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   name: String,
@@ -118,6 +123,11 @@ schema.methods.getPropertyIncomes = async function () {
 const roundCurrency = val => Math.floor(val * 100) / 100
 schema.methods.handlePaymentJob = async function () {
   const { Transaction } = mongoose.models
+
+  if (!this.accountType) {
+    logger.warn(`account ${this._id} does not have a valid type linked!`)
+    return
+  }
 
   // get annual values
   const salaries = this.accountType.options.salary ? await this.getSalaries() : {}
