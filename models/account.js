@@ -62,20 +62,20 @@ schema.methods.calculateBalances = async function () {
 const calculateTaxDue = (annualGross) => {
   const taxBrackets = [
     {
-      topEnd: 12000,
+      topEnd: 20419,
       rate: 0
     },
     {
-      topEnd: 45000,
-      rate: 0.2
+      topEnd: 51050,
+      rate: 0.15
     },
     {
-      topEnd: 150000,
-      rate: 0.4
+      topEnd: 153150,
+      rate: 0.375
     },
     {
       topEnd: Infinity,
-      rate: 0.45
+      rate: 0.40
     }
   ]
   let unallocated = annualGross
