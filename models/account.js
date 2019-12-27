@@ -148,10 +148,10 @@ schema.methods.handlePaymentJob = async function () {
     const periodNet = roundCurrency(netAnnual * yearsSinceLastWage)
 
     const meta = {
-      gross: grossAnnual,
       salary: salaryIncome,
       property: propertyIncome,
-      tax: taxDue
+      tax: taxDue,
+      yearsSinceLastWage
     }
 
     transactions.push({
