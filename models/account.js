@@ -139,15 +139,18 @@ schema.methods.handlePaymentJob = async function () {
   // create transactions for salaries/property income and apply tax
   const transactions = []
   for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
-    const grossAnnual = roundCurrency(salaries[currency] + propertyIncomes[currency])
+    const propertyIncome = propertyIncomes[currency] || 0
+    const salaryIncome = salaries[currency] || 0
+
+    const grossAnnual = roundCurrency(salaryIncome + propertyIncome)
     const taxDue = roundCurrency(calculateTaxDue(grossAnnual))
     const netAnnual = grossAnnual - taxDue
     const periodNet = roundCurrency(netAnnual * yearsSinceLastWage)
 
     const meta = {
       gross: grossAnnual,
-      salary: salaries[currency],
-      property: propertyIncomes[currency],
+      salary: salaryIncome,
+      property: propertyIncome,
       tax: taxDue
     }
 
