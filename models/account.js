@@ -95,6 +95,7 @@ const calculateTaxDue = (annualGross) => {
 }
 
 schema.methods.getSalaries = async function () {
+  this.wages = this.wages.filter(id => id !== '*unemployed*')
   if (this.wages.length === 0) {
     this.wages = ['*unemployed*']
   }
@@ -189,7 +190,10 @@ schema.methods.handlePaymentJob = async function () {
   }
 
   await Transaction.create(transactions)
-  await this.update({ lastPaid: Date.now() }).exec()
+
+  this.lastPaid = Date.now()
+  this.markModified('lastPaid')
+  this.markModified('wages')
   await this.save()
 }
 
