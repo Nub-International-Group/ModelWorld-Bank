@@ -20,8 +20,8 @@ const payAccounts = async () => {
   logger.info(`${accounts.length} accounts to process wages for.`)
 
   for (const account of accounts) {
-    const paymentInfo = await account.handlePaymentJob()
-    logger.info(paymentInfo, `account ${account._id} paid`)
+    await account.handlePaymentJob()
+    logger.info(`account ${account._id} paid`)
   }
 }
 
