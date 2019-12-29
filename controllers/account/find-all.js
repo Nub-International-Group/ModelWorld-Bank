@@ -39,6 +39,7 @@ function updateLeaderboard () {
   Account.find({ public: true }).exec((err, accounts) => {
     if (err) {
       console.log(err)
+      throw err
     }
 
     const balances = {}
