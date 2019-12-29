@@ -1,3 +1,4 @@
+const Decimal = require('decimal.js')
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
 const moment = require('moment')
@@ -21,23 +22,28 @@ const schema = new mongoose.Schema({
 }, { collection: 'accounts' })
 
 const calculateBalancesFromTransactions = (transactions) => {
-  return transactions.reduce((acc, transaction) => {
-    const currencyBalance = acc[transaction.currency] || 0
+  const balances = transactions.reduce((acc, transaction) => {
+    const currencyBalance = acc[transaction.currency] || new Decimal(0)
 
-    if (transaction.to === this._id) {
+    if (transaction.to && transaction.to._id === this._id) {
       return {
         ...acc,
-        [transaction.currency]: currencyBalance + transaction.amount
+        [transaction.currency]: Decimal.add(currencyBalance, transaction.amount)
       }
-    } else if (transaction.from === this._id) {
+    } else if (transaction.from && transaction.from._id === this._id) {
       return {
         ...acc,
-        [transaction.currency]: currencyBalance - transaction.amount
+        [transaction.currency]: Decimal.sub(currencyBalance, transaction.amount)
       }
     } else {
       return acc
     }
   }, {})
+
+  // convert to number for browser
+  return Object.keys(balances).reduce(
+    (obj, currency) => ({ ...obj, [currency]: balances[currency].toNumber() }), {}
+  )
 }
 schema.calculateBalancesFromTransactions = calculateBalancesFromTransactions
 
@@ -79,19 +85,25 @@ const calculateTaxDue = (annualGross) => {
     }
   ]
   let unallocated = annualGross
-  let taxDueAnnually = 0
+  let taxDueAnnually = new Decimal(0)
 
-  for (const taxBracket of taxBrackets) {
-    if (unallocated >= taxBracket.topEnd) {
-      taxDueAnnually += taxBracket.topEnd * taxBracket.rate
-      unallocated -= taxBracket.topEnd
-    } else {
-      taxDueAnnually += unallocated * taxBracket.rate
+  for (let taxBracketIndex = 0; taxBracketIndex < taxBrackets.length; taxBracketIndex++) {
+    const previousBracket = taxBrackets[taxBracketIndex - 1] || {
+      topEnd: 0
+    }
+    const currentBracket = taxBrackets[taxBracketIndex]
+    const bracketSize = Decimal.sub(currentBracket.topEnd, previousBracket.topEnd)
+    const amountInBracket = unallocated.gt(bracketSize) ? bracketSize : unallocated
+
+    taxDueAnnually = taxDueAnnually.add(amountInBracket.mul(currentBracket.rate))
+    unallocated = unallocated.sub(amountInBracket)
+
+    if (unallocated.eq(0)) {
       break
     }
   }
 
-  return taxDueAnnually
+  return taxDueAnnually.toDP(2)
 }
 
 schema.methods.getSalaries = async function () {
@@ -104,7 +116,7 @@ schema.methods.getSalaries = async function () {
 
   return this.wages.reduce((acc, wage) => ({
     ...acc,
-    [wage.currency]: (acc[wage.currency] || 0) + wage.value
+    [wage.currency]: (acc[wage.currency] || new Decimal()) + new Decimal(wage.value)
   }), {})
 }
 
@@ -117,11 +129,10 @@ schema.methods.getPropertyIncomes = async function () {
 
   return ownedProperties.reduce((acc, property) => ({
     ...acc,
-    [property.currency]: (acc[property.currency] || 0) + property.returnRate
+    [property.currency]: (acc[property.currency] || new Decimal()) + new Decimal(property.returnRate)
   }), {})
 }
 
-const roundCurrency = val => Math.floor(val * 100) / 100
 schema.methods.handlePaymentJob = async function () {
   const { Transaction } = mongoose.models
 
@@ -140,18 +151,18 @@ schema.methods.handlePaymentJob = async function () {
   // create transactions for salaries/property income and apply tax
   const transactions = []
   for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
-    const propertyIncome = propertyIncomes[currency] || 0
-    const salaryIncome = salaries[currency] || 0
+    const propertyIncome = propertyIncomes[currency] || new Decimal()
+    const salaryIncome = salaries[currency] || new Decimal()
 
-    const grossAnnual = roundCurrency(salaryIncome + propertyIncome)
-    const taxDue = roundCurrency(calculateTaxDue(grossAnnual))
-    const netAnnual = grossAnnual - taxDue
-    const periodNet = roundCurrency(netAnnual * yearsSinceLastWage)
+    const grossAnnual = Decimal.add(salaryIncome + propertyIncome)
+    const taxDue = calculateTaxDue(grossAnnual)
+    const netAnnual = Decimal.sub(grossAnnual - taxDue)
+    const periodNet = netAnnual.mul(yearsSinceLastWage).toDP(2)
 
     const meta = {
-      salary: salaryIncome,
-      property: propertyIncome,
-      tax: taxDue,
+      salary: salaryIncome.toNumber(),
+      property: propertyIncome.toNumber(),
+      tax: taxDue.toNumber(),
       yearsSinceLastWage
     }
 
@@ -159,7 +170,7 @@ schema.methods.handlePaymentJob = async function () {
       to: this._id,
       from: '*economy*',
       description: 'Income',
-      amount: periodNet,
+      amount: periodNet.toNumber(),
       currency: currency,
       type: 'INCOME',
       authoriser: 'SYSTEM',
@@ -169,7 +180,7 @@ schema.methods.handlePaymentJob = async function () {
 
   // create transactions for savings
   if (this.accountType.options.interest.rate) {
-    const rateToPay = Math.pow(this.accountType.options.interest.rate, yearsSinceLastWage)
+    const rateToPay = Decimal.pow(this.accountType.options.interest.rate, yearsSinceLastWage)
 
     const { balances } = await this.calculateBalances()
 
@@ -178,7 +189,7 @@ schema.methods.handlePaymentJob = async function () {
         to: this._id,
         from: '*NubBank*',
         description: 'Interest on account',
-        amount: roundCurrency(amount * rateToPay),
+        amount: rateToPay.mul(amount).toDP(2),
         currency,
         type: 'INTEREST',
         authoriser: 'SYSTEM',
