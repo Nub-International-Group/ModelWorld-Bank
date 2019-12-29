@@ -116,7 +116,7 @@ schema.methods.getSalaries = async function () {
 
   return this.wages.reduce((acc, wage) => ({
     ...acc,
-    [wage.currency]: (acc[wage.currency] || new Decimal()) + new Decimal(wage.value)
+    [wage.currency]: (acc[wage.currency] || new Decimal(0)) + new Decimal(wage.value)
   }), {})
 }
 
@@ -129,7 +129,7 @@ schema.methods.getPropertyIncomes = async function () {
 
   return ownedProperties.reduce((acc, property) => ({
     ...acc,
-    [property.currency]: (acc[property.currency] || new Decimal()) + new Decimal(property.returnRate)
+    [property.currency]: (acc[property.currency] || new Decimal(0)) + new Decimal(property.returnRate)
   }), {})
 }
 
@@ -151,8 +151,8 @@ schema.methods.handlePaymentJob = async function () {
   // create transactions for salaries/property income and apply tax
   const transactions = []
   for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
-    const propertyIncome = propertyIncomes[currency] || new Decimal()
-    const salaryIncome = salaries[currency] || new Decimal()
+    const propertyIncome = propertyIncomes[currency] || new Decimal(0)
+    const salaryIncome = salaries[currency] || new Decimal(0)
 
     const grossAnnual = Decimal.add(salaryIncome + propertyIncome)
     const taxDue = calculateTaxDue(grossAnnual)
