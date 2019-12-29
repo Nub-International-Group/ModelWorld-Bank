@@ -116,7 +116,7 @@ schema.methods.getSalaries = async function () {
 
   return this.wages.reduce((acc, wage) => ({
     ...acc,
-    [wage.currency]: (acc[wage.currency] || new Decimal(0)) + new Decimal(wage.value)
+    [wage.currency]: Decimal.add(acc[wage.currency] || new Decimal(0), wage.value)
   }), {})
 }
 
@@ -129,7 +129,7 @@ schema.methods.getPropertyIncomes = async function () {
 
   return ownedProperties.reduce((acc, property) => ({
     ...acc,
-    [property.currency]: (acc[property.currency] || new Decimal(0)) + new Decimal(property.returnRate)
+    [property.currency]: Decimal.add((acc[property.currency] || 0), property.returnRate)
   }), {})
 }
 
