@@ -154,9 +154,9 @@ schema.methods.handlePaymentJob = async function () {
     const propertyIncome = propertyIncomes[currency] || new Decimal(0)
     const salaryIncome = salaries[currency] || new Decimal(0)
 
-    const grossAnnual = Decimal.add(salaryIncome + propertyIncome)
+    const grossAnnual = Decimal.add(salaryIncome, propertyIncome)
     const taxDue = calculateTaxDue(grossAnnual)
-    const netAnnual = Decimal.sub(grossAnnual - taxDue)
+    const netAnnual = Decimal.sub(grossAnnual, taxDue)
     const periodNet = netAnnual.mul(yearsSinceLastWage).toDP(2)
 
     const meta = {
