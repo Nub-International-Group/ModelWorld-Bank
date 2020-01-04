@@ -10,7 +10,7 @@ const findByAccount = async (req, res, next) => {
     req.account.calculateBalances().then(({ transactions, balances }) => {
       res.status(200).json({
         transactions,
-        balance: balances
+        balances
       })
     }).catch(next)
   } catch (e) {
