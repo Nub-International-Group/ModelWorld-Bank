@@ -180,7 +180,7 @@ schema.methods.handlePaymentJob = async function () {
 
   // create transactions for savings
   if (this.accountType.options.interest.rate) {
-    const rateToPay = Decimal.pow(this.accountType.options.interest.rate, yearsSinceLastWage)
+    const rateToPay = Decimal.pow(this.accountType.options.interest.rate, yearsSinceLastWage).sub(1)
 
     const { balances } = await this.calculateBalances()
 
