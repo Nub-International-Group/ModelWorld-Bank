@@ -180,7 +180,7 @@ schema.methods.handlePaymentJob = async function () {
 
   // create transactions for savings
   if (this.accountType.options.interest.rate) {
-    const rateToPay = Decimal.pow(this.accountType.options.interest.rate, yearsSinceLastWage).sub(1)
+    const effectiveRate = (new Decimal(this.accountType.options.interest.rate)).add(1).toPower(yearsSinceLastWage).sub(1)
 
     const { balances } = await this.calculateBalances()
 
@@ -189,7 +189,7 @@ schema.methods.handlePaymentJob = async function () {
         to: this._id,
         from: '*NubBank*',
         description: 'Interest on account',
-        amount: rateToPay.mul(amount).toDP(2),
+        amount: effectiveRate.mul(amount).toDP(2),
         currency,
         type: 'INTEREST',
         authoriser: 'SYSTEM',
