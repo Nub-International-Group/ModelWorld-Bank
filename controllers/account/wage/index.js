@@ -3,8 +3,7 @@ const router = (require('express')).Router()
 const WageRequest = require('../../../models/wage-request')
 
 const middleware = require('../middleware')
-
-const findByAccount = async (req, res, next) => {
+async function find (req, res, next) {
   try {
     const account = req.account
     const wageRequests = await WageRequest.find({ account: account._id }).populate('wage').exec()
@@ -15,7 +14,7 @@ const findByAccount = async (req, res, next) => {
   }
 }
 
-const createWageRequest = async (req, res, next) => {
+async function createWageRequest (req, res, next) {
   try {
     const account = req.account
 
@@ -34,7 +33,7 @@ const createWageRequest = async (req, res, next) => {
   }
 }
 
-const deleteById = async (req, res, next) => {
+async function deleteById (req, res, next) {
   try {
     const account = req.account
 
@@ -53,7 +52,7 @@ const deleteById = async (req, res, next) => {
   }
 }
 
-router.get('/', middleware.accountWithPerms(1), findByAccount)
+router.get('/', middleware.accountWithPerms(1), find)
 router.post('/', middleware.accountWithPerms(3), createWageRequest)
 router.delete('/:wageId', middleware.accountWithPerms(3), deleteById)
 

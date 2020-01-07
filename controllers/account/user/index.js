@@ -2,7 +2,7 @@ const router = (require('express')).Router()
 
 const middleware = require('../middleware')
 
-const updatePermission = async (req, res, next) => {
+async function updatePermission (req, res, next) {
   try {
     const account = req.account
 

@@ -1,10 +1,10 @@
 const router = (require('express')).Router()
 
-const Wager = require('../../../models/transaction')
+const Wager = require('../../../models/wager')
 
 const middleware = require('../middleware')
 
-const findByAccount = async (req, res, next) => {
+async function find (req, res, next) {
   try {
     const wagers = await Wager.find({ account: req.account._id }).populate('bet').exec()
 
@@ -14,7 +14,7 @@ const findByAccount = async (req, res, next) => {
   }
 }
 
-router.get('/', middleware.accountWithPerms(), findByAccount)
+router.get('/', middleware.accountWithPerms(1), find)
 
 module.exports = {
   router

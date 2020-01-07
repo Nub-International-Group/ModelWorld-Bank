@@ -7,6 +7,7 @@ const middleware = {
   ...require('./middleware')
 }
 const subControllers = {
+  property: require('./property'),
   transaction: require('./transaction'),
   wage: require('./wage'),
   user: require('./user'),
@@ -17,7 +18,7 @@ const utils = require('../../utils')
 
 const findAll = require('./find-all')
 
-const findById = async (req, res, next) => {
+async function findById (req, res, next) {
   try {
     res.status(200).json(req.account)
   } catch (e) {
@@ -25,7 +26,7 @@ const findById = async (req, res, next) => {
   }
 }
 
-const create = async (req, res, next) => {
+async function create (req, res, next) {
   try {
     const owner = req.body.owner
     delete req.body.owner
@@ -44,7 +45,7 @@ const create = async (req, res, next) => {
   }
 }
 
-const deleteById = async (req, res, next) => {
+async function deleteById (req, res, next) {
   try {
     await Account.remove({ _id: req.params.accountId })
 
@@ -54,7 +55,7 @@ const deleteById = async (req, res, next) => {
   }
 }
 
-const updateById = async (req, res, next) => {
+async function patchById (req, res, next) {
   try {
     const account = req.account
 
@@ -70,7 +71,7 @@ const updateById = async (req, res, next) => {
   }
 }
 
-const payWagesPromisified = (account) => {
+function payWagesPromisified (account) {
   return new Promise((resolve, reject) => {
     account.payWages((err) => {
       if (err) {
@@ -82,7 +83,7 @@ const payWagesPromisified = (account) => {
   })
 }
 
-const triggerWagePayment = async (req, res, next) => {
+async function triggerWagePayment (req, res, next) {
   try {
     await payWagesPromisified(req.account)
 
@@ -96,13 +97,14 @@ router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
 router.get('/:accountId', middleware.accountWithPerms(1), findById)
 router.delete('/:accountId', deleteById)
-router.put('/:accountId', middleware.ensureAdmin, updateById)
-router.post('/:accountId/pay', middleware.ensureAdmin, middleware.accountWithPerms(), triggerWagePayment)
+router.put('/:accountId', middleware.ensureAdmin, patchById)
+router.post('/:accountId/pay', middleware.ensureAdmin, triggerWagePayment)
 
 router.use('/:accountId/transactions', subControllers.transaction.router)
 router.use('/:accountId/wages', subControllers.wage.router)
 router.use('/:accountId/users', subControllers.user.router)
 router.use('/:accountId/wagers', subControllers.wager.router)
+router.use('/:accountId/properties', subControllers.property.router)
 
 router.param('accountId', utils.generateParamMiddleware(Account, 'account'))
 

@@ -5,7 +5,7 @@ const Transaction = require('../../../models/transaction')
 
 const middleware = require('../middleware')
 
-const findByAccount = async (req, res, next) => {
+async function find (req, res, next) {
   try {
     req.account.calculateBalances().then(({ transactions, balances }) => {
       res.status(200).json({
@@ -18,7 +18,7 @@ const findByAccount = async (req, res, next) => {
   }
 }
 
-const create = async (req, res, next) => {
+async function create (req, res, next) {
   try {
     const sendingAccount = req.account
 
@@ -104,7 +104,7 @@ const create = async (req, res, next) => {
   }
 }
 
-router.get('/', middleware.accountWithPerms(1), findByAccount)
+router.get('/', middleware.accountWithPerms(1), find)
 router.post('/', create)
 
 module.exports = {
