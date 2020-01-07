@@ -2,17 +2,15 @@ const router = (require('express')).Router()
 
 const Bet = require('../../models/bet.js')
 
+const utils = require('../../utils')
 const middleware = require('../../middleware')
 
-const statuses = ['Closed', 'Open', 'Paid']
-
-const create = async (req, res, next) => {
+async function create (req, res, next) {
   try {
-    req.body.status = statuses.indexOf(req.body.status)
-
-    if (req.body.status === -1) {
-      const err = new Error('Invalid bet status')
-      err.code = 400
+    const { status, options } = req.body
+    if (!['CLOSED', 'OPEN'].includes(status)) {
+      const err = new Error('Invalid bet status, cannot be created as PAID_OUT')
+      err.code = 422
 
       throw err
     }
@@ -20,15 +18,15 @@ const create = async (req, res, next) => {
     const newBet = new Bet({
       name: req.body.name,
       description: req.body.description,
-      status: req.body.status
+      status: status
     })
 
-    for (const option of req.body.options) {
+    for (const option of options) {
       if (isNaN(option.currentOdds) === false) {
         option.currentOdds = parseFloat(option.currentOdds)
       } else {
         const err = new Error('invalid odds value for option')
-        err.code = 400
+        err.code = 422
 
         throw err
       }
@@ -46,7 +44,7 @@ const create = async (req, res, next) => {
   }
 }
 
-const findAll = async (req, res, next) => {
+async function find (req, res, next) {
   Bet.find({}).exec(function (err, documents) {
     if (err) {
       return next(err)
@@ -56,46 +54,46 @@ const findAll = async (req, res, next) => {
   })
 }
 
-const putStatus = async (req, res, next) => {
-  Bet.findById(req.params.id).exec().then((bet) => {
-    if (bet) {
-      req.body.status = statuses.indexOf(req.body.status)
+function handleStatusChange (newStatus) {
+  return async function (req, res, next) {
+    try {
+      const bet = req.bet
 
-      if (req.body.status === -1) {
-        return res.status(500).json({ err: { code: 500, desc: 'Invalid data entry, Status invalid...' } })
+      if (bet.status !== 'PAID_OUT') {
+        const err = new Error('Paid out bets cannot change status')
+        err.code = 422
+  
+        throw err
       }
-
-      if (req.body.status !== 2) {
-        bet.status = req.body.status
-        bet.markModified('status')
-
-        bet.save((err) => {
-          if (err) {
-            return next(err)
-          }
-
-          return res.status(200).json({})
-        })
-      } else {
-        bet.payOut(req.body.winner, (err) => {
-          if (err) {
-            return next(err)
-          }
-
-          return res.status(200).json({})
-        })
-      }
-    } else {
-      throw new Error(404)
+  
+      bet.status = newStatus
+      await bet.save()
+  
+      res.status(200).json(bet)
+    } catch (e) {
+      next(e)
     }
-  }).catch((err) => {
-    return res.status(500).json({ err: { code: 500, desc: 'Something went wrong.' } })
-  })
+  }
 }
 
-router.get('/', findAll)
+async function payOut (req, res, next) {
+  try {
+    const { bet } = req
+    await bet.payOut(req.body.winningOptionId)
+    res.status(200).json(bet)
+  } catch (e) {
+    next(e)
+  }
+}
+
+router.get('/', find)
 router.post('/', middleware.ensureAdmin, create)
-router.put('/:id/status', middleware.ensureAdmin, putStatus)
+
+router.post('/:betId/open', middleware.ensureAdmin, handleStatusChange('OPEN'))
+router.post('/:betId/close', middleware.ensureAdmin, handleStatusChange('CLOSED'))
+router.post('/:betId/pay-out', middleware.ensureAdmin, payOut)
+
+router.param('betId', utils.generateParamMiddleware(Bet, 'bet'))
 
 module.exports = {
   router

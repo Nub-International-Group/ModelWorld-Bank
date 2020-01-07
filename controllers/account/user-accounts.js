@@ -1,6 +1,6 @@
 const Account = require('../../models/account.js')
 
-module.exports = async function (req, res, next) {
+async function findUserAccounts (req, res, next) {
   try {
     const key = 'users.' + req.decoded.name // Build query with adaptive key
     const query = {}
@@ -13,3 +13,5 @@ module.exports = async function (req, res, next) {
     next(e)
   }
 }
+
+module.exports = findUserAccounts

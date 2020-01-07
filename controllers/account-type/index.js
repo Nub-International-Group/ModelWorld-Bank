@@ -5,7 +5,7 @@ const AccountType = require('../../models/account-type.js')
 const middleware = require('../../middleware')
 const utils = require('../../utils')
 
-const create = async (req, res, next) => {
+async function create (req, res, next) {
   try {
     delete req.body._id
     const newAccountType = await AccountType.create({
@@ -18,7 +18,7 @@ const create = async (req, res, next) => {
   }
 }
 
-const findAll = async (req, res, next) => {
+async function find (req, res, next) {
   try {
     const accountTypes = await AccountType.find({}).exec()
     res.status(200).json(accountTypes)
@@ -27,7 +27,7 @@ const findAll = async (req, res, next) => {
   }
 }
 
-const updateById = async (req, res, next) => {
+async function patchById (req, res, next) {
   try {
     for (const field in req.body) {
       req.accountType[field] = req.body[field]
@@ -41,9 +41,9 @@ const updateById = async (req, res, next) => {
   }
 }
 
-router.get('/', findAll)
+router.get('/', find)
 router.post('/', middleware.ensureAdmin, create)
-router.put('/:accountTypeId', middleware.ensureAdmin, updateById)
+router.put('/:accountTypeId', middleware.ensureAdmin, patchById)
 
 router.param('accountTypeId', utils.generateParamMiddleware(AccountType, 'accountType'))
 
