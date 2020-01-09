@@ -62,13 +62,13 @@ function handleStatusChange (newStatus) {
       if (bet.status !== 'PAID_OUT') {
         const err = new Error('Paid out bets cannot change status')
         err.code = 422
-  
+
         throw err
       }
-  
+
       bet.status = newStatus
       await bet.save()
-  
+
       res.status(200).json(bet)
     } catch (e) {
       next(e)
