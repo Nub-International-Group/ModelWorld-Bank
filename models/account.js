@@ -150,7 +150,7 @@ schema.methods.handlePaymentJob = async function () {
 
   // create transactions for salaries/property income and apply tax
   const transactions = []
-  for (const currency of [...Object.keys(salaries), ...Object.keys(propertyIncomes)]) {
+  for (const currency of [...new Set([...Object.keys(salaries), ...Object.keys(propertyIncomes)])]) {
     const propertyIncome = propertyIncomes[currency] || new Decimal(0)
     const salaryIncome = salaries[currency] || new Decimal(0)
 
