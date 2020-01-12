@@ -17,7 +17,7 @@
     "@coreui/coreui-pro": "^2.1.14",
     "@coreui/icons": "0.3.0",
     "@coreui/vue": "^2.1.2",
-    "axios": "^0.16.2",
+    "axios": "^0.18.1",
     "bootstrap": "4.3.1",
     "bootstrap-vue": "2.0.4",
     "chart.js": "^2.7.3",
