@@ -249,7 +249,7 @@ export default {
       this.selectedToModify = null
     },
     async deleteSelected () {
-      const confirm = window.confirm('Pressing ok will delete this account')
+      const confirm = window.confirm('Pressing ok will delete this wage')
       if (confirm) {
         await this.$store.dispatch('wages/deleteById', this.selectedToModify._id)
         this.selectedToModify = null

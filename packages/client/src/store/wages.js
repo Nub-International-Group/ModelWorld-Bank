@@ -43,7 +43,7 @@ const wages = {
         dispatch('messages/handleError', { err }, { root: true })
       }
     },
-    delete: async ({ state, commit, dispatch }, wageId) => {
+    deleteById: async ({ state, commit, dispatch }, wageId) => {
       try {
         await api.request({
           url: '/v1/wages/' + wageId,
