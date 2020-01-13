@@ -2,7 +2,7 @@
   <div class="animated fadeIn">
     <h3>{{ isAllView ? 'Property Market' : 'Your Properties' }}</h3>
 
-    <BRow>
+    <BRow v-if="properties.length">
       <BCol
         v-for="property in properties"
         :key="property._id"
@@ -12,6 +12,9 @@
         <PropertyCard :property-id="property._id" />
       </BCol>
     </BRow>
+    <h4 v-else>
+      Unfortunately, you don't own any properties. Try visiting the market!
+    </h4>
   </div>
 </template>
 
