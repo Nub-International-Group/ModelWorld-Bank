@@ -164,10 +164,13 @@ const router = new Router({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+
+// ensure login
+router.beforeEach(async (to, from, next) => {
+  // ensure logged in
   if (!to.meta.noLogin && !store.state.user.jwt) {
     if (localStorage.jwt) {
-      store.commit('user/setJWT', { jwt: localStorage.jwt })
+      await store.dispatch('user/login', localStorage.jwt)
       return next()
     }
 
@@ -181,7 +184,8 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-router.beforeEach((to, from, next) => {
+// preserve query string
+router.beforeEach(async (to, from, next) => {
   if (from.query.accountId && !to.query.accountId) {
     return next({
       name: to.name,
@@ -189,6 +193,21 @@ router.beforeEach((to, from, next) => {
       query: {
         ...to.query,
         accountId: from.query.accountId
+      }
+    })
+  }
+  next()
+})
+
+// attempt account selection
+router.beforeEach(async (to, from, next) => {
+  if (!to.query.accountId && store.getters['accounts/ownedAccounts'].length) {
+    return next({
+      name: to.name,
+      params: to.params,
+      query: {
+        ...to.query,
+        accountId: store.getters['accounts/ownedAccounts'][0]._id
       }
     })
   }

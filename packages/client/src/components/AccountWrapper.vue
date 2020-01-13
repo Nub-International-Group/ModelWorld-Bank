@@ -3,7 +3,8 @@
     v-if="!accountId"
     class="animated fadeIn"
   >
-    <h1>You need to select an account!</h1>
+    <h1>No account!</h1>
+    <h3>If you don't have an account, speak to any member of the NubBank team. Otherwise, try refreshing.</h3>
   </div>
   <div
     v-else-if="loading"
@@ -12,7 +13,7 @@
     <h1>Loading...</h1>
   </div>
   <RouterView
-    v-else-if="account"
+    v-else-if="selectedAccount"
     :key="$route.fullPath"
   />
   <div
@@ -24,7 +25,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'AccountWrapper',
   data () {
@@ -34,9 +35,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('selectedAccount', ['account']),
-    accountId: function () {
+    accountId () {
       return this.$route.query.accountId
+    },
+    selectedAccount () {
+      return this.$store.getters['selectedAccount/account']
     }
   },
   watch: {

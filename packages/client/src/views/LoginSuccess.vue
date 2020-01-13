@@ -10,19 +10,18 @@ export default {
   name: 'LoginSuccess',
   methods: {
     ...mapActions({
-      fetchJWT: 'user/fetchJWT'
+      login: 'user/login'
     }),
     ...mapMutations({
       setJWT: 'user/setJWT'
     })
   },
-  mounted () {
+  async mounted () {
     if (!this.$route.query.jwt) {
-      this.fetchJWT().then(() => {
-        this.$router.push('/')
-      })
+      await this.login()
+      this.$router.push('/')
     } else {
-      this.setJWT({ jwt: this.$route.query.jwt })
+      await this.login(this.$route.query.jwt)
       this.$router.push('/')
     }
   }
