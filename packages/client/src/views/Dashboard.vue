@@ -28,7 +28,7 @@
         >
           <BCardBody class="pb-0">
             <h2 class="mb-0">
-              Soon
+              {{ $currency(totalAssetValue) }}
             </h2>
             <p>Assets</p>
           </BCardBody>
@@ -44,9 +44,9 @@
         >
           <BCardBody class="pb-0">
             <h2 class="mb-0">
-              {{ $currency(balances.GBP || 0) }}
+              {{ $currency(netWorth) }}
             </h2>
-            <p>Total Value</p>
+            <p>Net Worth</p>
           </BCardBody>
         </BCard>
       </BCol>
@@ -128,11 +128,23 @@ export default {
     ...mapGetters({
       account: 'selectedAccount/account',
       transactions: 'selectedAccount/transactions',
-      balances: 'selectedAccount/balances'
+      balances: 'selectedAccount/balances',
+      properties: 'selectedAccount/properties'
     }),
     ...mapState('user', ['userDetails']),
     mostRecentTransactions () {
       return this.transactions.slice(-5)
+    },
+    totalAssetValue () {
+      const properties = this.properties.reduce((acc, property) => {
+        const length = property.valuations.length
+        return acc + (length ? property.valuations[length - 1].amount : 0)
+      }, 0)
+
+      return properties
+    },
+    netWorth () {
+      return this.totalAssetValue + (this.balances['GBP'] || 0)
     }
   },
   mounted () {
