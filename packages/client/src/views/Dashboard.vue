@@ -60,7 +60,7 @@
           title="Top Properties"
           sub-title="Your 5 highest revenue properties"
         >
-
+          Soon
         </BCard>
       </BCol>
       <BCol

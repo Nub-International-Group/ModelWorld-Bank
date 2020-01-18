@@ -5,10 +5,14 @@
         <i class="icon-list" />
       </template>
       <BListGroup class="list-group-accent">
+        <BListGroupItem v-if="!accounts.length">
+          No other accounts to select from.
+        </BListGroupItem>
         <BListGroupItem
-          v-for="possibleAccount in ownedAccounts"
-          :key="possibleAccount._id"
+          v-else
+          v-for="possibleAccount in accounts"
           href="#"
+          :key="possibleAccount._id"
           class="list-group-item-divider"
           :class="{
             'list-group-item-accent-warning': possibleAccount.company,
@@ -27,11 +31,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
   name: 'AccountAside',
   computed: {
-    ...mapGetters('accounts', ['ownedAccounts'])
+    accounts () {
+      return this.$store.getters['accounts/ownedAccounts']
+        .filter(account => account._id !== this.$store.state.selectedAccount.accountId)
+        .sort((a, b) => a.name < b.name ? -1 : 1)
+    }
   },
   methods: {
     selectAccount (account) {
