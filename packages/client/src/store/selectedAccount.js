@@ -74,7 +74,7 @@ const selectedAccount = {
   getters: {
     account: (state, getters, rootState, rootGetters) => rootGetters['accounts/allAccountsById'][state.accountId],
     balances: (state, getters) => getters.transactionData.balances || {},
-    properties: (state, getters, rootState) => rootState.properties.all.filter(property => property.owner === state.accountId),
+    properties: (state, getters, rootState, rootGetters) => rootGetters['properties/all'].filter(property => property.owner === state.accountId),
     transactionData: (state, getters, rootState) => rootState.transactions.transactionDataByAccountId[state.accountId] || {},
     transactions: (state, getters) => getters.transactionData.transactions || [],
     wageRequests: (state, getters, rootState) => rootState.wageRequests.wageRequestsByAccountId[state.accountId] || [],

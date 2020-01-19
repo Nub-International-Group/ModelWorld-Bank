@@ -4,10 +4,10 @@
   >
     <BCardBody>
       <BRow>
-        <BCol md="4" class="d-flex align-items-center">
+        <BCol md="2" class="d-flex align-items-center">
           <img :src="property.image" width="100%">
         </BCol>
-        <BCol md="8" class="pt-1 pt-md-0">
+        <BCol md="10" class="pt-1 pt-md-0">
           <div class="d-flex justify-content-between">
             <h4 class="mb-1">{{ property.name }}</h4>
             <BBtn
@@ -18,7 +18,7 @@
             </BBtn>
           </div>
           <h6>{{ $currency(property.returnRate, property.currency) }} per annum return</h6>
-          <h6 v-if="lastValuation">{{ $currency(lastValuation, property.currency) }} last sale price</h6>
+          <h6 v-if="property.lastValuation">{{ $currency(property.lastValuation, property.currency) }} last sale price</h6>
           <h6>Current owner: {{ propertyOwner ? propertyOwner.name : 'N/A' }}</h6>
           <p>{{ property.description }}</p>
         </BCol>
@@ -53,11 +53,6 @@ export default {
     },
     property () {
       return this.propertyId ? this.$store.getters['properties/propertiesById'][this.propertyId] : null
-    },
-    lastValuation () {
-      if (!this.property) return null
-      const length = this.property.valuations.length
-      return length ? this.property.valuations[length - 1].amount : null
     }
   }
 }

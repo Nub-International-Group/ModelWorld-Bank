@@ -62,7 +62,14 @@ const properties = {
     }
   },
   getters: {
-    propertiesById: (state) => state.all.reduce((propertiesById, property) => ({
+    all: (state) => state.all.map((property) => {
+      const length = property.valuations.length
+      return {
+        ...property,
+        lastValuation: length ? property.valuations[length - 1].amount : null
+      }
+    }),
+    propertiesById: (state, getters) => getters['all'].reduce((propertiesById, property) => ({
       ...propertiesById,
       [property._id]: property
     }), {})
