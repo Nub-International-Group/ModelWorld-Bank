@@ -21,17 +21,17 @@ export default {
       icon: 'cui-briefcase'
     },
     {
-      name: 'Properties',
-      url: '/properties?view=owned',
+      name: 'Assets',
+      url: '/assets?view=owned',
       icon: 'cui-home',
       children: [
         {
-          name: 'My Properties',
-          url: '/properties?view=owned'
+          name: 'My Assets',
+          url: '/assets?view=owned'
         },
         {
-          name: 'Property Market',
-          url: '/properties?view=all'
+          name: 'Assets Market',
+          url: '/assets?view=all'
         }
       ]
     },

@@ -63,13 +63,13 @@ const router = new Router({
           component: Wages
         },
         {
-          path: '/properties',
-          name: 'Properties',
+          path: '/assets',
+          name: 'Assets',
           component: Properties
         },
         {
-          path: '/properties/:propertyId',
-          name: 'Property',
+          path: '/assets/:propertyId',
+          name: 'Asset',
           component: Property
         },
         {

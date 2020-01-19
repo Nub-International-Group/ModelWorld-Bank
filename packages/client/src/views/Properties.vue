@@ -1,6 +1,6 @@
 <template>
   <div class="animated fadeIn">
-    <h3>{{ isAllView ? 'Property Market' : 'Your Properties' }}</h3>
+    <h3>{{ isAllView ? 'Assets Market' : 'Your Assets' }}</h3>
 
     <BRow v-if="properties.length">
       <BCol
@@ -13,7 +13,7 @@
       </BCol>
     </BRow>
     <h4 v-else>
-      Unfortunately, you don't own any properties. Try visiting the market!
+      Unfortunately, you don't own any assets. Try visiting the market!
     </h4>
   </div>
 </template>

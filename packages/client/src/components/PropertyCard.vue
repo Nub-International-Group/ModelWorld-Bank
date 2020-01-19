@@ -12,7 +12,7 @@
             <h4 class="mb-1">{{ property.name }}</h4>
             <BBtn
               v-if="!hideLink"
-              @click="$router.push({ name: 'Property', params: { propertyId: property._id }})"
+              @click="$router.push({ name: 'Asset', params: { propertyId: property._id }})"
             >
               More Info
             </BBtn>

@@ -57,8 +57,8 @@
         sm="12"
       >
         <BCard
-          title="Top Properties"
-          sub-title="Your 5 highest revenue properties"
+          title="Top Assets"
+          sub-title="Your 5 highest revenue assets"
         >
           Soon
         </BCard>
