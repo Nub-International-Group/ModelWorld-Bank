@@ -86,12 +86,18 @@
             :options="lastTransactionsTable.options"
             :loading="$wait.is('fetching transactions')"
           >
-            <div
+            <template
+              slot="created"
+              slot-scope="props"
+            >
+              {{ new Date(props.row.created).toLocaleString('en-GB') }}
+            </template>
+            <template
               slot="amount"
               slot-scope="props"
             >
               {{ $currency(props.row.amount) }}
-            </div>
+            </template>
           </VClientTable>
         </BCard>
       </BCol>

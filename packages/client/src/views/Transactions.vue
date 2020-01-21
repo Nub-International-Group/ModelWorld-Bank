@@ -65,7 +65,13 @@
             :options="options"
             :loading="$wait.is('fetching transactions')"
           >
-            <div
+            <template
+              slot="created"
+              slot-scope="props"
+            >
+              {{ new Date(props.row.created).toLocaleString('en-GB') }}
+            </template>
+            <template
               slot="child_row"
               slot-scope="props"
             >
@@ -77,13 +83,13 @@
                 <strong>Gross:</strong> {{ $currency(props.row.meta.salary + props.row.meta.property, props.row.currency) }} <br>
                 <strong>Tax Due:</strong> {{ $currency(props.row.meta.tax, props.row.currency) }} <br>
               </div>
-            </div>
-            <div
+            </template>
+            <template
               slot="amount"
               slot-scope="props"
             >
               {{ $currency(props.row.amount, props.row.currency) }}
-            </div>
+            </template>
           </VClientTable>
         </BCard>
       </BCol>
@@ -92,7 +98,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 
 import NewTransaction from '@/components/Transactions/NewTransaction'
 
