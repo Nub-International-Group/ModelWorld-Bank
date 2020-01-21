@@ -17,6 +17,7 @@ export default {
     },
     {
       name: 'Wages',
+      requiredScopes: ['salary'],
       url: '/wages',
       icon: 'cui-briefcase'
     },
@@ -24,6 +25,7 @@ export default {
       name: 'Assets',
       url: '/assets?view=owned',
       icon: 'cui-home',
+      requiredScopes: ['property'],
       children: [
         {
           name: 'My Assets',
@@ -38,7 +40,8 @@ export default {
     {
       name: 'Bets',
       url: '/bets',
-      icon: 'cui-note'
+      icon: 'cui-note',
+      requiredScopes: ['betting']
     },
     {
       name: 'Rich List',
@@ -64,7 +67,7 @@ export default {
       name: 'Admin',
       url: '/admin',
       icon: 'icon-list',
-      admin: true,
+      requiredScopes: ['admin'],
       children: [
         {
           name: 'Accounts',

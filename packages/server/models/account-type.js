@@ -11,7 +11,6 @@ const schema = new mongoose.Schema({
   corporate: Boolean,
   options: {
     salary: Boolean,
-    benefits: Boolean,
     transactionFee: {
       mechanism: {
         type: String,

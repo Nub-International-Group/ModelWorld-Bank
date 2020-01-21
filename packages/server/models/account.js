@@ -108,7 +108,7 @@ const calculateTaxDue = (annualGross) => {
 
 schema.methods.getSalaries = async function () {
   this.wages = this.wages.filter(id => id !== '*unemployed*')
-  if (this.wages.length === 0) {
+  if (this.wages.length === 0 && !this.accountType.corporate) {
     this.wages = ['*unemployed*']
   }
 

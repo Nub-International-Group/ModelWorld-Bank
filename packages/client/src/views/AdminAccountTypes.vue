@@ -91,13 +91,6 @@
             Betting
           </BFormCheckbox>
           <BFormCheckbox
-            v-model="selectedToModify.options.benefits"
-            :value="true"
-            :unchecked-value="false"
-          >
-            Benefits
-          </BFormCheckbox>
-          <BFormCheckbox
             v-model="selectedToModify.options.property"
             :value="true"
             :unchecked-value="false"
@@ -184,7 +177,6 @@ export default {
         corporate: false,
         options: {
           salary: true,
-          benefits: true,
           transactionFee: {
             mechanism: 'percentage',
             rate: 0.05

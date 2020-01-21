@@ -50,7 +50,10 @@ const router = new Router({
         {
           path: '/bets',
           name: 'Bets',
-          component: Bets
+          component: Bets,
+          meta: {
+            requiredScopes: ['betting']
+          }
         },
         {
           path: '/transactions',
@@ -60,17 +63,26 @@ const router = new Router({
         {
           path: '/wages',
           name: 'Wages',
-          component: Wages
+          component: Wages,
+          meta: {
+            requiredScopes: ['salary']
+          }
         },
         {
           path: '/assets',
           name: 'Assets',
-          component: Properties
+          component: Properties,
+          meta: {
+            requiredScopes: ['property']
+          }
         },
         {
           path: '/assets/:propertyId',
           name: 'Asset',
-          component: Property
+          component: Property,
+          meta: {
+            requiredScopes: ['property']
+          }
         },
         {
           path: '/rich-list/:type',
@@ -122,7 +134,7 @@ const router = new Router({
               name: 'AdminAccounts',
               component: AdminAccounts,
               meta: {
-                admin: true,
+                requiredScopes: ['admin'],
                 label: 'Accounts'
               }
             },
@@ -131,7 +143,7 @@ const router = new Router({
               name: 'AdminWages',
               component: AdminWages,
               meta: {
-                admin: true,
+                requiredScopes: ['admin'],
                 label: 'Wages'
               }
             },
@@ -140,7 +152,7 @@ const router = new Router({
               name: 'AdminAccountTypes',
               component: AdminAccountTypes,
               meta: {
-                admin: true,
+                requiredScopes: ['admin'],
                 label: 'Account Types'
               }
             },
@@ -149,7 +161,7 @@ const router = new Router({
               name: 'AdminProperties',
               component: AdminProperties,
               meta: {
-                admin: true,
+                requiredScopes: ['admin'],
                 label: 'Properties'
               }
             }
@@ -164,7 +176,6 @@ const router = new Router({
   ]
 })
 
-
 // ensure login
 router.beforeEach(async (to, from, next) => {
   // ensure logged in
@@ -175,10 +186,6 @@ router.beforeEach(async (to, from, next) => {
     }
 
     return next('/login')
-  }
-
-  if (to.meta.admin && !store.state.user.userDetails.admin) {
-    return next('/')
   }
 
   next()
@@ -209,6 +216,16 @@ router.beforeEach(async (to, from, next) => {
         ...to.query,
         accountId: store.getters['accounts/ownedAccounts'][0]._id
       }
+    })
+  }
+  next()
+})
+
+// ensure user has scopes for that route
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiredScopes && !to.meta.requiredScopes.every(scope => store.getters['ui/allowedNavScopes'][scope])) {
+    return next({
+      name: 'Dashboard'
     })
   }
   next()

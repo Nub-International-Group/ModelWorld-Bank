@@ -44,8 +44,7 @@ export default {
     selectAccount (account) {
       if (account._id !== this.$route.query.accountId) {
         this.$router.push({
-          name: this.$route.name,
-          params: this.$route.params,
+          name: 'Dashboard',
           query: {
             accountId: account._id
           }

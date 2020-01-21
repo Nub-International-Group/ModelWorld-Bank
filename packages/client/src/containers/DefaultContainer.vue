@@ -122,6 +122,14 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      account: 'selectedAccount/account',
+      allowedNavScopes: 'ui/allowedNavScopes'
+    }),
+    ...mapState({
+      userDetails: state => state.user.userDetails,
+      toasts: state => state.messages.queue
+    }),
     name () {
       return this.$route.name
     },
@@ -129,13 +137,8 @@ export default {
       return this.$route.matched.filter((route) => route.name || route.meta.label)
     },
     allowedNav () {
-      return nav.items.filter(nav => !nav.admin || (nav.admin && this.userDetails.admin))
-    },
-    ...mapState({
-      userDetails: state => state.user.userDetails,
-      toasts: state => state.messages.queue
-    }),
-    ...mapGetters('selectedAccount', ['account'])
+      return nav.items.filter(nav => nav.requiredScopes ? nav.requiredScopes.every(scope => !!this.allowedNavScopes[scope]) : true)
+    }
   },
   watch: {
     toasts: function (val) {
