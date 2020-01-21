@@ -42,38 +42,41 @@ module.exports = async function (req, res, next) {
 
 async function updateLeaderboard () {
   logger.info('leaderboard update triggered')
+  try {
+    const accounts = await Account.find({ public: true }).exec()
+    const balances = {}
+    const transactions = await Transaction.find({}).exec()
 
-  const accounts = await Account.find({ public: true }).exec()
-  const balances = {}
-  const transactions = await Transaction.find({}).exec()
+    for (const transaction of transactions) {
+      if (!balances[transaction.to]) balances[transaction.to] = {}
+      balances[transaction.to][transaction.currency] = (balances[transaction.to][transaction.currency] || 0) + transaction.amount
 
-  for (const transaction of transactions) {
-    if (!balances[transaction.to]) balances[transaction.to] = {}
-    balances[transaction.to][transaction.currency] = (balances[transaction.to][transaction.currency] || 0) + transaction.amount
-
-    if (!balances[transaction.from]) balances[transaction.from] = {}
-    balances[transaction.from][transaction.currency] = (balances[transaction.from][transaction.currency] || 0) - transaction.amount
-  }
-
-  // reset leaderboards
-  corporateAccountLeaderboard = []
-  personalAccountLeaderboard = []
-
-  // generate new leaderboards
-  for (const account of accounts) {
-    if (balances[account._id]) {
-      const balance = balances[account._id].GBP || 0
-      const lb = account.accountType.corporate ? corporateAccountLeaderboard : personalAccountLeaderboard
-      lb.push({
-        name: account.name,
-        description: account.description,
-        balance
-      })
+      if (!balances[transaction.from]) balances[transaction.from] = {}
+      balances[transaction.from][transaction.currency] = (balances[transaction.from][transaction.currency] || 0) - transaction.amount
     }
-  }
 
-  lastUpdated = Date.now()
-  logger.info('leaderboard update complete for %d accounts', accounts.length)
+    // reset leaderboards
+    corporateAccountLeaderboard = []
+    personalAccountLeaderboard = []
+
+    // generate new leaderboards
+    for (const account of accounts) {
+      if (balances[account._id] && account.accountType) {
+        const balance = balances[account._id].GBP || 0
+        const lb = account.accountType.corporate ? corporateAccountLeaderboard : personalAccountLeaderboard
+        lb.push({
+          name: account.name,
+          description: account.description,
+          balance
+        })
+      }
+    }
+
+    lastUpdated = Date.now()
+    logger.info('leaderboard update complete for %d accounts', accounts.length)
+  } catch (err) {
+    logger.error(err, 'error updating leaderboards')
+  }
 }
 
 nodeSchedule.scheduleJob('*/5 * * * *', updateLeaderboard)
