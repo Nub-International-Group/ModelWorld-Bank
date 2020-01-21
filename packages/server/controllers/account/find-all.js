@@ -2,8 +2,13 @@ const Account = require('../../models/account')
 const Transaction = require('../../models/transaction')
 const nodeSchedule = require('node-schedule')
 
-let leaderboard = []
-let companyLeaderboard = []
+const logger = require('pino')({
+  name: 'models:account:find-all',
+  level: process.env.LOG_LEVEL || 'info'
+})
+
+let corporateAccountLeaderboard = []
+let personalAccountLeaderboard = []
 
 let lastUpdated = null
 
@@ -22,7 +27,7 @@ module.exports = async function (req, res, next) {
     if (req.query.public !== undefined) {
       const company = req.query.type === 'company'
 
-      return res.status(200).json({ leaderboard: (company ? companyLeaderboard : leaderboard), lastUpdated })
+      return res.status(200).json({ leaderboard: (company ? corporateAccountLeaderboard : personalAccountLeaderboard), lastUpdated })
     }
 
     if (req.query.typeahead !== undefined) {
@@ -35,51 +40,40 @@ module.exports = async function (req, res, next) {
   }
 }
 
-function updateLeaderboard () {
-  Account.find({ public: true }).exec((err, accounts) => {
-    if (err) {
-      console.log(err)
-      throw err
+async function updateLeaderboard () {
+  logger.info('leaderboard update triggered')
+
+  const accounts = await Account.find({ public: true }).exec()
+  const balances = {}
+  const transactions = await Transaction.find({}).exec()
+
+  for (const transaction of transactions) {
+    if (!balances[transaction.to]) balances[transaction.to] = {}
+    balances[transaction.to][transaction.currency] = (balances[transaction.to][transaction.currency] || 0) + transaction.amount
+
+    if (!balances[transaction.from]) balances[transaction.from] = {}
+    balances[transaction.from][transaction.currency] = (balances[transaction.from][transaction.currency] || 0) - transaction.amount
+  }
+
+  // reset leaderboards
+  corporateAccountLeaderboard = []
+  personalAccountLeaderboard = []
+
+  // generate new leaderboards
+  for (const account of accounts) {
+    if (balances[account._id]) {
+      const balance = balances[account._id].GBP || 0
+      const lb = account.accountType.corporate ? corporateAccountLeaderboard : personalAccountLeaderboard
+      lb.push({
+        name: account.name,
+        description: account.description,
+        balance
+      })
     }
+  }
 
-    const balances = {}
-    Transaction.find({}).exec((err, trans) => {
-      if (err) {
-        console.log(err)
-      }
-
-      trans.forEach((el) => {
-        if (!balances[el.to]) balances[el.to] = {}
-        balances[el.to][el.currency] = (balances[el.to][el.currency] || 0) + el.amount
-
-        if (!balances[el.from]) balances[el.from] = {}
-        balances[el.from][el.currency] = (balances[el.from][el.currency] || 0) - el.amount
-      })
-      leaderboard = []
-      companyLeaderboard = []
-
-      accounts.forEach((acc) => {
-        let bal = 0
-        if (balances[acc._id]) bal = balances[acc._id].GBP || 0
-
-        if (!acc.company) {
-          leaderboard.push({
-            name: acc.name,
-            description: acc.description,
-            balance: bal
-          })
-        } else {
-          companyLeaderboard.push({
-            name: acc.name,
-            description: acc.description,
-            balance: bal
-          })
-        }
-
-        lastUpdated = Date.now()
-      })
-    })
-  })
+  lastUpdated = Date.now()
+  logger.info('leaderboard update complete for %d accounts', accounts.length)
 }
 
 nodeSchedule.scheduleJob('*/5 * * * *', updateLeaderboard)

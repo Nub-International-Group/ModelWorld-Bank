@@ -8,7 +8,7 @@ const config = require('config')
 const session = require('express-session')
 const jwt = require('jsonwebtoken')
 const logger = require('pino')({
-  name: 'payment-cron',
+  name: 'server-entrypoint',
   level: process.env.LOG_LEVEL || 'info'
 })
 
