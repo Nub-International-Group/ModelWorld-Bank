@@ -7,6 +7,10 @@ const passport = require('passport')
 const config = require('config')
 const session = require('express-session')
 const jwt = require('jsonwebtoken')
+const logger = require('pino')({
+  name: 'payment-cron',
+  level: process.env.LOG_LEVEL || 'info'
+})
 
 const controllers = require('./controllers')
 
@@ -15,20 +19,20 @@ const RedditStrategy = require('passport-reddit').Strategy
 
 const pfile = require('./package')
 
+// establish database connection
 mongoose.connect(config.mongoURL)
 mongoose.Promise = Promise
-
-mongoose.connection.on('error', function (err) {
-  console.log('DB Connection Error')
-  console.log(err)
-
+mongoose.connection.on('error', (err) => {
+  logger.fatal(err, 'DB Connection Error')
   process.exit()
 })
 
 const app = express()
 
-app.use(cors({ credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080'] }))
-app.options('*', cors({ credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080'] }))
+// cors middleware
+const corsInstance = cors({ credentials: true, origin: ['https://bank.nub.international', 'http://localhost:8080'] })
+app.use(corsInstance)
+app.options('*', corsInstance)
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -39,15 +43,15 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
 
-/**
- * All responses should be JSON unless otherwise mentioned
- */
-app.use( (req, res, next) => {
+// set custom headers
+app.use((req, res, next) => {
   res.contentType('application/json')
   res.setHeader('X-Powered-By', 'The dreams and salt of MHOC')
   next()
 })
 
+// we don't persist user details so both of these passport methods are empty.
+// TODO: Strip out passport and just directly interact with the Reddit API
 passport.serializeUser((user, done) => {
   done(null, user)
 })
@@ -60,9 +64,9 @@ passport.use(new RedditStrategy({
   clientID: config.reddit.key,
   clientSecret: config.reddit.secret,
   callbackURL: config.deploymentURL + '/v1/auth/callback'
-}, function (accessToken, refreshToken, profile, done) {
+}, (accessToken, refreshToken, profile, done) => {
   process.nextTick(() => {
-    // TODO: Grab extended user from the DATABASE
+    // No user stored in the database so just pass profile through
     return done(null, profile)
   })
 }))
@@ -152,10 +156,15 @@ app.use((err, req, res, next) => {
   if (!err.code) err.code = 500
 
   if (err.code === 500) {
-    console.log('an error occurred handling a request:')
-    console.log(err)
+    logger.err({
+      err,
+      body: req.body,
+      query: req.query,
+      method: req.method,
+      url: req.originalUrl
+    }, 'error handling request')
 
-    err.message = 'Something went wrong! Blame nub...'
+    err.message = 'SERVER_ERROR'
   }
 
   res.status(err.code).json({ err: { code: err.code, desc: err.message } })

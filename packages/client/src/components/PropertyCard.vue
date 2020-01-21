@@ -4,10 +4,10 @@
   >
     <BCardBody>
       <BRow>
-        <BCol md="2" class="d-flex align-items-center">
+        <BCol md="3" class="d-flex align-items-center">
           <img :src="property.image" width="100%">
         </BCol>
-        <BCol md="10" class="pt-1 pt-md-0">
+        <BCol md="9" class="pt-1 pt-md-0">
           <div class="d-flex justify-content-between">
             <h4 class="mb-1">{{ property.name }}</h4>
             <BBtn
