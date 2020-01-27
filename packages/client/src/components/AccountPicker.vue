@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h5>Recipient</h5>
     <BFormGroup label="Account Search">
       <BFormInput
         v-model="query"
@@ -27,7 +26,7 @@ import { validationMixin } from 'vuelidate'
 import Fuse from 'fuse.js'
 
 export default {
-  name: 'NewTransaction',
+  name: 'AccountPicker',
   mixins: [validationMixin],
   data () {
     return {
@@ -60,16 +59,9 @@ export default {
   },
   methods: {
     select (item) {
-      this.selected = item._id
-      this.$emit('input', item._id)
-    },
-    trClass (item, type) {
-      console.log(type)
-      if (!item || type !== 'row') return
-      console.log(item)
-      if (item._id === this.selected) {
-        return 'table-success'
-      }
+      const account = item[0]
+      this.selected = account._id
+      this.$emit('input', account._id)
     }
   }
 }

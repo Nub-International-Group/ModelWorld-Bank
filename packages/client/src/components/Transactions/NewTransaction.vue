@@ -28,14 +28,15 @@
           />
         </BFormGroup>
         <BBtn
-        v-b-modal.confirmTransactionModal
-        :disabled="$v.newTransaction.$invalid"
+          v-b-modal.confirmTransactionModal
+          :disabled="$v.newTransaction.$invalid"
         >
           Make Transaction
         </BBtn>
       </BCol>
       <BCol md="6">
-        <AccountPicker v-model="newTransaction.target"/>
+        <h5>Recipient</h5>
+        <AccountPicker v-model="newTransaction.target" />
       </BCol>
     </BRow>
 

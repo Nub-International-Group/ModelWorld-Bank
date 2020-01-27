@@ -71,12 +71,13 @@
             type="text"
           />
         </BFormGroup>
-        <BFormGroup label="Owner">
-          <BFormInput
-            v-model="selectedToModify.owner"
-            type="text"
-          />
-        </BFormGroup>
+        <strong v-if="targetAccount">
+          Selected owner: {{ targetAccount.name }} ({{ targetAccount._id }})
+        </strong>
+        <strong v-else>
+          No owner selected!
+        </strong>
+        <AccountPicker v-model="selectedToModify.owner" />
         <BFormGroup label="Annual Revenue">
           <BFormInput
             v-model.number="selectedToModify.returnRate"
@@ -133,9 +134,13 @@
 
 <script>
 import { mapState } from 'vuex'
+import AccountPicker from '../components/AccountPicker'
 
 export default {
   name: 'AdminProperties',
+  components: {
+    AccountPicker
+  },
   data () {
     return {
       columns: ['_id', 'name', 'description', 'returnRate', 'details'],
@@ -157,7 +162,10 @@ export default {
     ...mapState({
       properties: state => state.properties.all,
       currencies: state => state.ui.currencies
-    })
+    }),
+    targetAccount () {
+      return this.selectedToModify && this.selectedToModify.owner ? this.$store.getters['ui/accountsById'][this.selectedToModify.owner] : {}
+    }
   },
   mounted () {
     this.$store.dispatch('properties/fetch')
