@@ -35,22 +35,7 @@
         </BBtn>
       </BCol>
       <BCol md="6">
-        <h5>Recipient</h5>
-        <BFormGroup label="Account Search">
-          <BFormInput
-            v-model="query"
-            type="text"
-          />
-        </BFormGroup>
-
-        <br>
-        <BTable
-          striped
-          :items="queried"
-          :fields="['_id', 'name', 'description']"
-          caption="Click the row to select."
-          @row-clicked="selectRecipient"
-        />
+        <AccountPicker v-model="newTransaction.target"/>
       </BCol>
     </BRow>
 
@@ -70,13 +55,16 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import { validationMixin } from 'vuelidate'
 import { required, decimal } from 'vuelidate/lib/validators'
-import Fuse from 'fuse.js'
+import AccountPicker from '../AccountPicker'
 
 export default {
   name: 'NewTransaction',
+  components: {
+    AccountPicker
+  },
   mixins: [validationMixin],
   data () {
     return {
@@ -84,48 +72,22 @@ export default {
         target: null,
         amount: 0,
         description: ''
-      },
-      target: {
-        name: null
-      },
-      query: 'nub'
+      }
     }
   },
   computed: {
     ...mapGetters('selectedAccount', ['balances', 'account']),
-    ...mapState({
-      allAccounts: state => state.ui.typeAhead.accounts
-    }),
-    queried () {
-      const options = {
-        shouldSort: true,
-        threshold: 0.6,
-        location: 0,
-        distance: 100,
-        maxPatternLength: 32,
-        minMatchCharLength: 1,
-        keys: [
-          'name',
-          'description'
-        ]
-      }
-
-      const fuse = new Fuse(this.allAccounts, options)
-
-      return fuse.search(this.query).slice(0, 5)
-    },
     amountWithFee () {
       return (this.newTransaction.amount || 0) + this.fee
     },
     fee () {
       return Math.floor(this.account.accountType.options.transactionFee.rate * (this.newTransaction.amount || 0) * 100) / 100
+    },
+    target () {
+      return this.newTransaction.target ? this.$store.getters['ui/accountsById'][this.newTransaction.target] : {}
     }
   },
   methods: {
-    selectRecipient (item) {
-      this.target = item
-      this.newTransaction.target = item._id
-    },
     createTransaction () {
       this.$store.dispatch('selectedAccount/createTransaction', this.newTransaction)
     }
