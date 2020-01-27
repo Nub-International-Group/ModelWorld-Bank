@@ -71,6 +71,7 @@
             type="text"
           />
         </BFormGroup>
+        &nbsp;
         <strong v-if="targetAccount">
           Selected owner: {{ targetAccount.name }} ({{ targetAccount._id }})
         </strong>

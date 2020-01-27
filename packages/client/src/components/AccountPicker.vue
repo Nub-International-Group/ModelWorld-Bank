@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BFormGroup label="Account Search">
+    <BFormGroup>
       <BFormInput
         v-model="query"
         type="text"
@@ -60,8 +60,10 @@ export default {
   methods: {
     select (item) {
       const account = item[0]
-      this.selected = account._id
-      this.$emit('input', account._id)
+      if (account) {
+        this.selected = account._id
+        this.$emit('input', account._id)
+      }
     }
   }
 }
