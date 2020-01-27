@@ -27,7 +27,10 @@
             type="text"
           />
         </BFormGroup>
-        <BBtn v-b-modal.confirmTransactionModal>
+        <BBtn
+        v-b-modal.confirmTransactionModal
+        :disabled="$v.newTransaction.$invalid"
+        >
           Make Transaction
         </BBtn>
       </BCol>
@@ -135,9 +138,6 @@ export default {
       amount: {
         required,
         decimal
-      },
-      description: {
-        required
       }
     }
   }
