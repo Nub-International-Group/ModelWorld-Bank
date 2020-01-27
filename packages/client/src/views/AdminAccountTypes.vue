@@ -108,7 +108,12 @@
             step="0.005"
             type="range"
           />
-          <strong>{{ Math.floor(selectedToModify.options.transactionFee.rate * 200) / 2 }}%</strong>
+          <BFormInput
+            v-model.number="selectedToModify.options.transactionFee.rate"
+            type="number"
+            min="0"
+            max="1"
+          />
         </BFormGroup>
         <BFormGroup
           label="Interest Rate (AER) (%)"
@@ -120,7 +125,12 @@
             step="0.005"
             type="range"
           />
-          <strong>{{ Math.floor(selectedToModify.options.interest.rate * 200) / 2 }}%</strong>
+          <BFormInput
+            v-model.number="selectedToModify.options.interest.rate"
+            type="number"
+            min="0"
+            max="1"
+          />
         </BFormGroup>
       </template>
 
