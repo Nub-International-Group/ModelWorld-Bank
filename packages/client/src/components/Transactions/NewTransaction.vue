@@ -1,5 +1,5 @@
 <template>
-  <BCard>
+  <BCard title="Transfer Ownership">
     <BRow>
       <BCol md="6">
         <h2>Make a payment</h2>

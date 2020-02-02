@@ -36,9 +36,7 @@
         v-if="userIsOwner"
         lg="8"
       >
-        <BCard title="Transfer Ownership">
-
-        </BCard>
+        <PropertyTransferCard :property="property" />
       </BCol>
     </BRow>
   </div>
@@ -46,9 +44,10 @@
 
 <script>
 import PropertyCard from '../components/PropertyCard'
+import PropertyTransferCard from '../components/PropertyTransferCard'
 export default {
   name: 'Property',
-  components: { PropertyCard },
+  components: { PropertyCard, PropertyTransferCard },
   computed: {
     propertyOwner () {
       return this.$store.getters['ui/getAccount'](this.property.owner)
