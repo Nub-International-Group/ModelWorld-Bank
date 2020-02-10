@@ -15,7 +15,7 @@ async function find (req, res, next) {
   }
 }
 
-async function sell ({ body, property, decoded: user }, res, next) {
+async function transfer ({ body, property, decoded: user }, res, next) {
   try {
     if (!body.accountId) {
       const e = new Error('accountId must be specified.')
@@ -26,7 +26,7 @@ async function sell ({ body, property, decoded: user }, res, next) {
 
     let value = body.value
     if (typeof value !== 'number' || value < 0) {
-      const e = new Error('A valid positive numerical value must be provided for the sale')
+      const e = new Error('A valid positive numerical value must be provided for the transfer')
       e.code = 422
 
       throw e
@@ -39,7 +39,8 @@ async function sell ({ body, property, decoded: user }, res, next) {
         ...property.valuations || [],
         {
           created: Date.now(),
-          user: user.name
+          user: user.name,
+          value
         }
       ]
     }).exec()
@@ -51,9 +52,27 @@ async function sell ({ body, property, decoded: user }, res, next) {
 }
 
 router.get('/', middleware.accountWithPerms(1), find)
-router.post('/sell', middleware.accountWithPerms(2), sell)
+router.post('/:propertyId/transfer', middleware.accountWithPerms(2), transfer)
 
 router.param('propertyId', utils.generateParamMiddleware(Property, 'property'))
+
+// Middleware to ensure property is owned by account
+router.param('propertyId', (req, res, next) => {
+  if (!req.property || !req.account) {
+    const e = new Error('Property or account does not exist')
+    e.code = 422
+    return next(e)
+  }
+
+  if (req.property.owner !== req.account._id) {
+    const e = new Error(`Property ${req.property._id} does not exist under account ${req.account.__id}`)
+    e.code = 404
+
+    return next(e)
+  }
+  next()
+})
+
 module.exports = {
   router
 }
