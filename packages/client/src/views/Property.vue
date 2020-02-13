@@ -33,7 +33,7 @@
         </BCard>
       </BCol>
       <BCol
-        v-if="userIsOwner"
+        v-if="userIsOwner && canBeTransferred"
         lg="8"
       >
         <PropertyTransferCard :property="property" />
@@ -57,6 +57,9 @@ export default {
     },
     property () {
       return this.$store.getters['properties/propertiesById'][this.$route.params.propertyId]
+    },
+    canBeTransferred () {
+      return !this.property.tags.includes('untransferrable')
     }
   }
 }

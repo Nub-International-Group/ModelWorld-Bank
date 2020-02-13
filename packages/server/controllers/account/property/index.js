@@ -31,6 +31,13 @@ async function transfer ({ body, property, decoded: user }, res, next) {
       throw e
     }
 
+    if (property.tags.includes('untransferrable')) {
+      const e = new Error('This property cannot be traded.')
+      e.code = 422
+
+      throw e
+    }
+
     let value = body.value
     if (typeof value !== 'number' || value < 0) {
       const e = new Error('A valid positive numerical value must be provided for the transfer')

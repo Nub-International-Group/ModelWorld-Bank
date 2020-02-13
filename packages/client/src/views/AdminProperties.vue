@@ -101,6 +101,9 @@
             text-field="name"
           />
         </BFormGroup>
+        <BFormGroup label="Tags">
+          <BFormTags v-model="selectedToModify.tags" />
+        </BFormGroup>
       </template>
 
       <template v-slot:modal-footer>

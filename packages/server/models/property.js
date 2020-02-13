@@ -16,7 +16,8 @@ const schema = new mongoose.Schema({
     user: String,
     amount: Number,
     created: { type: Date, default: Date.now }
-  }]
+  }],
+  tags: [String]
 }, { collection: 'properties' })
 
 const model = mongoose.model('Property', schema)
