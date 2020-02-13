@@ -52,28 +52,6 @@
       </BCol>
     </BRow>
     <BRow>
-      <BCol
-        lg="6"
-        sm="12"
-      >
-        <BCard
-          title="Top Assets"
-          sub-title="Your 5 highest revenue assets"
-        >
-          Soon
-        </BCard>
-      </BCol>
-      <BCol
-        lg="6"
-        sm="12"
-      >
-        <BCard
-          title="Top Commodities"
-          sub-title="Your 5 highest value commodities"
-        >
-          Soon
-        </BCard>
-      </BCol>
       <BCol sm="12">
         <BCard
           title="Last Transactions"
