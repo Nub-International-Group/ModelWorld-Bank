@@ -24,6 +24,13 @@ async function transfer ({ body, property, decoded: user }, res, next) {
       throw e
     }
 
+    if (body.accountId === property.owner) {
+      const e = new Error('cannot transfer to self.')
+      e.code = 422
+
+      throw e
+    }
+
     let value = body.value
     if (typeof value !== 'number' || value < 0) {
       const e = new Error('A valid positive numerical value must be provided for the transfer')
@@ -33,7 +40,7 @@ async function transfer ({ body, property, decoded: user }, res, next) {
     }
     value = Number(value.toFixed(2))
 
-    const updated = await property.update({
+    await property.update({
       owner: body.accountId,
       valuations: [
         ...property.valuations || [],
@@ -45,7 +52,7 @@ async function transfer ({ body, property, decoded: user }, res, next) {
       ]
     }).exec()
 
-    res.status(200).json(updated)
+    res.status(204).json({})
   } catch (e) {
     next(e)
   }

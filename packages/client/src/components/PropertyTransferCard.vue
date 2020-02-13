@@ -19,7 +19,7 @@
           />
         </BFormGroup>
         <BBtn
-          v-b-modal.confirmTransactionModal
+          v-b-modal.transferPropertyModal
           :disabled="$v.$invalid"
         >
           Make Transfer
@@ -37,9 +37,9 @@
       header-bg-variant="danger"
       @ok="transferProperty"
     >
-      <p>You will transfer <strong>{{ $currency((amount || 0)) }}</strong> to <strong>{{ targetAccount.name }}.</strong></p>
+      <p>You will transfer the property to <strong>{{ targetAccount.name }}.</strong></p>
 
-      <p>Transfers are non-returnable.</p>
+      <p>Transfers are non-returnable. This will not create a transaction for the value of the property!</p>
     </BModal>
   </BCard>
 </template>
@@ -47,7 +47,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { validationMixin } from 'vuelidate'
-import { required, decimal } from 'vuelidate/lib/validators'
+import { required, integer, minValue } from 'vuelidate/lib/validators'
 import AccountPicker from './AccountPicker'
 
 export default {
@@ -75,8 +75,10 @@ export default {
     }
   },
   methods: {
-    transferProperty () {
-      this.$store.dispatch('selectedAccount/transferProperty', { amount: this.amount, reciepient: this.targetId, propertyId: this.property._id })
+    async transferProperty () {
+      await this.$store.dispatch('selectedAccount/transferProperty', { value: this.amount, accountId: this.targetId, propertyId: this.property._id })
+
+      this.$router.push({ name: 'Dashboard' })
     }
   },
   validations: {
@@ -85,7 +87,8 @@ export default {
     },
     amount: {
       required,
-      decimal
+      integer,
+      minValue: minValue(1)
     }
   }
 }

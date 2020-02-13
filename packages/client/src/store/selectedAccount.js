@@ -61,6 +61,22 @@ const selectedAccount = {
         dispatch('messages/handleError', { err }, { root: true })
       }
     },
+    transferProperty: async ({ state, commit, dispatch }, { value, accountId, propertyId }) => {
+      try {
+        await api.request({
+          url: `/v1/accounts/${state.accountId}/properties/${propertyId}/transfer`,
+          method: 'post',
+          data: {
+            value,
+            accountId
+          }
+        })
+
+        await dispatch('properties/fetch', {}, { root: true })
+      } catch (err) {
+        dispatch('messages/handleError', { err }, { root: true })
+      }
+    },
     fetchWageRequests: async ({ state, dispatch }) => {
       await dispatch('wageRequests/fetchByAccount', state.accountId, { root: true })
     },
