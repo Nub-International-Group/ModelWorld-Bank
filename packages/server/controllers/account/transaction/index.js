@@ -65,8 +65,11 @@ async function create (req, res, next) {
       const fee = Math.floor(amount * sendingAccount.accountType.options.transactionFee.rate * 100) / 100 // floor to 2 dp
 
       const { balances } = await sendingAccount.calculateBalances()
-      if (!balances[req.body.currency] || balances[req.body.currency] < (amount + fee)) {
-        throw new Error('Not enough balance in selected currency')
+      if ((!balances[req.body.currency] || balances[req.body.currency] < (amount + fee)) && sendingAccount._id !== '*Bottomless*') {
+        const err = new Error('Not enough balance!')
+        err.code = 422
+
+        throw err
       }
 
       const transactions = [{
