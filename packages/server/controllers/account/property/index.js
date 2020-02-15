@@ -54,7 +54,7 @@ async function transfer ({ body, property, decoded: user }, res, next) {
         {
           created: Date.now(),
           user: user.name,
-          value
+          amount: value
         }
       ]
     }).exec()
