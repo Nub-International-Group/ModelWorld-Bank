@@ -80,7 +80,6 @@ const calculateTaxDue = (annualGross) => {
       rate: 0.375
     },
     {
-      topEnd: Infinity,
       rate: 0.40
     }
   ]
@@ -91,7 +90,12 @@ const calculateTaxDue = (annualGross) => {
     const previousBracket = taxBrackets[taxBracketIndex - 1] || {
       topEnd: 0
     }
+
     const currentBracket = taxBrackets[taxBracketIndex]
+    if (taxBracketIndex === (taxBrackets.length - 1)) {
+      currentBracket.topEnd = Infinity
+    }
+
     const bracketSize = Decimal.sub(currentBracket.topEnd, previousBracket.topEnd)
     const amountInBracket = unallocated.gt(bracketSize) ? bracketSize : unallocated
 
