@@ -63,6 +63,7 @@ export default {
     this.$store.dispatch('ui/fetchTypeAhead')
     this.$store.dispatch('wages/fetch')
     this.$store.dispatch('accountTypes/fetch')
+    this.$store.dispatch('properties/fetch')
   },
   methods: {
     ...mapActions('selectedAccount', ['selectAccount'])
