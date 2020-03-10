@@ -37,14 +37,16 @@ const schema = new mongoose.Schema({
 }, { collection: 'settings' })
 
 schema.statics.getCurrent = async function () {
-  const settings = await this.findOne({ _id: HARDCODED_KEY }).exec()
+  let settings = await this.findOne({ _id: HARDCODED_KEY }).exec()
 
   if (!settings) {
-    this.create({
+    settings = this.create({
       _id: HARDCODED_KEY,
       ...defaultSettings
     })
   }
+
+  return settings.toJSON()
 }
 
 schema.statics.updateCurrent = async function (data) {
@@ -59,6 +61,11 @@ schema.statics.updateCurrent = async function (data) {
     }
   ).exec()
 }
+
+schema.statics.resetCurrent = async function () {
+  await this.updateCurrent(defaultSettings)
+}
+
 const model = mongoose.model('Setting', schema)
 
 module.exports = model
