@@ -27,6 +27,7 @@ const Login = () => import('@/views/Login')
 const AdminAccounts = () => import('@/views/AdminAccounts')
 const AdminAccountTypes = () => import('@/views/AdminAccountTypes')
 const AdminProperties = () => import('@/views/AdminProperties')
+const AdminSettings = () => import('@/views/AdminSettings')
 const AdminWages = () => import('@/views/AdminWages')
 
 Vue.use(Router)
@@ -154,6 +155,15 @@ const router = new Router({
               meta: {
                 requiredScopes: ['admin'],
                 label: 'Account Types'
+              }
+            },
+            {
+              path: 'settings',
+              name: 'AdminSettings',
+              component: AdminSettings,
+              meta: {
+                requiredScopes: ['admin'],
+                label: 'Settings'
               }
             },
             {

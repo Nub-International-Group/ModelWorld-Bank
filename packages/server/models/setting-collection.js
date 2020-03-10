@@ -40,7 +40,7 @@ schema.statics.getCurrent = async function () {
   let settings = await this.findOne({ _id: HARDCODED_KEY }).exec()
 
   if (!settings) {
-    settings = this.create({
+    settings = await this.create({
       _id: HARDCODED_KEY,
       ...defaultSettings
     })
@@ -50,7 +50,7 @@ schema.statics.getCurrent = async function () {
 }
 
 schema.statics.updateCurrent = async function (data) {
-  return this.update(
+  await this.update(
     {
       _id: HARDCODED_KEY
     },
@@ -64,6 +64,8 @@ schema.statics.updateCurrent = async function (data) {
 
 schema.statics.resetCurrent = async function () {
   await this.updateCurrent(defaultSettings)
+
+  return this.getCurrent()
 }
 
 const model = mongoose.model('Setting', schema)

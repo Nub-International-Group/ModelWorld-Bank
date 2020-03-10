@@ -17,6 +17,8 @@ const ui = {
         symbol: '$',
         name: 'US Dollar'
       }
+    },
+    settings: {
     }
   },
   actions: {
@@ -27,9 +29,24 @@ const ui = {
       }).then(res => {
         commit('setTypeAhead', { type: 'accounts', content: res.data })
       }).catch(err => { dispatch('messages/handleError', { err }, { root: true }) })
+    },
+    fetchSettings: async ({ commit, dispatch }) => {
+      try {
+        const { data } = await api.request({
+          url: `/v1/settings`,
+          method: 'get'
+        })
+
+        commit('setSettings', data)
+      } catch (err) {
+        dispatch('messages/handleError', { err }, { root: true })
+      }
     }
   },
   mutations: {
+    setSettings: (state, settings) => {
+      state.settings = settings
+    },
     setTypeAhead: (state, { type, content }) => {
       state.typeAhead[type] = content
     }

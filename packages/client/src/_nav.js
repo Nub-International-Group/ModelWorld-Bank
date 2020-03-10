@@ -90,6 +90,10 @@ export default {
           url: '/admin/properties'
         },
         {
+          name: 'Settings',
+          url: '/admin/settings'
+        },
+        {
           name: 'Wage Management',
           url: '/admin/wages'
         }
