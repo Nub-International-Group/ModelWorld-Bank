@@ -23,6 +23,7 @@
     "chart.js": "^2.7.3",
     "core-js": "^2.5.7",
     "css-vars-ponyfill": "^1.15.0",
+    "deep-equal": "^2.0.1",
     "flag-icon-css": "^3.2.1",
     "font-awesome": "^4.7.0",
     "fraction.js": "^4.0.4",

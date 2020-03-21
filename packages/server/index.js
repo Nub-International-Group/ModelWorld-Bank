@@ -95,6 +95,7 @@ app.use('/v1/account-types', middleware.ensureJWT, controllers.accountType.route
 app.use('/v1/bets', middleware.ensureJWT, controllers.bet.router)
 app.use('/v1/properties', middleware.ensureJWT, controllers.property.router)
 app.use('/v1/requests', middleware.ensureJWT, controllers.request.router)
+app.use('/v1/settings', middleware.ensureJWT, controllers.setting.router)
 app.use('/v1/transactions', middleware.ensureJWT, controllers.transaction.router)
 app.use('/v1/wages', middleware.ensureJWT, controllers.wage.router)
 app.use('/v1/wagers', middleware.ensureJWT, controllers.wager.router)
@@ -155,6 +156,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   if (!err.code) err.code = 500
 
+  logger.error(err)
   if (err.code === 500) {
     logger.error({
       err,
