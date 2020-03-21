@@ -46,7 +46,7 @@ schema.statics.getCurrent = async function () {
     })
   }
 
-  return settings.toJSON()
+  return settings.toObject({ versionKey: false })
 }
 
 schema.statics.updateCurrent = async function (data) {

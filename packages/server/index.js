@@ -156,6 +156,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   if (!err.code) err.code = 500
 
+  logger.error(err)
   if (err.code === 500) {
     logger.error({
       err,

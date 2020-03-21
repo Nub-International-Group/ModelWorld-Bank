@@ -17,6 +17,8 @@ const getCurrent = async (req, res, next) => {
 const updateCurrent = async (req, res, next) => {
   try {
     await SettingCollection.updateCurrent(req.body)
+
+    res.status(204).end()
   } catch (err) {
     next(err)
   }
@@ -25,6 +27,8 @@ const updateCurrent = async (req, res, next) => {
 const resetCurrent = async (req, res, next) => {
   try {
     await SettingCollection.resetCurrent()
+
+    res.status(204).end()
   } catch (err) {
     next(err)
   }
