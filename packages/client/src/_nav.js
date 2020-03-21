@@ -17,9 +17,9 @@ export default {
       icon: 'cui-briefcase'
     },
     {
-      name: 'Users',
-      url: '/users',
-      icon: 'cui-user'
+      name: 'Settings',
+      url: '/settings',
+      icon: 'cui-cog'
     },
     {
       name: 'Assets',

@@ -14,7 +14,7 @@ const Dashboard = () => import('@/views/account/Dashboard')
 const Properties = () => import('@/views/account/Properties')
 const Property = () => import('@/views/account/Property')
 const Transactions = () => import('@/views/account/Transactions')
-const Users = () => import('@/views/account/Users')
+const Settings = () => import('@/views/account/Settings')
 const Wages = () => import('@/views/account/Wages')
 
 // General Pages
@@ -61,9 +61,9 @@ const router = new Router({
           component: Transactions
         },
         {
-          path: '/users',
-          name: 'Users',
-          component: Users
+          path: '/settings',
+          name: 'Settings',
+          component: Settings
         },
         {
           path: '/wages',
