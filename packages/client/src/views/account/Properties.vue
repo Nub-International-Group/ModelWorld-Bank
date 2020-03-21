@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import PropertyCard from '../components/PropertyCard'
+import PropertyCard from '@/components/PropertyCard'
 import Fuse from 'fuse.js'
 
 export default {

@@ -139,7 +139,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import AccountPicker from '../components/AccountPicker'
+import AccountPicker from '@/components/AccountPicker'
 
 export default {
   name: 'AdminProperties',

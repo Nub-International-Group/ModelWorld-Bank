@@ -1,11 +1,6 @@
 export default {
   items: [
     {
-      name: 'Announcements',
-      url: '/announcements',
-      icon: 'cui-home'
-    },
-    {
       name: 'Dashboard',
       url: '/dashboard',
       icon: 'cui-chart'
@@ -20,6 +15,11 @@ export default {
       requiredScopes: ['salary'],
       url: '/wages',
       icon: 'cui-briefcase'
+    },
+    {
+      name: 'Users',
+      url: '/users',
+      icon: 'cui-user'
     },
     {
       name: 'Assets',
@@ -57,11 +57,6 @@ export default {
           url: '/rich-list/company'
         }
       ]
-    },
-    {
-      name: 'Staff',
-      url: '/staff',
-      icon: 'cui-user'
     },
     {
       name: 'Admin',

@@ -60,7 +60,7 @@
       <!--footer-->
       <div>
         <span class="ml-1">
-          &copy; 2018 Stridey & Viljo & Padanub
+          &copy; 2020 Stridey & Viljo & Padanub
         </span>
       </div>
       <div class="ml-auto">
@@ -88,7 +88,7 @@ import {
   Breadcrumb
 } from '@coreui/vue'
 
-import AccountAside from './AccountAside'
+import AccountAside from '../components/AccountAside'
 import AccountWrapper from '../components/AccountWrapper'
 import { mapState, mapGetters } from 'vuex'
 import nav from '@/_nav'

@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import PropertyCard from '../components/PropertyCard'
-import PropertyTransferCard from '../components/PropertyTransferCard'
+import PropertyCard from '@/components/PropertyCard'
+import PropertyTransferCard from '@/components/PropertyTransferCard'
 export default {
   name: 'Property',
   components: { PropertyCard, PropertyTransferCard },

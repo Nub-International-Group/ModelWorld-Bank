@@ -9,26 +9,25 @@ const DefaultContainer = () => import('@/containers/DefaultContainer')
 const Error404 = () => import('@/views/Error404')
 
 // Account level
-const Bets = () => import('@/views/Bets')
-const Dashboard = () => import('@/views/Dashboard')
-const Properties = () => import('@/views/Properties')
-const Property = () => import('@/views/Property')
-const Transactions = () => import('@/views/Transactions')
-const Wages = () => import('@/views/Wages')
+const Bets = () => import('@/views/account/Bets')
+const Dashboard = () => import('@/views/account/Dashboard')
+const Properties = () => import('@/views/account/Properties')
+const Property = () => import('@/views/account/Property')
+const Transactions = () => import('@/views/account/Transactions')
+const Users = () => import('@/views/account/Users')
+const Wages = () => import('@/views/account/Wages')
 
 // General Pages
-const Staff = () => import('@/views/Staff')
-const Announcements = () => import('@/views/Announcements')
 const Leaderboards = () => import('@/views/Leaderboard')
 const LoginSuccess = () => import('@/views/LoginSuccess')
 const Login = () => import('@/views/Login')
 
 // Admin Content
-const AdminAccounts = () => import('@/views/AdminAccounts')
-const AdminAccountTypes = () => import('@/views/AdminAccountTypes')
-const AdminProperties = () => import('@/views/AdminProperties')
-const AdminSettings = () => import('@/views/AdminSettings')
-const AdminWages = () => import('@/views/AdminWages')
+const AdminAccounts = () => import('@/views/admin/Accounts')
+const AdminAccountTypes = () => import('@/views/admin/AccountTypes')
+const AdminProperties = () => import('@/views/admin/Properties')
+const AdminSettings = () => import('@/views/admin/Settings')
+const AdminWages = () => import('@/views/admin/Wages')
 
 Vue.use(Router)
 
@@ -60,6 +59,11 @@ const router = new Router({
           path: '/transactions',
           name: 'Transactions',
           component: Transactions
+        },
+        {
+          path: '/users',
+          name: 'Users',
+          component: Users
         },
         {
           path: '/wages',
@@ -97,16 +101,6 @@ const router = new Router({
           meta: {
             noLogin: true
           }
-        },
-        {
-          path: '/staff',
-          name: 'Staff',
-          component: Staff
-        },
-        {
-          path: '/announcements',
-          name: 'Announcements',
-          component: Announcements
         },
         {
           path: '/login',

@@ -5,26 +5,27 @@ const middleware = require('../middleware')
 async function updatePermission (req, res, next) {
   try {
     const account = req.account
+    const parsedLevel = parseInt(req.body.level)
+    const username = req.params.username.toLowerCase()
 
-    req.body.newDocument.name = req.body.newDocument.name.toLowerCase()
+    if (isNaN(parsedLevel)) {
+      const e = new Error('Invalid permission level provided')
+      e.code = 422
 
-    if (req.body.newDocument.name === req.decoded.name) {
-      return res.status(500).json({ err: { code: 500, desc: 'You can\'t adjust your own permissions' } })
+      throw e
     }
 
-    const parsedLevel = parseInt(req.body.newDocument.level)
-    if (isNaN(parsedLevel)) {
-      return res.status(500).json({ err: { code: 500, desc: 'Invalid level entry' } })
+    if (req.decoded.username === username && !req.decoded.admin) {
+      const e = new Error('You can\'t adjust your own permissions!')
+      e.code = 403
+
+      throw e
     }
 
     if (parsedLevel <= 3 && parsedLevel > 0) {
       account.users[req.body.newDocument.name] = parsedLevel // Create new property with name and level, or overwrite existing
     } else if (parsedLevel === 0) { // 0 -> Delete operation
-      if (account.users[req.body.newDocument.name] !== undefined) {
-        delete account.users[req.body.newDocument.name]
-      } else {
-        return res.status(500).json({ err: { code: 500, desc: 'You can\'t remove a user that doesn\'t exist' } })
-      }
+      delete account.users[req.body.newDocument.name]
     }
 
     account.markModified('users')
@@ -36,7 +37,7 @@ async function updatePermission (req, res, next) {
   }
 }
 
-router.post('/', middleware.accountWithPerms(3), updatePermission)
+router.put('/:username', middleware.accountWithPerms(3), updatePermission)
 
 module.exports = {
   router
