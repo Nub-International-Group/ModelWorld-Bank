@@ -15,14 +15,14 @@
           :key="possibleAccount._id"
           class="list-group-item-divider"
           :class="{
-            'list-group-item-accent-warning': possibleAccount.company,
-            'list-group-item-accent-success': !possibleAccount.company
+            'list-group-item-accent-warning': possibleAccount.accountType.corporate,
+            'list-group-item-accent-success': !possibleAccount.accountType.corporate
           }"
           @click="selectAccount(possibleAccount)"
         >
           <strong>{{ possibleAccount.name }}</strong><br>
           <small class="text-muted">
-            <i class="icon-user" /> {{ possibleAccount.company ? 'Company' : 'Personal' }}
+            <i class="icon-user" /> {{ possibleAccount.accountType.corporate ? 'Company' : 'Personal' }}
           </small>
         </BListGroupItem>
       </BListGroup>
