@@ -23,9 +23,9 @@ async function updatePermission (req, res, next) {
     }
 
     if (parsedLevel <= 3 && parsedLevel > 0) {
-      account.users[req.body.newDocument.name] = parsedLevel // Create new property with name and level, or overwrite existing
+      account.users[username] = parsedLevel // Create new property with name and level, or overwrite existing
     } else if (parsedLevel === 0) { // 0 -> Delete operation
-      delete account.users[req.body.newDocument.name]
+      delete account.users[username]
     }
 
     account.markModified('users')

@@ -9,6 +9,24 @@
           <template v-slot:header>
             <h4>Users</h4>
           </template>
+          <h5>Edit User</h5>
+          <b-form-group
+            label="Username without /u/"
+          >
+            <b-form-input v-model="username" trim />
+          </b-form-group>
+          <b-form-group
+            label="Access Level"
+          >
+            <b-form-select v-model="level" :options="ACCESS_LEVELS" />
+          </b-form-group>
+          <BBtn
+            variant="success"
+            @click="editUser"
+          >
+            Edit User
+          </BBtn>
+          <br/><br/>
           <b-list-group>
             <b-list-group-item v-for="(user) in accountUsers" :key="user.username">
               <div class="float-left">
@@ -27,14 +45,15 @@
 
 <script>
 import api from '@/api'
-const ACCESS_LEVELS = ['No Access', 'Read', 'Read/Write', 'Owner']
+const ACCESS_LEVELS = [{ text: 'No Access', value: 0 }, { text: 'Read', value: 1 }, { text: 'Read/Write', value: 2 }, { text: 'Owner', value: 3 }]
 
 export default {
   name: 'Settings',
   data () {
     return {
       username: '',
-      level: 0
+      level: 0,
+      ACCESS_LEVELS
     }
   },
   computed: {
@@ -52,23 +71,13 @@ export default {
     }
   },
   methods: {
-    async putUser () {
-      try {
-        await api.request({
-          url: '/v1/settings',
-          method: 'PUT',
-          data: this.settings
-        })
-        await this.$store.dispatch('ui/fetchSettings')
-        this.resetChanges()
-      } catch (err) {
-        this.$store.dispatch('messages/handleError', { err })
-      }
+    async editUser () {
+      await this.$store.dispatch('selectedAccount/editUser', { username: this.username, level: this.level })
     }
   },
   filters: {
     accessLevel (level) {
-      return ACCESS_LEVELS[level]
+      return ACCESS_LEVELS.find(lvl => lvl.value === level).text
     }
   }
 }

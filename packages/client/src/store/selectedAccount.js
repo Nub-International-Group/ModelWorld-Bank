@@ -27,6 +27,21 @@ const selectedAccount = {
         return null
       }
     },
+    editUser: async ({ state, commit, dispatch }, { username, level }) => {
+      try {
+        await api.request({
+          url: `/v1/accounts/${state.accountId}/users/${username}`,
+          method: 'put',
+          data: {
+            level
+          }
+        })
+        dispatch('fetchAccount', state.accountId)
+      } catch (err) {
+        dispatch('messages/handleError', { err }, { root: true })
+        return null
+      }
+    },
     createTransaction: async ({ state, commit, dispatch, rootState }, transaction) => {
       try {
         await api.request({
