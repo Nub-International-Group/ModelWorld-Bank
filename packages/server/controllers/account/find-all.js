@@ -63,7 +63,7 @@ async function updateLeaderboard () {
 
       if (valuations[0]) {
         if (!balances[property.owner]) balances[property.owner] = {}
-        balances[property.owner][properties.currency] = (balances[property.owner][property.currency] || 0) + valuations[0].amount
+        balances[property.owner][property.currency] = (balances[property.owner][property.currency] || 0) + valuations[0].amount
       }
     }
 
