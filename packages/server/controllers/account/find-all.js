@@ -1,4 +1,5 @@
 const Account = require('../../models/account')
+const Property = require('../../models/property')
 const Transaction = require('../../models/transaction')
 const nodeSchedule = require('node-schedule')
 
@@ -46,6 +47,7 @@ async function updateLeaderboard () {
     const accounts = await Account.find({ public: true }).exec()
     const balances = {}
     const transactions = await Transaction.find({}).exec()
+	const properties = await Property.find({}).exec()
 
     for (const transaction of transactions) {
       if (!balances[transaction.to]) balances[transaction.to] = {}
@@ -54,6 +56,12 @@ async function updateLeaderboard () {
       if (!balances[transaction.from]) balances[transaction.from] = {}
       balances[transaction.from][transaction.currency] = (balances[transaction.from][transaction.currency] || 0) - transaction.amount
     }
+	
+	for (const property of properties) {
+		const valuations = [...property.valuations]
+		valuations.sort((a, b) => a.created - b.created)
+		if (valuations[0]) {balances[property.owner][properties.currency] = (balances[property.owner][properties.currency] || 0) + valuations[0].amount} 
+	}
 
     // reset leaderboards
     corporateAccountLeaderboard = []
