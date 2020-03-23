@@ -47,7 +47,7 @@ async function updateLeaderboard () {
     const accounts = await Account.find({ public: true }).exec()
     const balances = {}
     const transactions = await Transaction.find({}).exec()
-	const properties = await Property.find({}).exec()
+    const properties = await Property.find({}).exec()
 
     for (const transaction of transactions) {
       if (!balances[transaction.to]) balances[transaction.to] = {}
@@ -56,12 +56,16 @@ async function updateLeaderboard () {
       if (!balances[transaction.from]) balances[transaction.from] = {}
       balances[transaction.from][transaction.currency] = (balances[transaction.from][transaction.currency] || 0) - transaction.amount
     }
-	
-	for (const property of properties) {
-		const valuations = [...property.valuations]
-		valuations.sort((a, b) => a.created - b.created)
-		if (valuations[0]) {balances[property.owner][properties.currency] = (balances[property.owner][properties.currency] || 0) + valuations[0].amount} 
-	}
+
+    for (const property of properties) {
+      const valuations = [...property.valuations]
+      valuations.sort((a, b) => b.created - a.created)
+
+      if (valuations[0]) {
+        if (!balances[property.owner]) balances[property.owner] = {}
+        balances[property.owner][properties.currency] = (balances[property.owner][property.currency] || 0) + valuations[0].amount
+      }
+    }
 
     // reset leaderboards
     corporateAccountLeaderboard = []
