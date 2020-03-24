@@ -2,55 +2,54 @@
   <div class="animated fadeIn">
     <BCard>
       <h3>Open Bets</h3>
-      <BRow>
-        <BCol
-          v-for="bet in openBets"
-          :key="bet._id"
-          sm="12"
+      <BCard
+        v-for="bet in openBets"
+        :key="bet._id"
+        no-body
+        class="mb-1"
+      >
+        <BCardHeader
+          header-tag="header"
+          class="p-1"
         >
-          <BCard :title="bet.name">
-            <BCardBody>
-              <strong>Created: </strong> {{ bet.created }} <br>
-              <strong>Description: </strong> {{ bet.description }} <br> <br>
-
-              <BRow>
-                <BCol
-                  v-for="option in bet.options"
-                  :key="option._id"
-                  sm="12"
-                  md="4"
-                >
-                  <BetOption
-                    :option="option"
-                    :bet="bet"
-                  />
-                </BCol>
-              </BRow>
-            </BCardBody>
-          </BCard>
-        </BCol>
-      </BRow>
-    </BCard>
-    <BCard>
-      <h3>My Wagers</h3>
-      <BCardBody>
-        <VClientTable
-          :columns="columns"
-          :data="wagers"
-          :options="settings"
-        />
-      </BCardBody>
+          <BButton
+            block
+            @click="selectedBet = selectedBet === bet._id ? null : bet._id"
+          >
+            {{ bet.name }}
+          </BButton>
+        </BCardHeader>
+        <BCollapse :visible="selectedBet === bet._id">
+          <BCardBody>
+            <BCardText>{{ bet.description }}</BCardText>
+            <BListGroup>
+              <BListGroupItem v-for="option in bet.options" :key="option._id">
+                <div class="d-flex justify-content-end">
+                  <div class="mr-auto align-self-center">
+                    <strong>{{ option.name }} | {{ option.currentOdds }}</strong>
+                  </div>
+                  <div>
+                    <BBtn
+                      variant="success"
+                    >
+                      Place Bet
+                    </BBtn>
+                  </div>
+                </div>
+              </BListGroupItem>
+            </BListGroup>
+          </BCardBody>
+        </BCollapse>
+      </BCard>
     </BCard>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import BetOption from '@/components/BetOption'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'Bets',
-  components: { BetOption },
   filters: {
     currency: value => {
       return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
@@ -58,6 +57,7 @@ export default {
   },
   data: function () {
     return {
+      selectedBet: null,
       columns: ['created', '_id', 'amount', 'bet.name', 'chosenOption.name'],
       settings: {
         headings: {
@@ -76,13 +76,11 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('bets/fetchBets')
-    this.$store.dispatch('selectedAccount/fetchWagers')
+    //this.$store.dispatch('bets/fetchBets')
+    //this.$store.dispatch('selectedAccount/fetchWagers')
   },
   computed: {
-    ...mapState('bets', {
-      openBets: state => state.possibleBets.filter(bet => bet.status === 1)
-    }),
+    ...mapGetters('bets', ['openBets']),
     ...mapState('selectedAccount', {
       wagers: state => state.wagers
     })
