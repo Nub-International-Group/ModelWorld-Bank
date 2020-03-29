@@ -14,12 +14,12 @@
         >
           <BButton
             block
-            @click="selectedBet = selectedBet === bet._id ? null : bet._id"
+            @click="newWager.betId = newWager.betId === bet._id ? null : bet._id"
           >
             {{ bet.name }}
           </BButton>
         </BCardHeader>
-        <BCollapse :visible="selectedBet === bet._id">
+        <BCollapse :visible="newWager.betId === bet._id">
           <BCardBody>
             <BCardText>{{ bet.description }}</BCardText>
             <BListGroup>
@@ -31,6 +31,7 @@
                   <div>
                     <BBtn
                       variant="success"
+                      @click="selectOption(option._id)"
                     >
                       Place Bet
                     </BBtn>
@@ -42,6 +43,71 @@
         </BCollapse>
       </BCard>
     </BCard>
+    <BModal
+      v-if="!!selectedOption"
+      :title="selectedBet.name + ' | ' + selectedOption.name"
+      header-bg-variant="primary"
+      :visible="!!selectedOption"
+      no-close-on-backdrop
+      no-close-on-esc
+      hide-header-close
+    >
+      <template v-slot:default>
+        <p>
+          <strong>
+            Bet Description:
+          </strong>
+          {{ selectedBet.description }}
+        </p>
+        <p>
+          <strong>
+            Selected Option:
+          </strong>
+          {{ selectedOption.name }}
+          <br/>
+          <strong>
+            Option Odds:
+          </strong>
+          {{ selectedOption.currentOdds }}
+          <br/>
+          <strong>
+            Option Description:
+          </strong>
+          {{ selectedOption.description }}
+        </p>
+        <BFormGroup>
+          <strong>Amount</strong>
+          <BFormInput
+            v-model="newWager.amount"
+            type="number"
+            min="0"
+          />
+        </BFormGroup>
+        <strong>
+          Potential Winnings:
+        </strong>
+        {{ $currency(newWager.amount * selectedOption.currentOdds) }}
+      </template>
+
+      <template v-slot:modal-footer>
+        <div
+          class="mr-auto"
+        >
+          <BBtn
+            variant="outline-secondary"
+            @click="newWager.optionId = null"
+          >
+            Cancel
+          </BBtn>
+        </div>
+        <BBtn
+          variant="success"
+          @click="makeWager"
+        >
+          Make Bet!
+        </BBtn>
+      </template>
+    </BModal>
   </div>
 </template>
 
@@ -57,7 +123,11 @@ export default {
   },
   data: function () {
     return {
-      selectedBet: null,
+      newWager: {
+        betId: null,
+        optionId: null,
+        amount: 0
+      },
       columns: ['created', '_id', 'amount', 'bet.name', 'chosenOption.name'],
       settings: {
         headings: {
@@ -83,7 +153,31 @@ export default {
     ...mapGetters('bets', ['openBets']),
     ...mapState('selectedAccount', {
       wagers: state => state.wagers
-    })
+    }),
+    selectedBet () {
+      if (!this.newWager.betId) {
+        return null
+      }
+
+      return this.openBets.find(bet => bet._id === this.newWager.betId)
+    },
+    selectedOption () {
+      if (!this.selectedBet || !this.newWager.optionId) {
+        return null
+      }
+
+      return this.selectedBet.options.find(option => option._id === this.newWager.optionId)
+    }
+  },
+  methods: {
+    selectOption (optionId) {
+      this.newWager.optionId = optionId
+    },
+    async makeWager () {
+      await this.$store.dispatch('selectedAccount/wagers/create', {
+
+      })
+    }
   }
 }
 </script>

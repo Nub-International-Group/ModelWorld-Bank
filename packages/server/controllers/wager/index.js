@@ -17,8 +17,8 @@ const findByBet = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const account = await Account.findOne({ _id: req.body.target }).exec()
-    const bet = await Bet.findOne({ _id: req.body.bet }).exec()
+    const account = await Account.findOne({ _id: req.body.accountId }).exec()
+    const bet = await Bet.findOne({ _id: req.body.betId }).exec()
 
     const amount = Number(req.body.amount)
     if (!(account && bet)) {
@@ -45,7 +45,7 @@ const create = async (req, res, next) => {
       throw new Error('Incorrect permissions.')
     }
 
-    const option = bet.options.id(req.body.option)
+    const option = bet.options.id(req.body.optionId)
 
     const { balances } = await account.calculateBalance()
     if (!balances.GBP) {

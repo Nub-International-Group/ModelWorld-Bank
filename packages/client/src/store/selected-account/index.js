@@ -1,5 +1,8 @@
 import api from '@/api'
 
+import transactions from './transactions'
+import wagers from './wagers'
+
 const selectedAccount = {
   namespaced: true,
   state: {
@@ -10,10 +13,22 @@ const selectedAccount = {
       state.accountId = accountId
     }
   },
+  modules: {
+    wagers,
+    transactions
+  },
   actions: {
     selectAccount: async ({ state, commit, dispatch }, accountId) => {
       await dispatch('accounts/fetchById', accountId, { root: true })
+
+      // reset sub-modules
+      commit('wagers/resetState')
+      commit('transactions/resetState')
+
+      // set id
       commit('setAccountId', accountId)
+
+      // trigger any sub-module fetches needed
     },
     deleteWage: async ({ state, commit, dispatch, rootState }, wageId) => {
       try {
@@ -40,25 +55,6 @@ const selectedAccount = {
       } catch (err) {
         dispatch('messages/handleError', { err }, { root: true })
         return null
-      }
-    },
-    createTransaction: async ({ state, commit, dispatch, rootState }, transaction) => {
-      try {
-        await api.request({
-          url: `/v1/accounts/${state.accountId}/transactions`,
-          method: 'post',
-          data: transaction
-        })
-
-        dispatch('transactions/fetch', state.accountId, { root: true })
-
-        commit('messages/addMessage', {
-          title: 'Transaction Created',
-          type: 'success',
-          message: 'Successfully created transaction'
-        }, { root: true })
-      } catch (err) {
-        dispatch('messages/handleError', { err }, { root: true })
       }
     },
     createWageRequest: async ({ state, commit, dispatch, rootState }, wageId) => {
@@ -104,10 +100,9 @@ const selectedAccount = {
   },
   getters: {
     account: (state, getters, rootState, rootGetters) => rootGetters['accounts/allAccountsById'][state.accountId],
-    balances: (state, getters) => getters.transactionData.balances || {},
+    balances: (state, getters) => state.transactions.balances || {},
     properties: (state, getters, rootState, rootGetters) => rootGetters['properties/all'].filter(property => property.owner === state.accountId),
-    transactionData: (state, getters, rootState) => rootState.transactions.transactionDataByAccountId[state.accountId] || {},
-    transactions: (state, getters) => getters.transactionData.transactions || [],
+    transactions: (state, getters) => state.transactions.transactions || [],
     wageRequests: (state, getters, rootState) => rootState.wageRequests.wageRequestsByAccountId[state.accountId] || [],
     wages: (state, getters, rootState, rootGetters) => getters.account.wages.map(wageId => rootGetters['wages/wagesById'][wageId])
   }

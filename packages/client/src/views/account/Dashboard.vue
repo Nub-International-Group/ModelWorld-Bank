@@ -132,7 +132,7 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('selectedAccount/fetchTransactions')
+    this.$store.dispatch('selectedAccount/transactions/fetch')
   }
 }
 </script>

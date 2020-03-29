@@ -8,8 +8,7 @@ import bets from './bets'
 import leaderboards from './leaderboards'
 import messages from './messages'
 import properties from './properties'
-import selectedAccount from './selectedAccount'
-import transactions from './transactions'
+import selectedAccount from './selected-account'
 import user from './user'
 import ui from './ui'
 import wages from './wages'
@@ -27,7 +26,6 @@ const store = new Vuex.Store({
     messages,
     properties,
     selectedAccount,
-    transactions,
     ui,
     user,
     wageRequests,

@@ -1,5 +1,5 @@
 <template>
-  <BCard title="Transfer Ownership">
+  <BCard>
     <BRow>
       <BCol md="6">
         <h2>Make a payment</h2>
@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     createTransaction () {
-      this.$store.dispatch('selectedAccount/createTransaction', this.newTransaction)
+      this.$store.dispatch('selectedAccount/transactions/create', this.newTransaction)
     }
   },
   validations: {
