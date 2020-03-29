@@ -6,7 +6,7 @@ const middleware = require('../middleware')
 
 async function find (req, res, next) {
   try {
-    const wagers = await Wager.find({ account: req.account._id }).populate('bet').exec()
+    const wagers = await Wager.find({ accountId: req.account._id }).populate('bet').exec()
 
     res.status(200).json(wagers)
   } catch (e) {

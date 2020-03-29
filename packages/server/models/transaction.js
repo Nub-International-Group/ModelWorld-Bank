@@ -13,7 +13,7 @@ const schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   type: {
     type: String,
-    enum: ['INCOME', 'INTEREST', 'TRANSFER', 'WAGER_PAYOUT', 'MISC']
+    enum: ['INCOME', 'INTEREST', 'TRANSFER', 'WAGER_PLACED', 'WAGER_PAYOUT', 'MISC']
   }
 }, { collection: 'transactions' })
 

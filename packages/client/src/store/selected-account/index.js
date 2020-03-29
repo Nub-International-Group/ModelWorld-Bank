@@ -100,11 +100,12 @@ const selectedAccount = {
   },
   getters: {
     account: (state, getters, rootState, rootGetters) => rootGetters['accounts/allAccountsById'][state.accountId],
-    balances: (state, getters) => state.transactions.balances || {},
+    balances: (state) => state.transactions.balances || {},
     properties: (state, getters, rootState, rootGetters) => rootGetters['properties/all'].filter(property => property.owner === state.accountId),
-    transactions: (state, getters) => state.transactions.transactions || [],
+    transactions: (state) => state.transactions.transactions || [],
     wageRequests: (state, getters, rootState) => rootState.wageRequests.wageRequestsByAccountId[state.accountId] || [],
-    wages: (state, getters, rootState, rootGetters) => getters.account.wages.map(wageId => rootGetters['wages/wagesById'][wageId])
+    wages: (state, getters, rootState, rootGetters) => getters.account.wages.map(wageId => rootGetters['wages/wagesById'][wageId]),
+    wagers: (state) => state.wagers.items
   }
 }
 

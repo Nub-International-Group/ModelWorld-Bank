@@ -23,7 +23,7 @@ const wagers = {
       try {
         dispatch('wait/start', 'fetching account wagers', { root: true })
         const { data } = await api.request({
-          url: `/v1/accounts/${rootState.selectedAccount.accountId}/transactions`,
+          url: `/v1/accounts/${rootState.selectedAccount.accountId}/wagers`,
           method: 'get'
         })
 

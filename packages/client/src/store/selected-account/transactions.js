@@ -59,7 +59,7 @@ const transactions = {
   },
   mutations: {
     resetState: (state) => {
-      state = defaultState()
+      Object.assign(state, defaultState())
     },
     setAccountTransactionData: (state, { transactions, balances }) => {
       state.transactions = transactions

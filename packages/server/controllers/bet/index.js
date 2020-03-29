@@ -44,6 +44,22 @@ async function create (req, res, next) {
   }
 }
 
+async function patch (req, res, next) {
+  try {
+    const bet = req.bet
+
+    if (bet.status !== req.body.status) {
+      throw new Error('Cannot edit status')
+    }
+
+    const doc = await Bet.findByIdAndUpdate(bet._id, req.body).exec()
+
+    res.status(200).json(doc)
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function find (req, res, next) {
   Bet.find({}).exec(function (err, documents) {
     if (err) {
@@ -59,7 +75,7 @@ function handleStatusChange (newStatus) {
     try {
       const bet = req.bet
 
-      if (bet.status !== 'PAID_OUT') {
+      if (bet.status === 'PAID_OUT') {
         const err = new Error('Paid out bets cannot change status')
         err.code = 422
 
@@ -89,6 +105,7 @@ async function payOut (req, res, next) {
 router.get('/', find)
 router.post('/', middleware.ensureAdmin, create)
 
+router.patch('/:betId', middleware.ensureAdmin, patch)
 router.post('/:betId/open', middleware.ensureAdmin, handleStatusChange('OPEN'))
 router.post('/:betId/close', middleware.ensureAdmin, handleStatusChange('CLOSED'))
 router.post('/:betId/pay-out', middleware.ensureAdmin, payOut)

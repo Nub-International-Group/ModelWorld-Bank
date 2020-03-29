@@ -37,7 +37,7 @@ const create = async (req, res, next) => {
       throw new Error('Invalid amount, you can only bet up to 1,000,000')
     }
 
-    if (bet.status !== 1) {
+    if (bet.status !== 'OPEN') {
       throw new Error('Bet is closed or paid out.')
     }
 
@@ -47,7 +47,7 @@ const create = async (req, res, next) => {
 
     const option = bet.options.id(req.body.optionId)
 
-    const { balances } = await account.calculateBalance()
+    const { balances } = await account.calculateBalances()
     if (!balances.GBP) {
       throw new Error('No balance.')
     }
@@ -63,9 +63,9 @@ const create = async (req, res, next) => {
     const newWager = new Wager({
       amount: amount,
       currency: 'GBP',
-      bet: bet._id,
-      account: account._id,
-      betOption: option._id,
+      betId: bet._id,
+      accountId: account._id,
+      optionId: option._id,
       odd: option.currentOdds
     })
 

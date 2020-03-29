@@ -25,6 +25,7 @@ const Login = () => import('@/views/Login')
 // Admin Content
 const AdminAccounts = () => import('@/views/admin/Accounts')
 const AdminAccountTypes = () => import('@/views/admin/AccountTypes')
+const AdminBets = () => import('@/views/admin/Bets')
 const AdminProperties = () => import('@/views/admin/Properties')
 const AdminSettings = () => import('@/views/admin/Settings')
 const AdminWages = () => import('@/views/admin/Wages')
@@ -149,6 +150,15 @@ const router = new Router({
               meta: {
                 requiredScopes: ['admin'],
                 label: 'Account Types'
+              }
+            },
+            {
+              path: 'bets',
+              name: 'AdmiBets',
+              component: AdminBets,
+              meta: {
+                requiredScopes: ['admin'],
+                label: 'Bets'
               }
             },
             {

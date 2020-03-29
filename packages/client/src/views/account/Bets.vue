@@ -43,6 +43,34 @@
         </BCollapse>
       </BCard>
     </BCard>
+    <BRow>
+      <BCol sm="12">
+        <BCard>
+          <template v-slot:header>
+            <h4>My Wagers</h4>
+          </template>
+          <VClientTable
+            id="dataTable"
+            :columns="columns"
+            :data="wagers"
+            :options="settings"
+          >
+            <template
+              slot="amount"
+              slot-scope="props"
+            >
+              {{ $currency(props.row.amount, props.row.currency) }}
+            </template>
+            <template
+              slot="option"
+              slot-scope="props"
+            >
+              {{ props.row.bet.options.find(opt => opt._id === props.row.optionId).name }}
+            </template>
+          </VClientTable>
+        </BCard>
+      </BCol>
+    </BRow>
     <BModal
       v-if="!!selectedOption"
       :title="selectedBet.name + ' | ' + selectedOption.name"
@@ -112,8 +140,15 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
+const defaultWager = () => {
+  return {
+    betId: null,
+    optionId: null,
+    amount: 0
+  }
+}
 export default {
   name: 'Bets',
   filters: {
@@ -123,19 +158,15 @@ export default {
   },
   data: function () {
     return {
-      newWager: {
-        betId: null,
-        optionId: null,
-        amount: 0
-      },
-      columns: ['created', '_id', 'amount', 'bet.name', 'chosenOption.name'],
+      newWager: defaultWager(),
+      columns: ['created', '_id', 'amount', 'bet.name', 'option'],
       settings: {
         headings: {
           'created': 'Placed',
           '_id': 'Wager ID',
           'amount': 'Amount',
           'bet.name': 'Bet',
-          'chosenOption.name': 'Option'
+          'option': 'Chosen Option'
         },
         uniqueKey: '_id',
         orderBy: {
@@ -146,14 +177,12 @@ export default {
     }
   },
   created () {
-    //this.$store.dispatch('bets/fetchBets')
-    //this.$store.dispatch('selectedAccount/fetchWagers')
+    this.$store.dispatch('bets/fetch')
+    this.$store.dispatch('selectedAccount/wagers/fetch')
   },
   computed: {
     ...mapGetters('bets', ['openBets']),
-    ...mapState('selectedAccount', {
-      wagers: state => state.wagers
-    }),
+    ...mapGetters('selectedAccount', ['wagers']),
     selectedBet () {
       if (!this.newWager.betId) {
         return null
@@ -174,9 +203,8 @@ export default {
       this.newWager.optionId = optionId
     },
     async makeWager () {
-      await this.$store.dispatch('selectedAccount/wagers/create', {
-
-      })
+      await this.$store.dispatch('selectedAccount/wagers/create', this.newWager)
+      Object.assign(this.newWager, defaultWager())
     }
   }
 }

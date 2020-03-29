@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
   accountId: { type: String, ref: 'Account' },
   optionId: String,
   odd: Number
-}, { collection: 'wagers' })
+}, { collection: 'wagers', toJSON: { virtuals: true } })
 
 schema.virtual('account', {
   ref: 'Account',
