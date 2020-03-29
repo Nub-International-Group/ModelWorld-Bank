@@ -39,7 +39,7 @@ schema.methods.payOut = async function (winningOptionId) {
 
   for (const wager of wagers) {
     await Transaction.create({
-      from: '*bets*',
+      from: '*NubBets*',
       to: wager.accountId,
       amount: wager.amount * wager.odd,
       currency: wager.currency,
