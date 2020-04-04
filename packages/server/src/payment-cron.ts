@@ -1,15 +1,17 @@
-const mongoose = require('mongoose')
-const config = require('config')
-const logger = require('pino')({
-  name: 'payment-cron',
-  level: process.env.LOG_LEVEL || 'info'
+import * as config from 'config'
+import * as mongoose from 'mongoose'
+import * as pino from 'pino'
+
+import { Account } from './models'
+
+const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  name: 'payment-cron'
 })
-const { Account } = require('./models')
 
-mongoose.connect(config.mongoURL)
-mongoose.Promise = Promise
+mongoose.connect(config.get('mongoURL'))
 
-mongoose.connection.on('error', function (err) {
+mongoose.connection.on('error', err => {
   logger.fatal(err, 'error connecting to mongodb')
 
   process.exit(1)

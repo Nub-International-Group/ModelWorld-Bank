@@ -1,28 +1,49 @@
-const Decimal = require('decimal.js')
-const mongoose = require('mongoose')
-const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
-const moment = require('moment')
+import { Decimal } from 'decimal.js'
+import * as moment from 'moment'
+import * as mongoose from 'mongoose'
+import * as pino from 'pino'
+import * as shortid from 'shortid' // smarter, shorter IDs than the default MongoDB ones
 
-const logger = require('pino')({
-  name: 'model:account',
-  level: process.env.LOG_LEVEL || 'info'
+import { ITransaction } from './transaction'
+
+const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  name: 'model:account'
 })
 
+export interface IAccount extends mongoose.Document {
+  _id: string
+  accountType: string
+  created: Date
+  description: string
+  lastPaid: string
+  name: string
+  public: boolean
+  users: {
+    [user: string]: number
+  }
+  verified: boolean
+  wages: string[]
+}
+
 const schema = new mongoose.Schema({
-  _id: { type: String, default: shortid.generate },
-  name: String,
+  _id: { default: shortid.generate, type: String },
+  accountType: { autopopulate: true, ref: 'AccountType', type: String },
+  created: { default: Date.now, type: Date },
   description: String,
+  lastPaid: { default: Date.now, type: Date },
+  name: String,
   public: Boolean,
-  verified: Boolean,
-  wages: [{ type: String, ref: 'Wage' }], // wages: ['fdsuf923', 'ushdushfui', 'uishdfuis']
-  created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
-  lastPaid: { type: Date, default: Date.now },
-  accountType: { type: String, ref: 'AccountType', autopopulate: true }
+  verified: Boolean,
+  wages: [{ ref: 'Wage', type: String }]
 }, { collection: 'accounts' })
 
-const calculateBalancesFromTransactions = (transactions) => {
+const calculateBalancesFromTransactions = (transactions: ITransaction[]) => {
   const balances = transactions.reduce((acc, transaction) => {
+    if (transaction.to instanceof IAccount) {
+
+    }
     const currencyBalance = acc[transaction.currency] || new Decimal(0)
 
     if (transaction.to && transaction.to._id === this._id) {
@@ -38,14 +59,14 @@ const calculateBalancesFromTransactions = (transactions) => {
     } else {
       return acc
     }
-  }, {})
+  }, {} as {[currency: string]: Decimal})
 
   // convert to number for browser
   return Object.keys(balances).reduce(
     (obj, currency) => ({ ...obj, [currency]: balances[currency].toNumber() }), {}
   )
 }
-schema.calculateBalancesFromTransactions = calculateBalancesFromTransactions
+schema.statics.calculateBalancesFromTransactions = calculateBalancesFromTransactions
 
 /**
  * calculateBalance
@@ -60,24 +81,24 @@ schema.methods.calculateBalances = async function () {
   ]
 
   return {
-    transactions,
-    balances: calculateBalancesFromTransactions(transactions)
+    balances: calculateBalancesFromTransactions(transactions),
+    transactions
   }
 }
 
-const calculateTaxDue = (annualGross) => {
+const calculateTaxDue = (annualGross: Decimal) => {
   const taxBrackets = [
     {
-      topEnd: 20419,
-      rate: 0
+      rate: 0,
+      topEnd: 20419
     },
     {
-      topEnd: 51050,
-      rate: 0.15
+      rate: 0.15,
+      topEnd: 51050
     },
     {
-      topEnd: 153150,
-      rate: 0.375
+      rate: 0.375,
+      topEnd: 153150
     },
     {
       rate: 0.40
@@ -96,7 +117,7 @@ const calculateTaxDue = (annualGross) => {
       currentBracket.topEnd = Infinity
     }
 
-    const bracketSize = Decimal.sub(currentBracket.topEnd, previousBracket.topEnd)
+    const bracketSize = Decimal.sub(currentBracket.topEnd || 0, previousBracket.topEnd || 0)
     const amountInBracket = unallocated.gt(bracketSize) ? bracketSize : unallocated
 
     taxDueAnnually = taxDueAnnually.add(amountInBracket.mul(currentBracket.rate))
@@ -165,25 +186,25 @@ schema.methods.handlePaymentJob = async function () {
     const periodNet = netAnnual.mul(yearsSinceLastWage).toDP(2)
 
     const meta = {
-      salary: salaryIncome.mul(yearsSinceLastWage).toDP(2).toNumber(),
-      property: propertyIncome.mul(yearsSinceLastWage).toDP(2).toNumber(),
-      tax: taxAnnual.mul(yearsSinceLastWage).toDP(2).toNumber(),
-      salaryAnnual: salaryIncome,
-      propertyAnnual: propertyIncome,
-      taxAnnual,
       grossAnnual,
+      property: propertyIncome.mul(yearsSinceLastWage).toDP(2).toNumber(),
+      propertyAnnual: propertyIncome,
+      salary: salaryIncome.mul(yearsSinceLastWage).toDP(2).toNumber(),
+      salaryAnnual: salaryIncome,
+      tax: taxAnnual.mul(yearsSinceLastWage).toDP(2).toNumber(),
+      taxAnnual,
       yearsSinceLastWage
     }
 
     transactions.push({
-      to: this._id,
-      from: '*economy*',
-      description: 'Income',
       amount: periodNet.toNumber(),
-      currency: currency,
-      type: 'INCOME',
       authoriser: 'SYSTEM',
-      meta
+      currency: currency,
+      description: 'Income',
+      from: '*economy*',
+      meta,
+      to: this._id,
+      type: 'INCOME'
     })
   }
 
@@ -195,16 +216,16 @@ schema.methods.handlePaymentJob = async function () {
 
     for (const [currency, amount] of Object.entries(balances)) {
       transactions.push({
-        to: this._id,
-        from: '*NubBank*',
-        description: 'Interest on account',
         amount: effectiveRate.mul(amount).toDP(2),
-        currency,
-        type: 'INTEREST',
         authoriser: 'SYSTEM',
+        currency,
+        description: 'Interest on account',
+        from: '*NubBank*',
         meta: {
           AER: this.accountType.options.interest.rate
-        }
+        },
+        to: this._id,
+        type: 'INTEREST'
       })
     }
   }
@@ -219,6 +240,4 @@ schema.methods.handlePaymentJob = async function () {
 
 schema.plugin(require('mongoose-autopopulate'))
 
-const model = mongoose.model('Account', schema)
-
-module.exports = model
+export default mongoose.model<IAccount>('Account', schema)

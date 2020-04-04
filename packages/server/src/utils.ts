@@ -1,5 +1,8 @@
-function pickProperties (obj, keys) {
-  const filtered = {}
+import { Handler } from 'express'
+import createHttpError = require('http-errors')
+
+export const pickProperties = (obj: any, keys: string[]) => {
+  const filtered: {[key: string]: any} = {}
 
   for (const key of keys) {
     filtered[key] = obj[key]
@@ -8,16 +11,13 @@ function pickProperties (obj, keys) {
   return filtered
 }
 
-function generateParamMiddleware (Model, name) {
+export const generateParamMiddleware = (Model: any, name: string): Handler => {
   return async (req, res, next) => {
     try {
       const doc = await Model.findOne({ _id: req.params[name + 'Id'] }).exec()
 
       if (!doc) {
-        const e = new Error(`Resource (${name}) by id (${req.params[name + 'Id']}) not found.`)
-        e.code = 404
-
-        throw e
+        throw createHttpError(404, `Resource (${name}) by id (${req.params[name + 'Id']}) not found.`)
       }
 
       req[name] = doc
@@ -28,7 +28,7 @@ function generateParamMiddleware (Model, name) {
   }
 }
 
-function generatePatchHandler (modelName, attributes) {
+export const generatePatchHandler = (modelName: string, attributes: string[]): Handler => {
   return async (req, res, next) => {
     try {
       const filtered = pickProperties(req[modelName], attributes)

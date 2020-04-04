@@ -1,0 +1,12 @@
+{
+  "eslint.format.enable": true,
+  "eslint.workingDirectories": [
+    "./packages/client",
+    "./packages/server"
+  ],
+  "eslint.packageManager": "yarn",
+  "eslint.lintTask.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": false
+  }
+}
