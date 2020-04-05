@@ -10,7 +10,8 @@
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
-    "strict": true
+    "strict": true,
+    "downlevelIteration": true
   },
   "exclude": [
     "node_modules/*",

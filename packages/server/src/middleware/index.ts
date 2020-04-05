@@ -1,15 +1,11 @@
 import * as express from 'express'
 import createHttpError = require('http-errors')
+import { IRequest } from '../types'
 
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
-export const ensureAuthenticated: express.Handler = (req, res, next) => {
-  if (req.isAuthenticated()) { return next() }
-  res.status(401).json({ err: { code: 401, desc: 'Not logged in' } })
-}
-
-export const ensureJWT: express.Handler = (req, res, next) => {
+export const ensureJWT: express.Handler = (req: IRequest, res, next) => {
   if (req.headers.jwt) {
     jwt.verify(req.headers.jwt, config.secret, (err: Error, decoded: any) => {
       if (err) {

@@ -1,0 +1,2 @@
+db.getCollection('transactions').updateMany({}, { $rename: { 'from': 'fromId', 'to': 'toId' } })
+db.getCollection('accounts').updateMany({}, { $rename: { 'wages': 'wageIds', 'accountType': 'accountTypeId' }})

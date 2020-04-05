@@ -4,16 +4,26 @@ import * as mongoose from 'mongoose'
 import * as pino from 'pino'
 import * as shortid from 'shortid' // smarter, shorter IDs than the default MongoDB ones
 
+import { IAccountType } from './account-type'
 import { ITransaction } from './transaction'
+import { IWage } from './wage'
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
   name: 'model:account'
 })
 
+interface ICalculateBalancesResult {
+  transactions: ITransaction[]
+  balances: {
+    [currency: string]: number
+  }
+}
+
 export interface IAccount extends mongoose.Document {
   _id: string
-  accountType: string
+  accountTypeId: string
+  accountType?: IAccountType
   created: Date
   description: string
   lastPaid: string
@@ -23,12 +33,15 @@ export interface IAccount extends mongoose.Document {
     [user: string]: number
   }
   verified: boolean
-  wages: string[]
+  wages?: IWage[]
+  wageIds: string[]
+
+  calculateBalances: (transactions: ITransaction[], accountId: string) => ICalculateBalancesResult
 }
 
 const schema = new mongoose.Schema({
   _id: { default: shortid.generate, type: String },
-  accountType: { autopopulate: true, ref: 'AccountType', type: String },
+  accountTypeId: { ref: 'AccountType', type: String },
   created: { default: Date.now, type: Date },
   description: String,
   lastPaid: { default: Date.now, type: Date },
@@ -36,22 +49,19 @@ const schema = new mongoose.Schema({
   public: Boolean,
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   verified: Boolean,
-  wages: [{ ref: 'Wage', type: String }]
+  wageIds: [{ ref: 'Wage', type: String }]
 }, { collection: 'accounts' })
 
-const calculateBalancesFromTransactions = (transactions: ITransaction[]) => {
+const calculateBalancesFromTransactions = (transactions: ITransaction[], accountId: string) => {
   const balances = transactions.reduce((acc, transaction) => {
-    if (transaction.to instanceof IAccount) {
-
-    }
     const currencyBalance = acc[transaction.currency] || new Decimal(0)
 
-    if (transaction.to && transaction.to._id === this._id) {
+    if (transaction.toId === accountId) {
       return {
         ...acc,
         [transaction.currency]: Decimal.add(currencyBalance, transaction.amount)
       }
-    } else if (transaction.from && transaction.from._id === this._id) {
+    } else if (transaction.fromId === accountId) {
       return {
         ...acc,
         [transaction.currency]: Decimal.sub(currencyBalance, transaction.amount)
@@ -66,22 +76,21 @@ const calculateBalancesFromTransactions = (transactions: ITransaction[]) => {
     (obj, currency) => ({ ...obj, [currency]: balances[currency].toNumber() }), {}
   )
 }
-schema.statics.calculateBalancesFromTransactions = calculateBalancesFromTransactions
 
 /**
  * calculateBalance
  * @callback
  * @return Promise
  */
-schema.methods.calculateBalances = async function () {
+schema.methods.calculateBalances = async function (): Promise<ICalculateBalancesResult> {
   const { Transaction } = mongoose.models
   const transactions = [
-    ...(await Transaction.find({ to: this._id }).populate('from')),
-    ...(await Transaction.find({ from: this._id }).populate('to'))
+    ...(await Transaction.find({ toId: this._id }).populate('from')),
+    ...(await Transaction.find({ fromId: this._id }).populate('to'))
   ]
 
   return {
-    balances: calculateBalancesFromTransactions(transactions),
+    balances: calculateBalancesFromTransactions(transactions, this._id),
     transactions
   }
 }
@@ -132,17 +141,17 @@ const calculateTaxDue = (annualGross: Decimal) => {
 }
 
 schema.methods.getSalaries = async function () {
-  this.wages = this.wages.filter(id => id !== '*unemployed*')
-  if (this.wages.length === 0 && !this.accountType.corporate) {
-    this.wages = ['*unemployed*']
+  this.wageIds = this.wagesIds.filter(id => id !== '*unemployed*')
+  if (this.wageIds.length === 0 && !this.accountType.corporate) {
+    this.wageIds = ['*unemployed*']
   }
 
   await this.populate('wages').execPopulate()
 
-  return this.wages.reduce((acc, wage) => ({
+  return this.wages.reduce((acc, wage: IWage) => ({
     ...acc,
     [wage.currency]: Decimal.add(acc[wage.currency] || new Decimal(0), wage.value)
-  }), {})
+  }), {} as {[key: string]: Decimal})
 }
 
 schema.methods.getPropertyIncomes = async function () {
@@ -237,7 +246,5 @@ schema.methods.handlePaymentJob = async function () {
   this.markModified('wages')
   await this.save()
 }
-
-schema.plugin(require('mongoose-autopopulate'))
 
 export default mongoose.model<IAccount>('Account', schema)

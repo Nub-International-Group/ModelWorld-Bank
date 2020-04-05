@@ -10,9 +10,11 @@ export interface ITransaction extends mongoose.Document {
   created: Date
   currency: string
   description: string
-  from: IAccount | string
+  fromId: string
+  fromAccount?: IAccount
   meta: any
-  to: IAccount | string
+  toId: string
+  toAccount?: IAccount
   type: string
 }
 
