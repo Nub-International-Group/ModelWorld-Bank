@@ -75,10 +75,9 @@ app.get('/v1/auth/jwt', (req, res, next) => {
       if (err) { return next(err) }
 
       res.status(200).json({ jwt: jwtString })
-
-      req.session && req.session.destroy(() => {}) // terminate the login and user. JWT then becomes the soul form of session.
-      req.user = undefined
     })
+  } else {
+    res.status(401).json({ code: 401, desc: 'Login required.' })
   }
 })
 

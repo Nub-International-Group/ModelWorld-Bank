@@ -1,5 +1,12 @@
-const mongoose = require('mongoose')
-const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
+import * as mongoose from 'mongoose'
+import * as shortid from 'shortid'
+
+export interface IBetOption extends mongoose.Document {
+  _id: string
+  name: string
+  description: string
+  currentOdds: number
+}
 
 const betOption = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
@@ -21,8 +28,7 @@ const schema = new mongoose.Schema({
 }, { collection: 'bets' })
 
 /**
- *
- * Pays out bet with specified winner ID
+ * pays out bet with specified winner ID
  * @param winningOptionId
  * @param callback
  */

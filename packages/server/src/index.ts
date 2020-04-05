@@ -7,6 +7,7 @@ import * as mongoose from 'mongoose'
 import * as pino from 'pino'
 
 import * as middleware from './middleware'
+import { HttpError } from 'http-errors'
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
@@ -76,11 +77,11 @@ app.use((req, res, next) => {
 /**
  * error Handler
  */
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!err.code) err.code = 500
+app.use((err: HttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!err.statusCode) err.statusCode = 500
 
   logger.error(err)
-  if (err.code === 500) {
+  if (err.statusCode === 500) {
     logger.error({
       body: req.body,
       err,

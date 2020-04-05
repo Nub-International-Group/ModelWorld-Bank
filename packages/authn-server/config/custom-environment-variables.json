@@ -1,5 +1,4 @@
 {
-  "mongoURL": "MWB_MONGO",
   "reddit": {
     "key": "MWB_REDDIT_KEY",
     "secret": "MWB_REDDIT_SECRET"

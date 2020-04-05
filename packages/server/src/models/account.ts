@@ -37,6 +37,7 @@ export interface IAccount extends mongoose.Document {
   wageIds: string[]
 
   calculateBalances: (transactions: ITransaction[], accountId: string) => ICalculateBalancesResult
+  getSalaries: () => Promise<{[key: string]: Decimal}>
 }
 
 const schema = new mongoose.Schema({
@@ -141,14 +142,14 @@ const calculateTaxDue = (annualGross: Decimal) => {
 }
 
 schema.methods.getSalaries = async function () {
-  this.wageIds = this.wagesIds.filter(id => id !== '*unemployed*')
+  this.wageIds = this.wagesIds.filter((id: string) => id !== '*unemployed*')
   if (this.wageIds.length === 0 && !this.accountType.corporate) {
     this.wageIds = ['*unemployed*']
   }
 
   await this.populate('wages').execPopulate()
 
-  return this.wages.reduce((acc, wage: IWage) => ({
+  return this.wages.reduce((acc: {[key: string]: Decimal}, wage: IWage) => ({
     ...acc,
     [wage.currency]: Decimal.add(acc[wage.currency] || new Decimal(0), wage.value)
   }), {} as {[key: string]: Decimal})
@@ -221,7 +222,8 @@ schema.methods.handlePaymentJob = async function () {
   if (this.accountType.options.interest.rate) {
     const effectiveRate = (new Decimal(this.accountType.options.interest.rate)).add(1).toPower(yearsSinceLastWage).sub(1)
 
-    const { balances } = await this.calculateBalances()
+    const balanceData: ICalculateBalancesResult = await this.calculateBalances()
+    const balances = balanceData.balances
 
     for (const [currency, amount] of Object.entries(balances)) {
       transactions.push({

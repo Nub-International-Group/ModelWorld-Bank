@@ -1,5 +1,4 @@
 {
-    "mongoURL": "mongodb://host.docker.internal/mWorldDev",
     "reddit": {
         "key": null,
         "secret": null
