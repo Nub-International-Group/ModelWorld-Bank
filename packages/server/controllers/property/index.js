@@ -64,8 +64,8 @@ const updateById = async (req, res, next) => {
 
 router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
-router.put('/:propertyId', updateById)
-router.delete('/:propertyId', deleteById)
+router.put('/:propertyId', middleware.ensureAdmin, updateById)
+router.delete('/:propertyId', middleware.ensureAdmin, deleteById)
 router.param('propertyId', utils.generateParamMiddleware(Property, 'property'))
 
 module.exports = {

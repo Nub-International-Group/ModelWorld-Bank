@@ -96,7 +96,7 @@ async function triggerWagePayment (req, res, next) {
 router.get('/', findAll)
 router.post('/', middleware.ensureAdmin, create)
 router.get('/:accountId', middleware.accountWithPerms(1), findById)
-router.delete('/:accountId', deleteById)
+router.delete('/:accountId', middleware.ensureAdmin, deleteById)
 router.put('/:accountId', middleware.ensureAdmin, patchById)
 router.post('/:accountId/pay', middleware.ensureAdmin, triggerWagePayment)
 

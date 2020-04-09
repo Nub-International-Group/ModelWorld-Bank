@@ -108,7 +108,7 @@ async function create (req, res, next) {
 }
 
 router.get('/', middleware.accountWithPerms(1), find)
-router.post('/', create)
+router.post('/', middleware.accountWithPerms(3), create)
 
 module.exports = {
   router
