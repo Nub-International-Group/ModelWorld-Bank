@@ -122,6 +122,7 @@
             v-model="selectedToModify.currency"
             :options="currencies"
             text-field="name"
+            value-field="_id"
           />
         </BFormGroup>
       </template>
