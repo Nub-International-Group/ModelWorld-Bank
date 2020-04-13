@@ -211,18 +211,8 @@ export default {
     }),
     totalAccounts () {
       let total = this.accounts.length
-      let corporations = 0
-      let personal = 0
-
-      for (let i = 0; i < this.accounts.length; i++) {
-        const account = this.accounts[i]
-
-        if (account.company) {
-          corporations++
-        } else {
-          personal++
-        }
-      }
+      const corporations = this.accounts.filter(account => account.accountType.corporate).length
+      const personal = this.accounts.filter(account => !account.accountType.corporate).length
 
       return { total, corporations, personal }
     }
