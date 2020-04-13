@@ -17,7 +17,19 @@
               slot="balance"
               slot-scope="props"
             >
-              £{{ props.row.balance | currency }}
+              {{ $currency(props.row.balance) }}
+            </div>
+            <div
+              slot="assetValue"
+              slot-scope="props"
+            >
+              {{ $currency(props.row.assetValue) }}
+            </div>
+            <div
+              slot="netWorth"
+              slot-scope="props"
+            >
+              {{ $currency(props.row.netWorth) }}
             </div>
           </VClientTable>
         </BCard>
@@ -28,7 +40,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-// TODO: Rehaul leaderboards to be more flexible and dynamic. Don't lock down to just company/personal.
+
 export default {
   name: 'Leaderboard',
   filters: {
@@ -38,16 +50,18 @@ export default {
   },
   data: function () {
     return {
-      columns: ['name', 'balance'],
+      columns: ['name', 'balance', 'assetValue', 'netWorth'],
       options: {
         sortIcon: { base: 'fa', up: 'fa-sort-asc', down: 'fa-sort-desc', is: 'fa-sort' },
         headings: {
           'name': 'Name',
-          'balance': 'Balance'
+          'balance': 'Balance',
+          'assetValue': 'Value of Assets',
+          'netWorth': 'Net Worth'
         },
         uniqueKey: '_id',
         orderBy: {
-          column: 'balance',
+          column: 'netWorth',
           ascending: false
         }
       }

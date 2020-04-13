@@ -46,6 +46,8 @@ async function updateLeaderboard () {
   try {
     const accounts = await Account.find({ public: true }).exec()
     const balances = {}
+    const assetValues = {}
+
     const transactions = await Transaction.find({}).exec()
     const properties = await Property.find({}).exec()
 
@@ -62,8 +64,8 @@ async function updateLeaderboard () {
       valuations.sort((a, b) => b.created - a.created)
 
       if (valuations[0]) {
-        if (!balances[property.owner]) balances[property.owner] = {}
-        balances[property.owner][property.currency] = (balances[property.owner][property.currency] || 0) + valuations[0].amount
+        if (!assetValues[property.owner]) assetValues[property.owner] = {}
+        assetValues[property.owner][property.currency] = (assetValues[property.owner][property.currency] || 0) + valuations[0].amount
       }
     }
 
@@ -73,15 +75,17 @@ async function updateLeaderboard () {
 
     // generate new leaderboards
     for (const account of accounts) {
-      if (balances[account._id] && account.accountType) {
-        const balance = balances[account._id].GBP || 0
-        const lb = account.accountType.corporate ? corporateAccountLeaderboard : personalAccountLeaderboard
-        lb.push({
-          name: account.name,
-          description: account.description,
-          balance
-        })
-      }
+      const balance = (balances[account._id] && balances[account._id].GBP) || 0
+      const assetValue = (assetValues[account._id] && assetValues[account._id].GBP) || 0
+
+      const lb = account.accountType.corporate ? corporateAccountLeaderboard : personalAccountLeaderboard
+      lb.push({
+        name: account.name,
+        description: account.description,
+        balance,
+        assetValue,
+        netWorth: balance + assetValue
+      })
     }
 
     lastUpdated = Date.now()
