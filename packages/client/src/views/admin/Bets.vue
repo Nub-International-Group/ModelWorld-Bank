@@ -101,7 +101,7 @@
                       <div class="float-left">
                         <h4>Option</h4>
                       </div>
-                      <div class="float-right" v-if="selectedToModify.options.length !== 1">
+                      <div class="float-right" v-if="selectedToModify.options.length !== 1 && selectedToModify._id ==='new'">
                         <BBtn
                           variant="danger"
                           @click="deleteOption(option._id)"
