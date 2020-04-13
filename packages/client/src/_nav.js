@@ -17,11 +17,6 @@ export default {
       icon: 'cui-briefcase'
     },
     {
-      name: 'Settings',
-      url: '/settings',
-      icon: 'cui-cog'
-    },
-    {
       name: 'Assets',
       url: '/assets?view=owned',
       icon: 'cui-home',
@@ -59,6 +54,11 @@ export default {
       ]
     },
     {
+      name: 'Settings',
+      url: '/settings',
+      icon: 'cui-cog'
+    },
+    {
       name: 'Admin',
       url: '/admin',
       icon: 'icon-list',
@@ -85,12 +85,12 @@ export default {
           url: '/admin/properties'
         },
         {
-          name: 'Settings',
-          url: '/admin/settings'
-        },
-        {
           name: 'Wage Management',
           url: '/admin/wages'
+        },
+        {
+          name: 'Settings',
+          url: '/admin/settings'
         }
       ]
     }
