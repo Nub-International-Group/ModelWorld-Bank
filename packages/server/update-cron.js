@@ -4,7 +4,8 @@ const logger = require('pino')({
   name: 'payment-cron',
   level: process.env.LOG_LEVEL || 'info'
 })
-const { Account } = require('./models')
+const { Account, EconomyReport } = require('./models')
+const { nubMonthsSinceEpoch } = require('./utils/nub-epoch')
 
 mongoose.connect(config.mongoURL)
 mongoose.Promise = Promise
@@ -25,13 +26,27 @@ const payAccounts = async () => {
   }
 }
 
-logger.info('starting account payment cron job')
-payAccounts()
+const run = async () => {
+  const monthsSinceEpoch = nubMonthsSinceEpoch()
+  logger.info('%d months since epoch', monthsSinceEpoch)
+
+  const wagesProcessed = await EconomyReport.exists({
+    monthsSinceEpoch
+  })
+  if (!wagesProcessed) {
+    await payAccounts()
+  }
+
+  await EconomyReport.generateReport()
+}
+
+logger.info('starting update cron job')
+run()
   .then(() => {
-    logger.info('payment cron job completed')
+    logger.info('update cron job completed')
     process.exit(0)
   })
   .catch(err => {
-    logger.fatal(err, 'an error occured completing the payment cron job')
+    logger.fatal(err, 'an error occured completing the update cron job')
     process.exit(1)
   })

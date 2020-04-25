@@ -20,6 +20,13 @@ const schema = new mongoose.Schema({
   tags: [String]
 }, { collection: 'properties' })
 
+schema.methods.getLastValue = function () {
+  const valuations = [...this.valuations]
+  valuations.sort((a, b) => b.created - a.created)
+
+  return valuations[0] ? valuations[0].amount : null
+}
+
 const model = mongoose.model('Property', schema)
 
 module.exports = model
