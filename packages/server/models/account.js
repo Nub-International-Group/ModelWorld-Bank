@@ -17,7 +17,8 @@ const schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now },
-  accountType: { type: String, ref: 'AccountType', autopopulate: true }
+  accountType: { type: String, ref: 'AccountType', autopopulate: true },
+  paidOnDate: mongoose.Schema.Types.Mixed
 }, { collection: 'accounts' })
 
 const calculateBalancesFromTransactions = (transactions) => {
@@ -128,7 +129,7 @@ schema.methods.getPropertyIncomes = async function () {
 
   const ownedProperties = await Property.find({
     owner: this._id
-  })
+  }).exec()
 
   return ownedProperties.reduce((acc, property) => ({
     ...acc,
@@ -136,7 +137,7 @@ schema.methods.getPropertyIncomes = async function () {
   }), {})
 }
 
-schema.methods.handlePaymentJob = async function () {
+schema.methods.handlePaymentJob = async function (monthsSinceEpoch) {
   const { Transaction } = mongoose.models
 
   if (!this.accountType) {
@@ -206,8 +207,12 @@ schema.methods.handlePaymentJob = async function () {
 
   await Transaction.create(transactions)
 
-  this.lastPaid = Date.now()
-  this.markModified('lastPaid')
+  if (!this.paidOnDate) {
+    this.paidOnDate = {}
+  }
+
+  this.paidOnDate[monthsSinceEpoch] = true
+  this.markModified('paidOnDate')
   this.markModified('wages')
   await this.save()
 }

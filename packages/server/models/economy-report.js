@@ -3,7 +3,6 @@ const shortid = require('shortid') // Smarter, shorter IDs than the default Mong
 const Transaction = require('./transaction')
 const Property = require('./property')
 const Account = require('./account')
-const { nubMonthsSinceEpoch } = require('../utils/nub-epoch')
 const CURRENCIES = ['GBP']
 
 const logger = require('pino')({
@@ -14,31 +13,16 @@ const logger = require('pino')({
 const individualEconomy = new mongoose.Schema({
   _id: String, // Currency Code
   totalAssetValue: Number,
-  totalCash: Number
+  totalCash: Number,
+  accountStats: mongoose.Schema.Types.Mixed
 })
 
 const schema = new mongoose.Schema({
   _id: { type: String, default: shortid.generate },
   monthsSinceEpoch: { type: Number, required: true },
   lastUpdated: { type: Date, default: Date.now },
-  currencies: [individualEconomy],
-  accountStats: mongoose.Schema.Types.Mixed
+  currencies: [individualEconomy]
 }, { collection: 'economy-reports' })
-
-schema.statics.generateReport = async function () {
-  const monthsSinceEpoch = nubMonthsSinceEpoch()
-
-  let report = await this.find({ monthsSinceEpoch }).exec()
-  if (!report) {
-    report = new this({
-      monthsSinceEpoch
-    })
-  }
-
-  report.currencies = Promise.all(CURRENCIES.map(code => this.generateCurrencyReport(code)))
-  report.lastUpdated = new Date()
-  await report.save()
-}
 
 schema.statics.generateCurrencyReport = async function (currencyCode) {
   const transactions = await Transaction.find({ currency: currencyCode, from: '*economy*' }).exec()
@@ -73,7 +57,7 @@ schema.statics.generateAccountStats = async function (currencyCode) {
 
   for (const transaction of transactions) {
     balances[transaction.to] = (balances[transaction.to] || 0) + transaction.amount
-    balances[transaction.from] = (balances[transaction.from] || 0) + transaction.to
+    balances[transaction.from] = (balances[transaction.from] || 0) - transaction.amount
   }
 
   for (const property of properties) {
@@ -94,8 +78,23 @@ schema.statics.generateAccountStats = async function (currencyCode) {
       corporate: account.accountType.corporate
     }
   }
+
+  return accountStats
 }
 
 const model = mongoose.model('EconomyReport', schema)
+
+model.generateReport = async (monthsSinceEpoch) => {
+  let report = await model.findOne({ monthsSinceEpoch }).exec()
+  if (!report) {
+    report = new model({
+      monthsSinceEpoch
+    })
+  }
+
+  report.currencies = await Promise.all(CURRENCIES.map(code => model.generateCurrencyReport(code)))
+  report.lastUpdated = new Date()
+  await report.save()
+}
 
 module.exports = model

@@ -16,12 +16,14 @@ mongoose.connection.on('error', function (err) {
   process.exit(1)
 })
 
-const payAccounts = async () => {
-  const accounts = await Account.find({}).exec()
+
+
+const payAccounts = async (monthsSinceEpoch) => {
+  const accounts = await Account.find().where('paidOnDate.' + monthsSinceEpoch).exists(false).exec()
   logger.info(`${accounts.length} accounts to process wages for.`)
 
   for (const account of accounts) {
-    await account.handlePaymentJob()
+    await account.handlePaymentJob(monthsSinceEpoch)
     logger.info(`account ${account._id} paid`)
   }
 }
@@ -30,14 +32,8 @@ const run = async () => {
   const monthsSinceEpoch = nubMonthsSinceEpoch()
   logger.info('%d months since epoch', monthsSinceEpoch)
 
-  const wagesProcessed = await EconomyReport.exists({
-    monthsSinceEpoch
-  })
-  if (!wagesProcessed) {
-    await payAccounts()
-  }
-
-  await EconomyReport.generateReport()
+  await payAccounts(monthsSinceEpoch)
+  await EconomyReport.generateReport(monthsSinceEpoch)
 }
 
 logger.info('starting update cron job')

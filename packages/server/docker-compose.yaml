@@ -13,8 +13,10 @@ services:
     - '4040:4040'
     volumes:
     - $PWD/index.js:/app/index.js
-    - $PWD/payment-cron.js:/app/payment-cron.js
+    - $PWD/package.json:/app/package.json
+    - $PWD/update-cron.js:/app/update-cron.js
     - $PWD/utils.js:/app/utils.js
+    - $PWD/utils:/app/utils
     - $PWD/models:/app/models
     - $PWD/controllers:/app/controllers
     - $PWD/middleware:/app/middleware
