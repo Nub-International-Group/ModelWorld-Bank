@@ -1,7 +1,6 @@
 const Decimal = require('decimal.js')
 const mongoose = require('mongoose')
 const shortid = require('shortid') // Smarter, shorter IDs than the default MongoDB ones
-const moment = require('moment')
 
 const logger = require('pino')({
   name: 'model:account',
@@ -18,7 +17,8 @@ const schema = new mongoose.Schema({
   created: { type: Date, default: Date.now },
   users: mongoose.Schema.Types.Mixed, // users: {'strideynet': NUM} NUM: 0 -> Blocked/Removed, 1 -> Read, 2 -> Read/Write, 3 -> Owner
   lastPaid: { type: Date, default: Date.now },
-  accountType: { type: String, ref: 'AccountType', autopopulate: true }
+  accountType: { type: String, ref: 'AccountType', autopopulate: true },
+  paidOnDate: mongoose.Schema.Types.Mixed
 }, { collection: 'accounts' })
 
 const calculateBalancesFromTransactions = (transactions) => {
@@ -129,7 +129,7 @@ schema.methods.getPropertyIncomes = async function () {
 
   const ownedProperties = await Property.find({
     owner: this._id
-  })
+  }).exec()
 
   return ownedProperties.reduce((acc, property) => ({
     ...acc,
@@ -137,7 +137,7 @@ schema.methods.getPropertyIncomes = async function () {
   }), {})
 }
 
-schema.methods.handlePaymentJob = async function () {
+schema.methods.handlePaymentJob = async function (monthsSinceEpoch) {
   const { Transaction } = mongoose.models
 
   if (!this.accountType) {
@@ -149,9 +149,6 @@ schema.methods.handlePaymentJob = async function () {
   const salaries = this.accountType.options.salary ? await this.getSalaries() : {}
   const propertyIncomes = this.accountType.options.property ? await this.getPropertyIncomes() : {}
 
-  // get multiplier values
-  const yearsSinceLastWage = moment().diff(this.lastPaid, 'years', true) * 10
-
   // create transactions for salaries/property income and apply tax
   const transactions = []
   for (const currency of [...new Set([...Object.keys(salaries), ...Object.keys(propertyIncomes)])]) {
@@ -162,17 +159,16 @@ schema.methods.handlePaymentJob = async function () {
     const taxAnnual = this.accountType.corporate ? new Decimal(0) : calculateTaxDue(grossAnnual)
     const netAnnual = grossAnnual.sub(taxAnnual)
 
-    const periodNet = netAnnual.mul(yearsSinceLastWage).toDP(2)
+    const periodNet = netAnnual.div(12).toDP(2)
 
     const meta = {
-      salary: salaryIncome.mul(yearsSinceLastWage).toDP(2).toNumber(),
-      property: propertyIncome.mul(yearsSinceLastWage).toDP(2).toNumber(),
-      tax: taxAnnual.mul(yearsSinceLastWage).toDP(2).toNumber(),
+      salary: salaryIncome.div(12).toDP(2).toNumber(),
+      property: propertyIncome.div(12).toDP(2).toNumber(),
+      tax: taxAnnual.div(12).toDP(2).toNumber(),
       salaryAnnual: salaryIncome,
       propertyAnnual: propertyIncome,
       taxAnnual,
-      grossAnnual,
-      yearsSinceLastWage
+      grossAnnual
     }
 
     transactions.push({
@@ -189,7 +185,7 @@ schema.methods.handlePaymentJob = async function () {
 
   // create transactions for savings
   if (this.accountType.options.interest.rate) {
-    const effectiveRate = (new Decimal(this.accountType.options.interest.rate)).add(1).toPower(yearsSinceLastWage).sub(1)
+    const effectiveRate = (new Decimal(this.accountType.options.interest.rate)).add(1).toPower(Decimal.div(1, 12)).sub(1)
 
     const { balances } = await this.calculateBalances()
 
@@ -211,8 +207,12 @@ schema.methods.handlePaymentJob = async function () {
 
   await Transaction.create(transactions)
 
-  this.lastPaid = Date.now()
-  this.markModified('lastPaid')
+  if (!this.paidOnDate) {
+    this.paidOnDate = {}
+  }
+
+  this.paidOnDate[monthsSinceEpoch] = true
+  this.markModified('paidOnDate')
   this.markModified('wages')
   await this.save()
 }

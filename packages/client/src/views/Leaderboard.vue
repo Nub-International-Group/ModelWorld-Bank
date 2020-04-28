@@ -4,8 +4,8 @@
       <BCol sm="12">
         <BCard>
           <h3>Forbes Rich List - {{ $route.params.type === 'company' ? 'Company' : 'People\'s' }} Accounts</h3>
-          <br>
-          <h5>Updated every 5 minutes</h5>
+          <h5> Cash in economy: {{ $currency(gbpEconomy.totalCash) }} </h5>
+          <h5> Assets in economy: {{ $currency(gbpEconomy.totalAssetValue) }} </h5>
           <br>
           <VClientTable
             id="dataTable"
@@ -17,13 +17,13 @@
               slot="balance"
               slot-scope="props"
             >
-              {{ $currency(props.row.balance) }}
+              {{ $currency(props.row.balance) }} <strong>({{ percentage(props.row.balance, gbpEconomy.totalCash) }}%)</strong>
             </div>
             <div
-              slot="assetValue"
+              slot="assets"
               slot-scope="props"
             >
-              {{ $currency(props.row.assetValue) }}
+              {{ $currency(props.row.assets) }} <strong>({{ percentage(props.row.assets, gbpEconomy.totalAssetValue) }}%)</strong>
             </div>
             <div
               slot="netWorth"
@@ -39,24 +39,19 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Leaderboard',
-  filters: {
-    currency: value => {
-      return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
-    }
-  },
   data: function () {
     return {
-      columns: ['name', 'balance', 'assetValue', 'netWorth'],
+      columns: ['account.name', 'balance', 'assets', 'netWorth'],
       options: {
         sortIcon: { base: 'fa', up: 'fa-sort-asc', down: 'fa-sort-desc', is: 'fa-sort' },
         headings: {
-          'name': 'Name',
+          'account.name': 'Name',
           'balance': 'Balance',
-          'assetValue': 'Value of Assets',
+          'assets': 'Value of Assets',
           'netWorth': 'Net Worth'
         },
         uniqueKey: '_id',
@@ -68,22 +63,24 @@ export default {
     }
   },
   computed: {
-    ...mapState('leaderboards', {
-      company: state => state.company,
-      personal: state => state.personal
-    }),
+    ...mapGetters('ui', ['accountsById']),
+    ...mapGetters('economyReports', ['leaderboard', 'gbpEconomy']),
     selectedLeaderboard () {
       const type = this.$route.params.type === 'company' ? 'company' : 'personal'
 
-      return this[type]
+      return this.leaderboard.filter(entry => entry.public && (entry.corporate === (type === 'company'))).map(entry => ({
+        ...entry,
+        account: this.accountsById[entry._id]
+      }))
     }
   },
-  methods: {
-    ...mapActions('leaderboards', ['fetchLeaderboard'])
-  },
   created () {
-    this.$store.dispatch('leaderboards/fetchLeaderboard', 'personal')
-    this.$store.dispatch('leaderboards/fetchLeaderboard', 'company')
+    this.$store.dispatch('economyReports/fetchLatest')
+  },
+  methods: {
+    percentage (cut, total) {
+      return (cut * 100 / total).toFixed(1)
+    }
   }
 }
 </script>

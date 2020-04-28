@@ -3,9 +3,10 @@ kind: CronJob
 metadata:
   labels:
     app: mwbank
-  name: payment-cron
+  name: update-cron
 spec:
-  schedule: "0 18 * * *"
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
@@ -13,9 +14,9 @@ spec:
           containers:
           - image: gcr.io/main-219410/mw-bank-api:latest
             command: ['node']
-            args: ['/app/payment-cron.js']
+            args: ['/app/update-cron.js']
             imagePullPolicy: Always
-            name: payment-cron
+            name: update-cron
             env:
             - name: MWB_MONGO
               value: "mongodb://mongo-0.mongo.default.svc.cluster.local/mWorldProd"
