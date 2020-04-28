@@ -17,13 +17,13 @@
               slot="balance"
               slot-scope="props"
             >
-              {{ $currency(props.row.balance) }}
+              {{ $currency(props.row.balance) }} <strong>({{ percentage(props.row.balance, gbpEconomy.totalCash) }}%)</strong>
             </div>
             <div
               slot="assets"
               slot-scope="props"
             >
-              {{ $currency(props.row.assets) }}
+              {{ $currency(props.row.assets) }} <strong>({{ percentage(props.row.assets, gbpEconomy.totalAssetValue) }}%)</strong>
             </div>
             <div
               slot="netWorth"
@@ -76,6 +76,11 @@ export default {
   },
   created () {
     this.$store.dispatch('economyReports/fetchLatest')
+  },
+  methods: {
+    percentage (cut, total) {
+      return (cut * 100 / total).toFixed(1)
+    }
   }
 }
 </script>
