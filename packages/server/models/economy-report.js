@@ -49,7 +49,7 @@ schema.statics.generateCurrencyReport = async function (currencyCode) {
 
 schema.statics.generateAccountStats = async function (currencyCode) {
   const accounts = await Account.find({}).exec()
-  const transactions = await Transaction.find({ from: '*economy*', currency: currencyCode }).exec()
+  const transactions = await Transaction.find({ currency: currencyCode }).exec()
   const properties = await Property.find({ currency: currencyCode }).exec()
 
   const balances = {}
