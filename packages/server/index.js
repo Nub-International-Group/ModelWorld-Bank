@@ -103,7 +103,8 @@ app.use('/v1/wagers', middleware.ensureJWT, controllers.wager.router)
 const admins = [
   'strideynet',
   'padanub',
-  'ohprkl'
+  'ohprkl',
+  'confessions_gb_'
 ]
 
 /**
