@@ -5,7 +5,7 @@ import accounts from './accounts'
 import accountTypes from './account-types'
 import admin from './admin'
 import bets from './bets'
-import leaderboards from './leaderboards'
+import economyReports from './economy-reports'
 import messages from './messages'
 import properties from './properties'
 import selectedAccount from './selected-account'
@@ -22,7 +22,7 @@ const store = new Vuex.Store({
     accounts,
     admin,
     bets,
-    leaderboards,
+    economyReports,
     messages,
     properties,
     selectedAccount,
