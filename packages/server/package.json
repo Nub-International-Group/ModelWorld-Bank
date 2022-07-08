@@ -20,7 +20,7 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "jsonwebtoken": "^8.0.1",
-    "moment": "^2.21.0",
+    "moment": "^2.29.4",
     "mongoose": "github:Automattic/mongoose#5.0",
     "mongoose-autopopulate": "^0.9.1",
     "node-schedule": "^1.2.5",
